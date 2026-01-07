@@ -1,3 +1,4 @@
+import Link from 'next/link'; // <--- IMPORTANTE: Adicionamos isso
 import { Search, MapPin, Key, Instagram, Facebook, Mail, Phone } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -57,7 +58,12 @@ export default async function HomeImobiliaria() {
           )}
 
           {imoveis?.map((imovel) => (
-            <div key={imovel.id} className="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 cursor-pointer">
+            /* AQUI MUDOU: Usamos Link em vez de div para tornar o card clicável */
+            <Link 
+              href={`/imoveis/${imovel.id}`} 
+              key={imovel.id} 
+              className="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 cursor-pointer block"
+            >
               <div className="h-64 overflow-hidden relative">
                 <span className={`absolute top-4 left-4 text-white text-xs font-bold px-3 py-1 rounded-full z-10 ${imovel.tipo === 'VENDA' ? 'bg-green-500' : 'bg-blue-500'}`}>
                   {imovel.tipo}
@@ -77,7 +83,7 @@ export default async function HomeImobiliaria() {
                   <span className="flex items-center gap-1"><MapPin className="w-4 h-4"/> {imovel.area}m²</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </main>
