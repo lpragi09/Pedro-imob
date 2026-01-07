@@ -1,6 +1,10 @@
-import Link from 'next/link'; // <--- IMPORTANTE: Adicionamos isso
-import { Search, MapPin, Key, Instagram, Facebook, Mail, Phone } from 'lucide-react';
+import Link from 'next/link';
+import { Search, MapPin, Key, Instagram, Facebook, Mail, Phone, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+
+// --- A MÁGICA ESTÁ AQUI ---
+// Isso diz pro Next.js: "Não guarde cache, olhe o banco toda vez!"
+export const revalidate = 0;
 
 const formatarPreco = (valor: number) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
@@ -54,26 +58,37 @@ export default async function HomeImobiliaria() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {(!imoveis || imoveis.length === 0) && (
-            <p className="text-slate-500 col-span-3 text-center py-10">Carregando imóveis...</p>
+            <div className="col-span-3 text-center py-10">
+              <p className="text-slate-500 text-lg">Nenhum imóvel encontrado no momento.</p>
+              <p className="text-sm text-slate-400">Acesse o painel /admin para cadastrar.</p>
+            </div>
           )}
 
           {imoveis?.map((imovel) => (
-            /* AQUI MUDOU: Usamos Link em vez de div para tornar o card clicável */
             <Link 
               href={`/imoveis/${imovel.id}`} 
               key={imovel.id} 
               className="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 cursor-pointer block"
             >
-              <div className="h-64 overflow-hidden relative">
+              <div className="h-64 overflow-hidden relative bg-slate-200">
                 <span className={`absolute top-4 left-4 text-white text-xs font-bold px-3 py-1 rounded-full z-10 ${imovel.tipo === 'VENDA' ? 'bg-green-500' : 'bg-blue-500'}`}>
                   {imovel.tipo}
                 </span>
-                <img 
-  src={imovel.imagens ? imovel.imagens[0] : ''} 
-  className="w-full h-full object-cover group-hover:scale-110 transition duration-700" 
-  alt={imovel.titulo} 
-/>
+                
+                {/* LÓGICA DA IMAGEM ATUALIZADA */}
+                {imovel.imagens && imovel.imagens.length > 0 ? (
+                  <img 
+                    src={imovel.imagens[0]} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition duration-700" 
+                    alt={imovel.titulo} 
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-400">
+                    <ImageIcon className="w-10 h-10" />
+                  </div>
+                )}
               </div>
+              
               <div className="p-6">
                 <div className="flex items-baseline justify-between mb-2">
                   <span className="text-sm text-slate-500 font-medium line-clamp-1">{imovel.descricao}</span>
