@@ -68,7 +68,11 @@ export default async function HomeImobiliaria() {
                 <span className={`absolute top-4 left-4 text-white text-xs font-bold px-3 py-1 rounded-full z-10 ${imovel.tipo === 'VENDA' ? 'bg-green-500' : 'bg-blue-500'}`}>
                   {imovel.tipo}
                 </span>
-                <img src={imovel.imagem_url} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt={imovel.titulo} />
+                <img 
+  src={imovel.imagens ? imovel.imagens[0] : ''} 
+  className="w-full h-full object-cover group-hover:scale-110 transition duration-700" 
+  alt={imovel.titulo} 
+/>
               </div>
               <div className="p-6">
                 <div className="flex items-baseline justify-between mb-2">
