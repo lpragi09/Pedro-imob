@@ -2,17 +2,36 @@ import { supabase } from '@/lib/supabase';
 import { MapPin, Bed, Ruler, ArrowLeft, Phone, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
-// Esta função busca o imóvel baseada no ID da URL
+// Função para buscar no banco
 async function getImovel(id: string) {
-  const { data } = await supabase.from('imoveis').select('*').eq('id', id).single();
+  const { data } = await supabase
+    .from('imoveis')
+    .select('*')
+    .eq('id', id)
+    .single();
   return data;
 }
 
-export default async function DetalhesImovel({ params }: { params: { id: string } }) {
-  const imovel = await getImovel(params.id);
+// ATENÇÃO AQUI: Mudança para Next.js 15/16
+// O "params" agora é uma Promise que precisa ser aguardada
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function DetalhesImovel({ params }: Props) {
+  // 1. Esperamos o params carregar para pegar o ID
+  const { id } = await params;
+  
+  // 2. Buscamos o imóvel com o ID certo
+  const imovel = await getImovel(id);
 
   if (!imovel) {
-    return <div className="min-h-screen flex items-center justify-center">Imóvel não encontrado.</div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-slate-500">
+        <h2 className="text-xl font-bold">Imóvel não encontrado.</h2>
+        <Link href="/" className="text-blue-600 hover:underline">Voltar para o início</Link>
+      </div>
+    );
   }
 
   const textoWhatsApp = `Olá! Vi o imóvel "${imovel.titulo}" no site e gostaria de mais informações.`;
