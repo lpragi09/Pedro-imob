@@ -35,7 +35,7 @@ export default async function HomeImobiliaria({
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans">
       
-      {/* HERO SECTION - Fundo Fixo (Corrigido para Mobile) */}
+      {/* HERO SECTION */}
       <div 
         id="topo" 
         className="relative h-screen w-full flex items-center justify-center bg-scroll md:bg-fixed bg-cover bg-center" 
@@ -111,7 +111,8 @@ export default async function HomeImobiliaria({
                       <span>{imovel.quartos} Quartos</span>
                       <span>{imovel.area} m²</span>
                    </div>
-                   <span className="text-xl font-bold text-white">{formatarPreco(imovel.preco)}</span>
+                   {/* AQUI ESTÁ A MUDANÇA: Preço agora é text-yellow-500 */}
+                   <span className="text-xl font-bold text-yellow-500">{formatarPreco(imovel.preco)}</span>
                 </div>
               </div>
             </Link>
