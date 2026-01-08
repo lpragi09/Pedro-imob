@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Filter, X, MapPin } from 'lucide-react';
+import { Filter, X, MapPin, DollarSign } from 'lucide-react';
 
 export function ImoveisFilter() {
   const router = useRouter();
@@ -15,8 +15,9 @@ export function ImoveisFilter() {
   const [banheiros, setBanheiros] = useState(searchParams.get('banheiros') || '');
   const [vagas, setVagas] = useState(searchParams.get('vagas') || '');
   
-  const [minPreco, setMinPreco] = useState(Number(searchParams.get('min_preco')) || 0);
-  const [maxPreco, setMaxPreco] = useState(Number(searchParams.get('max_preco')) || 5000000);
+  // Agora iniciamos com 0 (vazio) se não tiver nada na URL
+  const [minPreco, setMinPreco] = useState(searchParams.get('min_preco') || '');
+  const [maxPreco, setMaxPreco] = useState(searchParams.get('max_preco') || '');
 
   // Sincroniza o visual se o usuário mudar a URL manualmente ou voltar
   useEffect(() => {
@@ -25,22 +26,18 @@ export function ImoveisFilter() {
     setQuartos(searchParams.get('quartos') || '');
     setBanheiros(searchParams.get('banheiros') || '');
     setVagas(searchParams.get('vagas') || '');
-    setMinPreco(Number(searchParams.get('min_preco')) || 0);
-    setMaxPreco(Number(searchParams.get('max_preco')) || 5000000);
+    setMinPreco(searchParams.get('min_preco') || '');
+    setMaxPreco(searchParams.get('max_preco') || '');
   }, [searchParams]);
-
-  const formatMoney = (val: number) => 
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
   const aplicarFiltros = (e?: React.FormEvent) => {
     e?.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
 
-    // --- CORREÇÃO DO BUG ---
-    // Remove a "busca" genérica do topo para não conflitar com os filtros específicos
+    // Limpa a "busca" genérica para dar prioridade aos filtros exatos
     params.delete('busca'); 
     
-    // Reseta a paginação para a primeira página sempre que filtrar
+    // Reseta a paginação
     params.delete('page');
 
     if (cidade) params.set('cidade', cidade); else params.delete('cidade');
@@ -49,10 +46,11 @@ export function ImoveisFilter() {
     if (banheiros) params.set('banheiros', banheiros); else params.delete('banheiros');
     if (vagas) params.set('vagas', vagas); else params.delete('vagas');
     
-    if (minPreco > 0) params.set('min_preco', minPreco.toString()); 
+    // Lógica de Preço Livre
+    if (Number(minPreco) > 0) params.set('min_preco', minPreco.toString()); 
     else params.delete('min_preco');
     
-    if (maxPreco < 5000000) params.set('max_preco', maxPreco.toString());
+    if (Number(maxPreco) > 0) params.set('max_preco', maxPreco.toString());
     else params.delete('max_preco');
 
     router.push(`/imoveis?${params.toString()}`);
@@ -64,13 +62,13 @@ export function ImoveisFilter() {
     setQuartos('');
     setBanheiros('');
     setVagas('');
-    setMinPreco(0);
-    setMaxPreco(5000000);
+    setMinPreco('');
+    setMaxPreco('');
     router.push('/imoveis');
   };
 
-  const inputClass = "w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300 placeholder:text-slate-600";
-  const selectClass = "w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300 text-center font-bold";
+  const inputClass = "w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300 placeholder:text-slate-600 transition-colors";
+  const selectClass = "w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300 text-center font-bold transition-colors";
 
   return (
     <div className="bg-slate-900 border border-white/10 p-6 rounded-sm sticky top-32">
@@ -111,23 +109,32 @@ export function ImoveisFilter() {
           </div>
         </div>
 
-        {/* Faixa de Preço */}
-        <div className="space-y-4 pt-4 border-t border-white/5">
-            <div>
-            <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
-                <span>Mínimo</span>
-                <span className="text-yellow-500">{formatMoney(minPreco)}</span>
+        {/* Preço (Agora com Inputs Livres) */}
+        <div className="pt-4 border-t border-white/5">
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Faixa de Preço (R$)</label>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="relative">
+                    <input 
+                        type="number" 
+                        value={minPreco} 
+                        onChange={(e) => setMinPreco(e.target.value)} 
+                        placeholder="Mínimo" 
+                        className={`${inputClass} pl-8 font-mono`} // pl-8 para dar espaço ao cifrão
+                    />
+                    <span className="absolute left-3 top-3 text-slate-600 text-xs font-bold">R$</span>
+                </div>
+                <div className="relative">
+                    <input 
+                        type="number" 
+                        value={maxPreco} 
+                        onChange={(e) => setMaxPreco(e.target.value)} 
+                        placeholder="Máximo" 
+                        className={`${inputClass} pl-8 font-mono`}
+                    />
+                    <span className="absolute left-3 top-3 text-slate-600 text-xs font-bold">R$</span>
+                </div>
             </div>
-            <input type="range" min="0" max="2000000" step="50000" value={minPreco} onChange={(e) => setMinPreco(Number(e.target.value))} className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" />
-            </div>
-
-            <div>
-            <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
-                <span>Máximo</span>
-                <span className="text-yellow-500">{maxPreco === 5000000 ? '+ R$ 5 mi' : formatMoney(maxPreco)}</span>
-            </div>
-            <input type="range" min="0" max="5000000" step="100000" value={maxPreco} onChange={(e) => setMaxPreco(Number(e.target.value))} className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" />
-            </div>
+            <p className="text-[10px] text-slate-600 mt-2 italic text-center">Deixe vazio para qualquer valor</p>
         </div>
 
         {/* Características */}
@@ -174,7 +181,8 @@ export function ImoveisFilter() {
           Aplicar Filtros
         </button>
         
-        {(cidade || tipo || quartos || banheiros || vagas || minPreco > 0 || maxPreco < 5000000) && (
+        {/* Verifica se algum filtro está ativo para mostrar o botão limpar */}
+        {(cidade || tipo || quartos || banheiros || vagas || minPreco || maxPreco) && (
           <button type="button" onClick={limparFiltros} className="flex items-center justify-center gap-2 w-full border border-slate-700 hover:bg-slate-800 text-slate-400 text-xs py-3 rounded-sm transition">
             <X className="w-3 h-3" /> Limpar Filtros
           </button>
