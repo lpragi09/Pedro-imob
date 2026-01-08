@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-// IMPORTANTE: Importar a Navbar aqui
 import { Navbar } from "@/components/Navbar";
+// 1. O import deve ficar aqui no topo
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ 
   subsets: ["latin"], 
@@ -33,6 +34,9 @@ export default function RootLayout({
         <Navbar />
         
         {children}
+
+        {/* 2. O componente deve ser chamado como uma tag HTML aqui */}
+        <SpeedInsights />
       </body>
     </html>
   );
