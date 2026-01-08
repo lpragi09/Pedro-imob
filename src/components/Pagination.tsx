@@ -11,14 +11,26 @@ interface PaginationProps {
 export function Pagination({ paginaAtual, totalPaginas }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname(); // <--- O SEGREDO: Pega a página atual automaticamente
+  const pathname = usePathname();
 
   const irParaPagina = (pagina: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', pagina.toString());
     
-    // Agora ele redireciona para a mesma página onde você está (pathname)
-    router.push(`${pathname}?${params.toString()}`, { scroll: false }); 
+    // Atualiza a URL mantendo o scroll parado (para não dar pulos bruscos)
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    
+    // --- EFEITO DE SCROLL SUAVE PARA CIMA ---
+    const secaoImoveis = document.getElementById('imoveis');
+    
+    if (secaoImoveis) {
+      // Se achar a seção 'imoveis' (que existe na Home), rola até ela com um desconto para o cabeçalho
+      const y = secaoImoveis.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else {
+      // Se não achar (estamos na página interna /imoveis), rola para o topo absoluto
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   if (totalPaginas <= 1) return null;
