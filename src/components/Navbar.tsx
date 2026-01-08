@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, MessageCircle } from 'lucide-react'; // Importei MessageCircle
+import { Menu, X, MessageCircle } from 'lucide-react';
 
 export function Navbar() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -27,43 +27,81 @@ export function Navbar() {
 
           {/* MENU DESKTOP */}
           <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest">
-  <Link href="/" className="hover:text-terras-laranja transition">Início</Link>
-  
-  
-  <Link href="/#imoveis" className="hover:text-terras-laranja transition">Propriedades</Link>
-  
-  <Link href="/#sobre" className="hover:text-terras-laranja transition">Quem Somos</Link>
-  <Link href="/#contato" className="hover:text-terras-laranja transition">Contato</Link>
-</div>
+            <Link href="/" className="hover:text-terras-laranja transition">Início</Link>
+            <Link href="/#imoveis" className="hover:text-terras-laranja transition">Propriedades</Link>
+            <Link href="/#sobre" className="hover:text-terras-laranja transition">Quem Somos</Link>
+            <Link href="/#contato" className="hover:text-terras-laranja transition">Contato</Link>
+          </div>
 
-          {/* BOTÕES DE AÇÃO */}
+          {/* BOTÃO WHATSAPP DESKTOP */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Removi o botão de Login */}
-            
-            {/* Botão WhatsApp */}
             <a 
                 href="https://wa.me/5511999999999" 
                 target="_blank"
-                className="bg-[#25D366] hover:bg-[#20bd5a] text-white px-5 py-2 rounded font-bold text-xs uppercase tracking-widest shadow-lg shadow-green-900/20 transition flex items-center gap-2"
+                className="bg-[#25D366] hover:bg-[#20bd5a] text-white px-5 py-2 rounded font-bold text-xs uppercase tracking-widest shadow-lg transition flex items-center gap-2"
             >
                 <MessageCircle className="w-4 h-4"/> WhatsApp
             </a>
           </div>
 
-          {/* MENU MOBILE */}
-          <button className="md:hidden text-terras-bege" onClick={() => setMenuAberto(!menuAberto)}>
-            {menuAberto ? <X /> : <Menu />}
+          {/* BOTÃO HAMBURGUER MOBILE */}
+          <button className="md:hidden text-terras-bege p-2" onClick={() => setMenuAberto(!menuAberto)}>
+            {menuAberto ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </div>
 
-      {/* DROPDOWN MOBILE */}
+      {/* DROPDOWN MENU MOBILE */}
       {menuAberto && (
-        <div className="md:hidden bg-[#3a281d] border-t border-terras-bege/10 px-6 py-8 space-y-6 animate-in slide-in-from-top-5">
-            <Link href="/" onClick={() => setMenuAberto(false)} className="block text-terras-bege hover:text-terras-laranja font-bold uppercase">Início</Link>
-            <Link href="/imoveis" onClick={() => setMenuAberto(false)} className="block text-terras-bege hover:text-terras-laranja font-bold uppercase">Ver Imóveis</Link>
-            {/* Adicionei o link de admin no menu mobile caso você precise acessar pelo celular */}
-            <Link href="/admin" onClick={() => setMenuAberto(false)} className="block text-terras-bege/50 hover:text-terras-laranja font-bold uppercase text-xs mt-8">Área Restrita</Link>
+        <div className="md:hidden bg-[#3a281d] border-t border-terras-bege/10 px-6 py-8 flex flex-col gap-6 animate-in slide-in-from-top-5">
+            <Link 
+              href="/" 
+              onClick={() => setMenuAberto(false)} 
+              className="text-terras-bege hover:text-terras-laranja font-bold uppercase tracking-widest text-lg"
+            >
+              Início
+            </Link>
+            <Link 
+              href="/#imoveis" 
+              onClick={() => setMenuAberto(false)} 
+              className="text-terras-bege hover:text-terras-laranja font-bold uppercase tracking-widest text-lg"
+            >
+              Propriedades
+            </Link>
+            <Link 
+              href="/#sobre" 
+              onClick={() => setMenuAberto(false)} 
+              className="text-terras-bege hover:text-terras-laranja font-bold uppercase tracking-widest text-lg"
+            >
+              Quem Somos
+            </Link>
+            <Link 
+              href="/#contato" 
+              onClick={() => setMenuAberto(false)} 
+              className="text-terras-bege hover:text-terras-laranja font-bold uppercase tracking-widest text-lg"
+            >
+              Contato
+            </Link>
+
+            {/* WhatsApp Mobile */}
+            <a 
+              href="https://wa.me/5511999999999" 
+              target="_blank"
+              className="bg-[#25D366] text-white font-bold py-4 rounded-lg uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 mt-4"
+            >
+              <MessageCircle className="w-5 h-5" /> WhatsApp
+            </a>
+
+            {/* Admin link bem separado e menor para não bugar o clique */}
+            <div className="mt-8 pt-8 border-t border-terras-bege/5">
+              <Link 
+                href="/admin" 
+                onClick={() => setMenuAberto(false)} 
+                className="text-terras-bege/20 hover:text-terras-laranja font-bold uppercase text-[10px] tracking-widest block text-center"
+              >
+                Área Restrita
+              </Link>
+            </div>
         </div>
       )}
     </nav>
