@@ -119,7 +119,6 @@ export default function AdminPanel() {
   const labelClass = "block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2";
 
   return (
-    // CORREÇÃO AQUI: pt-32 para descer o conteúdo e não bater na Navbar
     <div className="min-h-screen bg-black text-slate-200 pt-32 pb-12 px-4 font-sans selection:bg-yellow-900 selection:text-white">
       <div className="max-w-5xl mx-auto space-y-12">
         
@@ -127,7 +126,8 @@ export default function AdminPanel() {
         <div className="flex items-center gap-4 border-b border-white/10 pb-8">
            <div className="bg-yellow-600/10 p-3 rounded-full"><Shield className="text-yellow-600 w-8 h-8"/></div>
            <div>
-              <h1 className="text-3xl font-serif text-white">Painel Administrativo</h1>
+              {/* FONTE CORRIGIDA */}
+              <h1 className="text-3xl font-bold text-white">Painel Administrativo</h1>
               <p className="text-slate-500 font-light">Gerencie o acervo exclusivo da ImobPrime</p>
            </div>
         </div>
@@ -137,7 +137,8 @@ export default function AdminPanel() {
             <div className="lg:col-span-7 space-y-8">
                 <div className="bg-slate-900 p-8 rounded-sm border border-white/5 shadow-2xl">
                     <div className="flex justify-between items-center mb-8">
-                        <h2 className="text-xl font-serif text-white">{imovelEmEdicao ? 'Editar Propriedade' : 'Nova Propriedade'}</h2>
+                        {/* FONTE CORRIGIDA */}
+                        <h2 className="text-xl font-bold text-white">{imovelEmEdicao ? 'Editar Propriedade' : 'Nova Propriedade'}</h2>
                         {imovelEmEdicao && <button onClick={() => { setImovelEmEdicao(null); setPreviewUrls([]); }} className="text-xs text-red-500 hover:text-red-400 uppercase tracking-widest font-bold flex gap-2"><X className="w-4 h-4"/> Cancelar</button>}
                     </div>
 
@@ -180,15 +181,18 @@ export default function AdminPanel() {
             {/* LISTA */}
             <div className="lg:col-span-5">
                 <div className="bg-slate-900 p-8 rounded-sm border border-white/5 shadow-2xl h-full">
-                    <h2 className="text-xl font-serif text-white mb-6">Acervo Atual</h2>
+                    {/* FONTE CORRIGIDA */}
+                    <h2 className="text-xl font-bold text-white mb-6">Acervo Atual</h2>
                     <div className="space-y-4 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
                         {imoveis.map((imovel) => (
                         <div key={imovel.id} className="group p-4 bg-slate-950 border border-slate-800 hover:border-yellow-600/30 transition rounded-sm flex gap-4">
                             <img src={imovel.imagens ? imovel.imagens[0] : ''} className="w-20 h-20 object-cover bg-slate-900 grayscale group-hover:grayscale-0 transition duration-500" />
                             <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-white truncate font-serif">{imovel.titulo}</h3>
+                                {/* FONTE CORRIGIDA: SEM SERIFA */}
+                                <h3 className="font-bold text-white truncate">{imovel.titulo}</h3>
                                 <p className="text-xs text-slate-500 uppercase tracking-wider mt-1">{imovel.cidade}</p>
-                                <p className="text-yellow-600 font-serif mt-2 text-sm">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(imovel.preco)}</p>
+                                {/* FONTE CORRIGIDA: SEM SERIFA */}
+                                <p className="text-yellow-600 font-bold mt-2 text-sm">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(imovel.preco)}</p>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <button onClick={() => preencherFormulario(imovel)} className="p-2 bg-slate-900 text-slate-400 hover:text-white border border-slate-800 hover:border-slate-600 rounded-sm transition"><Pencil className="w-3 h-3"/></button>

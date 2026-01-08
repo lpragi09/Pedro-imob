@@ -22,7 +22,7 @@ export default async function DetalhesImovel({ params }: Props) {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex flex-col selection:bg-yellow-500 selection:text-black">
       
-      {/* Botão Voltar (COM CORREÇÃO DE ESPAÇAMENTO: pt-28) */}
+      {/* Botão Voltar */}
       <div className="max-w-7xl mx-auto px-6 pt-28 pb-6 w-full">
         <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition uppercase tracking-widest text-xs font-bold">
           <ArrowLeft className="w-4 h-4" /> Voltar para o acervo
@@ -50,7 +50,8 @@ export default async function DetalhesImovel({ params }: Props) {
               </span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-serif text-white leading-tight mb-6">
+            {/* FONTE CORRIGIDA: Negrito Padrão */}
+            <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
               {imovel.titulo}
             </h1>
             <p className="text-lg text-slate-400 font-light leading-relaxed border-l-2 border-yellow-600 pl-6">
@@ -58,29 +59,34 @@ export default async function DetalhesImovel({ params }: Props) {
             </p>
           </div>
 
-          <div className="text-4xl md:text-5xl font-serif text-yellow-500">
+          {/* PREÇO CORRIGIDO: Negrito Padrão */}
+          <div className="text-4xl md:text-5xl font-bold text-yellow-500">
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(imovel.preco)}
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-8 border-y border-white/10">
             <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
               <Bed className="text-slate-300 w-6 h-6 mb-3"/>
-              <p className="text-2xl font-serif text-white">{imovel.quartos}</p>
+              {/* NÚMERO CORRIGIDO */}
+              <p className="text-2xl font-bold text-white">{imovel.quartos}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Quartos</p>
             </div>
             <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
               <Bath className="text-slate-300 w-6 h-6 mb-3"/>
-              <p className="text-2xl font-serif text-white">{imovel.banheiros || 1}</p>
+              {/* NÚMERO CORRIGIDO */}
+              <p className="text-2xl font-bold text-white">{imovel.banheiros || 1}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Banheiros</p>
             </div>
             <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
               <Car className="text-slate-300 w-6 h-6 mb-3"/>
-              <p className="text-2xl font-serif text-white">{imovel.vagas || 0}</p>
+              {/* NÚMERO CORRIGIDO */}
+              <p className="text-2xl font-bold text-white">{imovel.vagas || 0}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Vagas</p>
             </div>
             <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
               <Ruler className="text-slate-300 w-6 h-6 mb-3"/>
-              <p className="text-2xl font-serif text-white">{imovel.area}</p>
+              {/* NÚMERO CORRIGIDO */}
+              <p className="text-2xl font-bold text-white">{imovel.area}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Área (m²)</p>
             </div>
           </div>
@@ -96,7 +102,7 @@ export default async function DetalhesImovel({ params }: Props) {
       <footer id="contato" className="bg-black text-white py-20 border-t border-white/10 mt-auto">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
           <div className="col-span-1 md:col-span-2 space-y-6">
-            <h3 className="text-2xl font-serif">Imob<span className="text-yellow-600">Prime</span></h3>
+            <h3 className="text-2xl font-bold">Imob<span className="text-yellow-600">Prime</span></h3>
             <p className="text-slate-500 max-w-sm">
               Seu parceiro de confiança para compra, venda e aluguel de imóveis de alto padrão.
             </p>
