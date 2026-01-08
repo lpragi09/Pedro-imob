@@ -17,9 +17,17 @@ export function Pagination({ paginaAtual, totalPaginas, caminho = '/imoveis' }: 
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', novaPagina.toString());
     
-    // AQUI ESTÁ O TRUQUE: Adicionei o #imoveis no final
-    // Isso força o navegador a descer até onde tem id="imoveis"
-    router.push(`${caminho}?${params.toString()}#imoveis`, { scroll: false });
+    // 1. Muda a URL sem recarregar a página
+    router.push(`${caminho}?${params.toString()}`, { scroll: false });
+
+    // 2. Força a rolagem suave até o topo da lista (elemento com id="imoveis")
+    const sectionImoveis = document.getElementById('imoveis');
+    if (sectionImoveis) {
+      sectionImoveis.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      // Se não achar o ID (caso raro), joga pro topo da página
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   if (totalPaginas <= 1) return null;

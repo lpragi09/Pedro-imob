@@ -8,7 +8,7 @@ export function ImoveisFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Estados dos filtros (sem mudanças na lógica)
+  // Estados dos filtros
   const [cidade, setCidade] = useState(searchParams.get('cidade') || '');
   const [tipo, setTipo] = useState(searchParams.get('tipo') || '');
   const [quartos, setQuartos] = useState(searchParams.get('quartos') || '');
@@ -58,12 +58,10 @@ export function ImoveisFilter() {
     router.push('/imoveis');
   };
 
-  // Classes base para inputs e selects (Fundo claro, texto marrom, borda e foco laranja)
   const inputClass = "w-full bg-terras-bege border border-terras-marrom/30 p-3 rounded-md text-sm outline-none focus:border-terras-laranja focus:ring-1 focus:ring-terras-laranja text-terras-marrom placeholder:text-terras-marrom/50 transition-all";
   const selectClass = "w-full bg-terras-bege border border-terras-marrom/30 p-3 rounded-md text-sm outline-none focus:border-terras-laranja focus:ring-1 focus:ring-terras-laranja text-terras-marrom text-center font-bold transition-all appearance-none cursor-pointer";
 
   return (
-    // Container do filtro com fundo MARROM e texto BEGE
     <div className="bg-terras-marrom border border-terras-bege/10 p-6 rounded-lg shadow-xl sticky top-32 text-terras-bege">
       <div className="flex items-center gap-2 mb-6 text-terras-amarelo">
         <Filter className="w-5 h-5" />
@@ -90,20 +88,19 @@ export function ImoveisFilter() {
                 key={t}
                 type="button"
                 onClick={() => setTipo(tipo === t ? '' : t)}
-                // Botões de tipo com estilo novo
                 className={`flex-1 py-2 text-xs font-bold uppercase tracking-wider border rounded-md transition-all ${
                   tipo === t 
-                    ? 'bg-terras-laranja border-terras-laranja text-terras-bege shadow-md' // Ativo
-                    : 'bg-transparent border-terras-bege/30 text-terras-bege/70 hover:border-terras-bege/70 hover:text-terras-bege' // Inativo
+                    ? 'bg-terras-laranja border-terras-laranja text-terras-bege shadow-md' 
+                    : 'bg-transparent border-terras-bege/30 text-terras-bege/70 hover:border-terras-bege/70 hover:text-terras-bege' 
                 }`}
               >
-                {t === 'VENDA' ? 'Comprar' : 'Arrendar'}
+                {t === 'VENDA' ? 'Comprar' : 'Alugar'}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Faixa de Preço (Sliders Laranjas) */}
+        {/* Faixa de Preço */}
         <div className="space-y-4 pt-4 border-t border-terras-bege/10">
             <div>
               <div className="flex justify-between text-xs font-bold text-terras-bege/80 mb-2 uppercase">
@@ -112,7 +109,6 @@ export function ImoveisFilter() {
               </div>
               <input 
                   type="range" min="0" max="500000" step="1000" value={minPreco} onChange={(e) => setMinPreco(Number(e.target.value))} 
-                  // Slider com cor de destaque laranja
                   className="w-full h-2 bg-terras-bege/20 rounded-lg appearance-none cursor-pointer accent-terras-laranja" 
               />
             </div>
@@ -129,21 +125,20 @@ export function ImoveisFilter() {
             </div>
         </div>
 
-        {/* Características (Selects) */}
+        {/* Características */}
         <div className="pt-4 border-t border-terras-bege/10 space-y-4">
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-xs font-bold text-terras-bege/80 uppercase mb-2 text-center">Quartos / Suítes</label>
+                    <label className="block text-xs font-bold text-terras-bege/80 uppercase mb-2 text-center">Quartos</label>
                     <div className="relative">
                       <select value={quartos} onChange={(e) => setQuartos(e.target.value)} className={selectClass}>
                           <option value="">Todos</option>
-                          <option value="1">1+</option>
-                          <option value="2">2+</option>
-                          <option value="3">3+</option>
-                          <option value="4">4+</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
                           <option value="5">5+</option>
                       </select>
-                      {/* Ícone de seta para o select */}
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-terras-marrom/60">
                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                       </div>
@@ -154,10 +149,10 @@ export function ImoveisFilter() {
                     <div className="relative">
                       <select value={banheiros} onChange={(e) => setBanheiros(e.target.value)} className={selectClass}>
                           <option value="">Todos</option>
-                          <option value="1">1+</option>
-                          <option value="2">2+</option>
-                          <option value="3">3+</option>
-                          <option value="4">4+</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
                           <option value="5">5+</option>
                       </select>
                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-terras-marrom/60">
@@ -172,10 +167,10 @@ export function ImoveisFilter() {
                 <div className="relative">
                   <select value={vagas} onChange={(e) => setVagas(e.target.value)} className={selectClass}>
                       <option value="">Qualquer quantidade</option>
-                      <option value="1">1+</option>
-                      <option value="2">2+</option>
-                      <option value="3">3+</option>
-                      <option value="4">4+</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
                       <option value="5">5+</option>
                   </select>
                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-terras-marrom/60">
@@ -185,13 +180,11 @@ export function ImoveisFilter() {
             </div>
         </div>
 
-        {/* Botão de Aplicar LARANJA */}
         <button type="submit" className="w-full bg-terras-laranja hover:bg-terras-amarelo text-terras-bege font-bold uppercase tracking-widest text-xs py-4 rounded-md transition-all shadow-lg shadow-terras-laranja/20 mt-6 hover:-translate-y-1">
           Aplicar Filtros
         </button>
         
         {(cidade || tipo || quartos || banheiros || vagas || minPreco > 0 || maxPreco < 5000000) && (
-          // Botão de Limpar com borda clara
           <button type="button" onClick={limparFiltros} className="flex items-center justify-center gap-2 w-full border border-terras-bege/30 hover:bg-terras-bege/10 text-terras-bege/70 hover:text-terras-bege text-xs py-3 rounded-md transition-all">
             <X className="w-4 h-4" /> Limpar Filtros
           </button>
