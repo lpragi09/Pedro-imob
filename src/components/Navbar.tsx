@@ -27,11 +27,14 @@ export function Navbar() {
 
           {/* MENU DESKTOP */}
           <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest">
-            <Link href="/" className="hover:text-terras-laranja transition">Início</Link>
-            <Link href="/imoveis" className="hover:text-terras-laranja transition">Propriedades</Link>
-            <Link href="/#sobre" className="hover:text-terras-laranja transition">Quem Somos</Link>
-            <Link href="/#contato" className="hover:text-terras-laranja transition">Contato</Link>
-          </div>
+  <Link href="/" className="hover:text-terras-laranja transition">Início</Link>
+  
+  
+  <Link href="/#imoveis" className="hover:text-terras-laranja transition">Propriedades</Link>
+  
+  <Link href="/#sobre" className="hover:text-terras-laranja transition">Quem Somos</Link>
+  <Link href="/#contato" className="hover:text-terras-laranja transition">Contato</Link>
+</div>
 
           {/* BOTÕES DE AÇÃO */}
           <div className="hidden md:flex items-center gap-4">
