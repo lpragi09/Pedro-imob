@@ -44,9 +44,9 @@ export function Navbar() {
             </a>
           </div>
 
-          {/* BOTAO MOBILE */}
+          {/* BOTÃO HAMBURGUER */}
           <button 
-            className="md:hidden text-terras-bege p-2 z-50" 
+            className="md:hidden text-terras-bege p-2 transition-transform active:scale-90" 
             onClick={() => setMenuAberto(!menuAberto)}
           >
             {menuAberto ? <X size={28} /> : <Menu size={28} />}
@@ -54,46 +54,59 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* MENU MOBILE */}
+      {/* MENU MOBILE (MODIFICADO PARA NÃO COBRIR TUDO) */}
       {menuAberto && (
-        <div className="fixed inset-0 top-20 bg-[#3a281d] z-40 flex flex-col p-8 gap-8 animate-in slide-in-from-right">
-          <Link 
-            href="/" 
-            onClick={() => setMenuAberto(false)} 
-            className="text-terras-bege text-xl font-bold uppercase tracking-widest border-b border-terras-bege/10 pb-4"
-          >
-            Início
-          </Link>
-          <Link 
-            href="/#imoveis" 
-            onClick={() => setMenuAberto(false)} 
-            className="text-terras-bege text-xl font-bold uppercase tracking-widest border-b border-terras-bege/10 pb-4"
-          >
-            Propriedades
-          </Link>
-          <Link 
-            href="/#sobre" 
-            onClick={() => setMenuAberto(false)} 
-            className="text-terras-bege text-xl font-bold uppercase tracking-widest border-b border-terras-bege/10 pb-4"
-          >
-            Quem Somos
-          </Link>
-          <Link 
-            href="/#contato" 
-            onClick={() => setMenuAberto(false)} 
-            className="text-terras-bege text-xl font-bold uppercase tracking-widest border-b border-terras-bege/10 pb-4"
-          >
-            Contato
-          </Link>
+        <>
+          {/* Overlay escuro ao fundo para dar foco ao menu */}
+          <div 
+            className="fixed inset-0 bg-black/40 md:hidden z-40" 
+            onClick={() => setMenuAberto(false)}
+          />
           
-          <a 
-            href="https://wa.me/5511999999999" 
-            target="_blank"
-            className="bg-[#25D366] text-white font-bold py-4 rounded-lg uppercase tracking-widest shadow-lg flex items-center justify-center gap-2"
-          >
-            <MessageCircle className="w-5 h-5" /> WhatsApp
-          </a>
-        </div>
+          {/* O Menu em si - agora como um painel lateral */}
+          <div className="fixed top-0 right-0 h-full w-[280px] bg-[#3a281d] z-50 p-8 flex flex-col gap-6 shadow-2xl animate-in slide-in-from-right duration-300">
+            <div className="flex justify-end mb-4">
+                <button onClick={() => setMenuAberto(false)}><X size={28} className="text-terras-bege/50" /></button>
+            </div>
+            
+            <Link 
+              href="/" 
+              onClick={() => setMenuAberto(false)} 
+              className="text-terras-bege text-lg font-bold uppercase tracking-widest hover:text-terras-laranja transition"
+            >
+              Início
+            </Link>
+            <Link 
+              href="/#imoveis" 
+              onClick={() => setMenuAberto(false)} 
+              className="text-terras-bege text-lg font-bold uppercase tracking-widest hover:text-terras-laranja transition"
+            >
+              Propriedades
+            </Link>
+            <Link 
+              href="/#sobre" 
+              onClick={() => setMenuAberto(false)} 
+              className="text-terras-bege text-lg font-bold uppercase tracking-widest hover:text-terras-laranja transition"
+            >
+              Quem Somos
+            </Link>
+            <Link 
+              href="/#contato" 
+              onClick={() => setMenuAberto(false)} 
+              className="text-terras-bege text-lg font-bold uppercase tracking-widest hover:text-terras-laranja transition"
+            >
+              Contato
+            </Link>
+            
+            <a 
+              href="https://wa.me/5511999999999" 
+              target="_blank"
+              className="bg-[#25D366] text-white font-bold py-4 rounded-lg uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 mt-auto"
+            >
+              <MessageCircle className="w-5 h-5" /> WhatsApp
+            </a>
+          </div>
+        </>
       )}
     </nav>
   );
