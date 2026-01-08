@@ -18,7 +18,7 @@ export function ImoveisFilter() {
   const [minPreco, setMinPreco] = useState(Number(searchParams.get('min_preco')) || 0);
   const [maxPreco, setMaxPreco] = useState(Number(searchParams.get('max_preco')) || 5000000);
 
-  // Sincroniza o visual se o usuário usar o botão "Voltar" do navegador
+  // Sincroniza o visual se o usuário mudar a URL manualmente ou voltar
   useEffect(() => {
     setCidade(searchParams.get('cidade') || '');
     setTipo(searchParams.get('tipo') || '');
@@ -36,14 +36,18 @@ export function ImoveisFilter() {
     e?.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
 
+    // --- CORREÇÃO DO BUG ---
+    // Remove a "busca" genérica do topo para não conflitar com os filtros específicos
+    params.delete('busca'); 
+    
+    // Reseta a paginação para a primeira página sempre que filtrar
+    params.delete('page');
+
     if (cidade) params.set('cidade', cidade); else params.delete('cidade');
     if (tipo) params.set('tipo', tipo); else params.delete('tipo');
     if (quartos) params.set('quartos', quartos); else params.delete('quartos');
     if (banheiros) params.set('banheiros', banheiros); else params.delete('banheiros');
     if (vagas) params.set('vagas', vagas); else params.delete('vagas');
-    
-    // Reseta a paginação para 1 sempre que filtrar
-    params.delete('page');
     
     if (minPreco > 0) params.set('min_preco', minPreco.toString()); 
     else params.delete('min_preco');
@@ -54,9 +58,7 @@ export function ImoveisFilter() {
     router.push(`/imoveis?${params.toString()}`);
   };
 
-  // --- NOVA FUNÇÃO PARA LIMPAR VISUAL E URL ---
   const limparFiltros = () => {
-    // 1. Zera o visual
     setCidade('');
     setTipo('');
     setQuartos('');
@@ -64,8 +66,6 @@ export function ImoveisFilter() {
     setVagas('');
     setMinPreco(0);
     setMaxPreco(5000000);
-
-    // 2. Limpa a URL
     router.push('/imoveis');
   };
 
