@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+// IMPORTANTE: Importar a Navbar aqui
+import { Navbar } from "@/components/Navbar";
 
-// Fontes (mantive as mesmas, combinam bem)
 const inter = Inter({ 
   subsets: ["latin"], 
   variable: '--font-inter',
@@ -17,10 +18,7 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "Terras Rurais | Imóveis no Campo",
-  description: "Especialistas em venda e aluguel de propriedades rurais, sítios e fazendas.",
-  icons: {
-    icon: "/favicon.ico", // Você pode gerar um favicon novo com a casinha da logo depois!
-  },
+  description: "Especialistas em venda e aluguel de propriedades rurais.",
 };
 
 export default function RootLayout({
@@ -30,8 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`scroll-smooth ${inter.variable} ${playfair.variable}`}>
-      {/* AQUI MUDOU: Fundo bege e texto marrom */}
       <body className="bg-terras-bege text-terras-marrom antialiased">
+        {/* A Navbar fica aqui em cima de tudo */}
+        <Navbar />
+        
         {children}
       </body>
     </html>

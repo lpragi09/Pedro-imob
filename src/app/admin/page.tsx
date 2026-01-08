@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { Trash2, Plus, Pencil, LogOut, Image as ImageIcon, Loader2, Save, X, Upload } from 'lucide-react';
+import { Trash2, Plus, Pencil, LogOut, Image as ImageIcon, Loader2, Save, X, Upload, User } from 'lucide-react';
 
 // Tipagem do Imóvel
 type Imovel = {
@@ -28,7 +28,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   
   // Estados do Login
-  const [email, setEmail] = useState('');
+  const [usuario, setUsuario] = useState(''); // Mudei de 'email' para 'usuario'
   const [password, setPassword] = useState('');
 
   // Estados do CRUD
@@ -68,8 +68,20 @@ export default function AdminPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) alert('Erro ao entrar: ' + error.message);
+
+    // --- O TRUQUE DO ADMIN AQUI ---
+    // Se digitar só "admin", completamos com o email falso
+    let emailFinal = usuario.trim();
+    if (emailFinal === 'admin') {
+        emailFinal = 'admin@terras.com';
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({ 
+        email: emailFinal, 
+        password 
+    });
+
+    if (error) alert('Erro ao entrar: Verifique a senha ou usuário.');
     setLoading(false);
   };
 
@@ -78,7 +90,7 @@ export default function AdminPage() {
     router.push('/');
   };
 
-  // --- UPLOAD DE IMAGENS (ALTA QUALIDADE) ---
+  // --- UPLOAD DE IMAGENS ---
   async function uploadImagens(files: File[]): Promise<string[]> {
     const urls: string[] = [];
     for (const file of files) {
@@ -86,7 +98,7 @@ export default function AdminPage() {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       const { error } = await supabase.storage
-        .from('imoveis') // Certifique-se que o bucket se chama 'imoveis' no projeto novo
+        .from('imoveis') 
         .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false,
@@ -96,8 +108,6 @@ export default function AdminPage() {
       if (!error) {
         const { data } = supabase.storage.from('imoveis').getPublicUrl(fileName);
         urls.push(data.publicUrl);
-      } else {
-        console.error("Erro upload:", error);
       }
     }
     return urls;
@@ -118,11 +128,9 @@ export default function AdminPage() {
       const dadosFinais = { ...form, imagens: novasImagens, preco: Number(form.preco), quartos: Number(form.quartos), banheiros: Number(form.banheiros), vagas: Number(form.vagas), area: Number(form.area) };
 
       if (editandoImovel) {
-        // Atualizar
         const { error } = await supabase.from('imoveis').update(dadosFinais).eq('id', editandoImovel.id);
         if (error) throw error;
       } else {
-        // Criar
         const { error } = await supabase.from('imoveis').insert([dadosFinais]);
         if (error) throw error;
       }
@@ -160,20 +168,27 @@ export default function AdminPage() {
     setModalAberto(true);
   };
 
-  // --- TELA DE LOGIN (ESTILO TERRAS RURAIS) ---
+  // --- TELA DE LOGIN (ATUALIZADA PARA USUÁRIO) ---
   if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-terras-bege p-4">
         <div className="bg-white p-8 rounded-xl border border-terras-marrom/10 shadow-2xl w-full max-w-md">
+          <div className="flex justify-center mb-6">
+            <div className="bg-terras-marrom/10 p-4 rounded-full">
+                <User className="w-8 h-8 text-terras-laranja" />
+            </div>
+          </div>
           <h1 className="text-3xl font-serif text-terras-marrom font-bold mb-2 text-center">Área Restrita</h1>
-          <p className="text-terras-marrom/60 text-center mb-8">Acesse para gerenciar suas propriedades</p>
+          <p className="text-terras-marrom/60 text-center mb-8">Digite seu usuário de administrador</p>
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-terras-marrom uppercase mb-1">E-mail</label>
+              {/* CAMPO DE USUÁRIO (TEXTO) */}
+              <label className="block text-xs font-bold text-terras-marrom uppercase mb-1">Usuário</label>
               <input 
-                type="email" 
-                value={email} onChange={e => setEmail(e.target.value)} 
+                type="text" 
+                value={usuario} onChange={e => setUsuario(e.target.value)} 
+                placeholder="Ex: admin"
                 className="w-full bg-terras-bege border border-terras-marrom/20 p-3 rounded text-terras-marrom outline-none focus:border-terras-laranja transition" 
               />
             </div>
@@ -201,7 +216,6 @@ export default function AdminPage() {
   // --- PAINEL PRINCIPAL ---
   return (
     <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans">
-      {/* Navbar Admin */}
       <header className="bg-white border-b border-terras-marrom/10 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-xl font-serif font-bold text-terras-marrom flex items-center gap-2">
@@ -227,7 +241,6 @@ export default function AdminPage() {
           </button>
         </div>
 
-        {/* LISTA DE IMÓVEIS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {imoveis.map((imovel) => (
             <div key={imovel.id} className="bg-white border border-terras-marrom/10 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition group">
@@ -257,7 +270,7 @@ export default function AdminPage() {
         </div>
       </main>
 
-      {/* MODAL DE CRIAÇÃO/EDIÇÃO */}
+      {/* MODAL */}
       {modalAberto && (
         <div className="fixed inset-0 bg-terras-marrom/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl animate-in zoom-in-95 p-6 md:p-10 relative">
@@ -271,52 +284,32 @@ export default function AdminPage() {
              <form onSubmit={salvarImovel} className="space-y-6">
                 
                 <div className="grid md:grid-cols-2 gap-6">
-                   {/* Coluna 1 */}
                    <div className="space-y-4">
-                      <div>
-                        <label className="label-admin">Título do Anúncio</label>
-                        <input required type="text" value={form.titulo || ''} onChange={e => setForm({...form, titulo: e.target.value})} className="input-admin" placeholder="Ex: Sítio Recanto das Águas" />
-                      </div>
+                      <div><label className="label-admin">Título</label><input required type="text" value={form.titulo || ''} onChange={e => setForm({...form, titulo: e.target.value})} className="input-admin" /></div>
                       <div className="grid grid-cols-2 gap-4">
-                         <div>
-                            <label className="label-admin">Preço (R$)</label>
-                            <input required type="number" value={form.preco || ''} onChange={e => setForm({...form, preco: Number(e.target.value)})} className="input-admin" placeholder="0,00" />
-                         </div>
-                         <div>
-                            <label className="label-admin">Tipo</label>
-                            <select value={form.tipo || 'VENDA'} onChange={e => setForm({...form, tipo: e.target.value as any})} className="input-admin">
-                               <option value="VENDA">Venda</option>
-                               <option value="ALUGUEL">Arrendamento/Aluguel</option>
-                            </select>
-                         </div>
+                         <div><label className="label-admin">Preço</label><input required type="number" value={form.preco || ''} onChange={e => setForm({...form, preco: Number(e.target.value)})} className="input-admin" /></div>
+                         <div><label className="label-admin">Tipo</label><select value={form.tipo || 'VENDA'} onChange={e => setForm({...form, tipo: e.target.value as any})} className="input-admin"><option value="VENDA">Venda</option><option value="ALUGUEL">Aluguel</option></select></div>
                       </div>
                       <div className="grid grid-cols-3 gap-4">
                          <div><label className="label-admin">Cidade</label><input required type="text" value={form.cidade || ''} onChange={e => setForm({...form, cidade: e.target.value})} className="input-admin" /></div>
-                         <div><label className="label-admin">Bairro/Região</label><input type="text" value={form.bairro || ''} onChange={e => setForm({...form, bairro: e.target.value})} className="input-admin" /></div>
+                         <div><label className="label-admin">Bairro</label><input type="text" value={form.bairro || ''} onChange={e => setForm({...form, bairro: e.target.value})} className="input-admin" /></div>
                          <div><label className="label-admin">Estado</label><input required type="text" value={form.estado || ''} onChange={e => setForm({...form, estado: e.target.value})} className="input-admin" maxLength={2} /></div>
                       </div>
                    </div>
 
-                   {/* Coluna 2 */}
                    <div className="space-y-4">
                       <div className="grid grid-cols-4 gap-2">
-                         <div><label className="label-admin">Quartos</label><input type="number" value={form.quartos || ''} onChange={e => setForm({...form, quartos: Number(e.target.value)})} className="input-admin text-center" /></div>
-                         <div><label className="label-admin">Banheiros</label><input type="number" value={form.banheiros || ''} onChange={e => setForm({...form, banheiros: Number(e.target.value)})} className="input-admin text-center" /></div>
-                         <div><label className="label-admin">Vagas</label><input type="number" value={form.vagas || ''} onChange={e => setForm({...form, vagas: Number(e.target.value)})} className="input-admin text-center" /></div>
-                         <div><label className="label-admin">Área (m²)</label><input type="number" value={form.area || ''} onChange={e => setForm({...form, area: Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">Qts</label><input type="number" value={form.quartos || ''} onChange={e => setForm({...form, quartos: Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">Ban</label><input type="number" value={form.banheiros || ''} onChange={e => setForm({...form, banheiros: Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">Vag</label><input type="number" value={form.vagas || ''} onChange={e => setForm({...form, vagas: Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">m²</label><input type="number" value={form.area || ''} onChange={e => setForm({...form, area: Number(e.target.value)})} className="input-admin text-center" /></div>
                       </div>
-                      
-                      <div>
-                        <label className="label-admin">Descrição Completa</label>
-                        <textarea rows={5} value={form.descricao || ''} onChange={e => setForm({...form, descricao: e.target.value})} className="input-admin resize-none" placeholder="Descreva os detalhes da terra, pasto, casa sede..." />
-                      </div>
+                      <div><label className="label-admin">Descrição</label><textarea rows={5} value={form.descricao || ''} onChange={e => setForm({...form, descricao: e.target.value})} className="input-admin resize-none" /></div>
                    </div>
                 </div>
 
-                {/* Área de Imagens */}
                 <div className="border-t border-terras-marrom/10 pt-6">
-                   <label className="label-admin mb-2 block">Fotos da Propriedade</label>
-                   
+                   <label className="label-admin mb-2 block">Fotos</label>
                    <div className="flex gap-4 mb-4 overflow-x-auto pb-2">
                       {form.imagens?.map((img, i) => (
                         <div key={i} className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden group border border-terras-marrom/20">
@@ -325,55 +318,26 @@ export default function AdminPage() {
                         </div>
                       ))}
                    </div>
-
                    <div className="border-2 border-dashed border-terras-marrom/20 rounded-xl bg-terras-bege p-8 text-center hover:bg-terras-bege/50 hover:border-terras-laranja transition cursor-pointer relative">
                       <input type="file" multiple accept="image/*" onChange={e => { if(e.target.files) setArquivos(Array.from(e.target.files)) }} className="absolute inset-0 opacity-0 cursor-pointer" />
                       <div className="flex flex-col items-center gap-2 text-terras-marrom/60">
-                         <Upload className="w-8 h-8 text-terras-laranja" />
-                         <span className="text-sm font-bold">Clique para adicionar novas fotos</span>
-                         <span className="text-xs">{arquivos.length > 0 ? `${arquivos.length} arquivos selecionados` : 'JPG ou PNG'}</span>
+                         <Upload className="w-8 h-8 text-terras-laranja" /><span className="text-sm font-bold">Adicionar fotos</span>
                       </div>
                    </div>
                 </div>
 
-                <button 
-                  type="submit" 
-                  disabled={salvando}
-                  className="w-full bg-terras-laranja hover:bg-terras-amarelo text-terras-bege font-bold py-4 rounded-xl uppercase tracking-widest shadow-xl shadow-terras-laranja/20 transition flex items-center justify-center gap-2"
-                >
-                  {salvando ? <Loader2 className="animate-spin" /> : <><Save className="w-5 h-5"/> Salvar Propriedade</>}
+                <button type="submit" disabled={salvando} className="w-full bg-terras-laranja hover:bg-terras-amarelo text-terras-bege font-bold py-4 rounded-xl uppercase tracking-widest shadow-xl shadow-terras-laranja/20 transition flex items-center justify-center gap-2">
+                  {salvando ? <Loader2 className="animate-spin" /> : <><Save className="w-5 h-5"/> Salvar</>}
                 </button>
-
              </form>
           </div>
         </div>
       )}
 
-      {/* Styles globais locais para simplificar o JSX */}
       <style jsx>{`
-        .label-admin {
-          display: block;
-          font-size: 0.75rem; /* text-xs */
-          font-weight: 700;
-          text-transform: uppercase;
-          color: #4a3426; /* terras-marrom */
-          margin-bottom: 0.25rem;
-          opacity: 0.8;
-        }
-        .input-admin {
-          width: 100%;
-          background-color: #f4f1e8; /* terras-bege */
-          border: 1px solid rgba(74, 52, 38, 0.2); /* terras-marrom/20 */
-          padding: 0.75rem;
-          border-radius: 0.5rem;
-          color: #4a3426;
-          outline: none;
-          transition: all;
-        }
-        .input-admin:focus {
-          border-color: #c17a42; /* terras-laranja */
-          box-shadow: 0 0 0 1px #c17a42;
-        }
+        .label-admin { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #4a3426; margin-bottom: 0.25rem; opacity: 0.8; }
+        .input-admin { width: 100%; background-color: #f4f1e8; border: 1px solid rgba(74, 52, 38, 0.2); padding: 0.75rem; border-radius: 0.5rem; color: #4a3426; outline: none; transition: all; }
+        .input-admin:focus { border-color: #c17a42; box-shadow: 0 0 0 1px #c17a42; }
       `}</style>
     </div>
   );
