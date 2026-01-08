@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { MapPin, Bed, Ruler, ArrowLeft, Phone, Calendar, Bath, Car, Mail, Instagram, Facebook } from 'lucide-react';
+import { MapPin, Bed, Ruler, ArrowLeft, Phone, Bath, Car, Mail, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
 import { ImageGallery } from '@/components/ImageGallery';
 
@@ -14,121 +14,118 @@ export default async function DetalhesImovel({ params }: Props) {
   const { id } = await params;
   const imovel = await getImovel(id);
 
-  if (!imovel) return <div>Não encontrado</div>;
+  if (!imovel) return <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">Imóvel não encontrado</div>;
 
   const textoWhatsApp = `Olá! Vi o imóvel "${imovel.titulo}" no site e quero mais detalhes.`;
   const linkWhatsApp = `https://wa.me/5511999999999?text=${encodeURIComponent(textoWhatsApp)}`;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex flex-col selection:bg-yellow-500 selection:text-black">
       
       {/* Botão Voltar */}
-      <div className="max-w-7xl mx-auto px-4 py-6 w-full">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-600 hover:text-blue-600 font-medium">
-          <ArrowLeft className="w-5 h-5" /> Voltar
+      <div className="max-w-7xl mx-auto px-6 py-8 w-full">
+        <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition uppercase tracking-widest text-xs font-bold">
+          <ArrowLeft className="w-4 h-4" /> Voltar para o acervo
         </Link>
       </div>
 
-      {/* Conteúdo Principal (flex-1 para empurrar o rodapé se a tela for grande) */}
-      <main className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-8 lg:gap-12 flex-1 w-full pb-20">
+      {/* Conteúdo Principal */}
+      <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 flex-1 w-full pb-20">
         
-        {/* Galeria */}
-        <div className="h-[400px] md:h-[500px] bg-slate-200 rounded-3xl overflow-hidden shadow-xl">
+        {/* Galeria (Lado Esquerdo) */}
+        <div className="h-[400px] md:h-[600px] bg-slate-900 rounded-sm overflow-hidden border border-white/10 shadow-2xl relative group">
           <ImageGallery imagens={imovel.imagens} />
+          {/* Efeito de brilho na borda */}
+          <div className="absolute inset-0 border border-white/5 pointer-events-none"></div>
         </div>
 
-        {/* Informações Completas */}
-        <div className="flex flex-col justify-center space-y-6">
+        {/* Informações (Lado Direito) */}
+        <div className="flex flex-col justify-center space-y-8">
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className={`inline-block px-4 py-1 rounded-full text-xs font-bold text-white ${imovel.tipo === 'VENDA' ? 'bg-green-500' : 'bg-blue-500'}`}>
+            <div className="flex items-center justify-between mb-6">
+              <span className={`inline-block px-4 py-1 text-xs font-bold uppercase tracking-widest text-black ${imovel.tipo === 'VENDA' ? 'bg-white' : 'bg-yellow-500'}`}>
                 {imovel.tipo}
               </span>
-              <span className="text-slate-500 font-medium flex items-center gap-1 text-sm">
-                <MapPin className="w-4 h-4"/> {imovel.bairro}, {imovel.cidade}
+              <span className="text-slate-400 font-light flex items-center gap-2 text-sm uppercase tracking-wider">
+                <MapPin className="w-4 h-4 text-yellow-600"/> {imovel.bairro}, {imovel.cidade}
               </span>
             </div>
             
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">{imovel.titulo}</h1>
-            <p className="text-lg text-slate-600 mt-4 leading-relaxed">{imovel.descricao}</p>
+            <h1 className="text-4xl md:text-5xl font-serif text-white leading-tight mb-6">
+              {imovel.titulo}
+            </h1>
+            <p className="text-lg text-slate-400 font-light leading-relaxed border-l-2 border-yellow-600 pl-6">
+              {imovel.descricao}
+            </p>
           </div>
 
-          <div className="text-4xl font-black text-blue-600">
+          <div className="text-4xl md:text-5xl font-serif text-yellow-500">
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(imovel.preco)}
           </div>
 
-          {/* Grid de Características */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 border-y border-slate-200">
+          {/* Grid de Características (Estilo Dark Glass) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-8 border-y border-white/10">
             
-            <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
-              <Bed className="text-blue-600 w-6 h-6 mb-2"/>
-              <p className="text-2xl font-black text-slate-900">{imovel.quartos}</p>
-              <p className="text-xs text-slate-400 font-bold uppercase">Quartos</p>
+            <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
+              <Bed className="text-slate-300 w-6 h-6 mb-3"/>
+              <p className="text-2xl font-serif text-white">{imovel.quartos}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Quartos</p>
             </div>
 
-            <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
-              <Bath className="text-blue-600 w-6 h-6 mb-2"/>
-              <p className="text-2xl font-black text-slate-900">{imovel.banheiros || 1}</p>
-              <p className="text-xs text-slate-400 font-bold uppercase">Banheiros</p>
+            <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
+              <Bath className="text-slate-300 w-6 h-6 mb-3"/>
+              <p className="text-2xl font-serif text-white">{imovel.banheiros || 1}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Banheiros</p>
             </div>
 
-            <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
-              <Car className="text-blue-600 w-6 h-6 mb-2"/>
-              <p className="text-2xl font-black text-slate-900">{imovel.vagas || 0}</p>
-              <p className="text-xs text-slate-400 font-bold uppercase">Vagas</p>
+            <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
+              <Car className="text-slate-300 w-6 h-6 mb-3"/>
+              <p className="text-2xl font-serif text-white">{imovel.vagas || 0}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Vagas</p>
             </div>
 
-            <div className="flex flex-col items-center p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
-              <Ruler className="text-blue-600 w-6 h-6 mb-2"/>
-              <p className="text-2xl font-black text-slate-900">{imovel.area}</p>
-              <p className="text-xs text-slate-400 font-bold uppercase">Área (m²)</p>
+            <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
+              <Ruler className="text-slate-300 w-6 h-6 mb-3"/>
+              <p className="text-2xl font-serif text-white">{imovel.area}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Área (m²)</p>
             </div>
 
           </div>
 
-          <a href={linkWhatsApp} target="_blank" className="bg-green-500 hover:bg-green-600 text-white p-5 rounded-2xl font-black text-xl flex items-center justify-center gap-3 shadow-xl shadow-green-500/20 transition hover:scale-[1.02]">
-            <Phone className="w-6 h-6" /> Tenho Interesse
+          <a href={linkWhatsApp} target="_blank" className="group bg-white hover:bg-yellow-500 text-black px-8 py-5 rounded-sm font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(234,179,8,0.4)]">
+            <Phone className="w-4 h-4" /> Tenho Interesse
+            <ArrowLeft className="w-4 h-4 rotate-180 group-hover:translate-x-1 transition" />
           </a>
         </div>
       </main>
 
-      {/* FOOTER (ID: contato) */}
-      <footer id="contato" className="bg-slate-900 text-slate-300 py-16 mt-20">
-        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-12">
-          
-          {/* Coluna 1 */}
-          <div className="space-y-4">
-            <h3 className="text-white text-xl font-bold">ImobPrime</h3>
-            <p className="text-sm leading-relaxed max-w-xs">
-              Seu parceiro de confiança para compra, venda e aluguel de imóveis de alto padrão e oportunidades únicas.
+      {/* FOOTER */}
+      <footer id="contato" className="bg-black text-white py-20 border-t border-white/10 mt-auto">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
+          <div className="col-span-1 md:col-span-2 space-y-6">
+            <h3 className="text-2xl font-serif">Imob<span className="text-yellow-600">Prime</span></h3>
+            <p className="text-slate-500 max-w-sm">
+              Seu parceiro de confiança para compra, venda e aluguel de imóveis de alto padrão.
             </p>
           </div>
-
-          {/* Coluna 2 */}
           <div className="space-y-4">
-            <h3 className="text-white text-lg font-bold">Contatos</h3>
-            <div className="flex flex-col gap-3 text-sm">
-              <a href="#" className="flex items-center gap-2 hover:text-blue-400 transition"><Phone className="w-4 h-4"/> (11) 99999-9999</a>
-              <a href="#" className="flex items-center gap-2 hover:text-blue-400 transition"><Mail className="w-4 h-4"/> contato@imobprime.com.br</a>
-              <a href="#" className="flex items-center gap-2 hover:text-blue-400 transition"><MapPin className="w-4 h-4"/> Av. Paulista, 1000 - SP</a>
+            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Contato</h4>
+            <p className="text-slate-300">(11) 99999-9999</p>
+            <p className="text-slate-300">contato@imobprime.com.br</p>
+            <p className="text-slate-300">Av. Paulista, 1000 - SP</p>
+          </div>
+          <div className="space-y-4">
+            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Redes Sociais</h4>
+            <div className="flex gap-4 text-slate-300">
+               <a href="#" className="hover:text-yellow-500 transition flex items-center gap-2"><Instagram className="w-4 h-4"/> Instagram</a>
+               <a href="#" className="hover:text-yellow-500 transition flex items-center gap-2"><Facebook className="w-4 h-4"/> Facebook</a>
             </div>
           </div>
-
-          {/* Coluna 3 */}
-          <div className="space-y-4">
-            <h3 className="text-white text-lg font-bold">Redes Sociais</h3>
-            <div className="flex gap-4">
-              <a href="#" className="bg-slate-800 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition"><Instagram className="w-5 h-5"/></a>
-              <a href="#" className="bg-slate-800 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition"><Facebook className="w-5 h-5"/></a>
-            </div>
-          </div>
-
         </div>
-        <div className="border-t border-slate-800 mt-12 pt-8 text-center text-xs text-slate-500">
+        <div className="text-center mt-20 text-xs text-slate-800 uppercase tracking-widest">
           © 2026 ImobPrime. Todos os direitos reservados.
         </div>
       </footer>
-
     </div>
   );
 }
