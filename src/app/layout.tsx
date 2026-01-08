@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google"; // Importando a fonte nova
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 
+// Configurando as fontes
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-playfair' });
 
@@ -18,7 +19,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} ${playfair.variable} font-sans bg-slate-900`}>
+      {/* AQUI É O SEGREDO: As variáveis precisam estar na className do body */}
+      <body className={`${inter.variable} ${playfair.variable} antialiased`}>
         <Navbar />
         {children}
       </body>
