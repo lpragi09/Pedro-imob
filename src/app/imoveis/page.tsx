@@ -22,7 +22,7 @@ export default async function PaginaImoveis({
   const inicio = (paginaAtual - 1) * ITEMS_POR_PAGINA;
   const fim = inicio + ITEMS_POR_PAGINA - 1;
 
-  // 1. TENTATIVA DE BUSCA COM FILTROS
+  // 1. BUSCA COM FILTROS
   let query = supabase.from('imoveis').select('*', { count: 'exact' }).order('created_at', { ascending: false });
 
   if (params.busca) query = query.or(`titulo.ilike.%${params.busca}%,cidade.ilike.%${params.busca}%,bairro.ilike.%${params.busca}%`);
@@ -40,7 +40,7 @@ export default async function PaginaImoveis({
   let imoveisParaExibir = imoveisFiltrados || [];
   let mostrandoSugestoes = false;
 
-  // 2. SE NÃO HOUVER RESULTADOS, BUSCAMOS AS NOVIDADES (SEM FILTROS)
+  // 2. SE NÃO HOUVER RESULTADOS, BUSCA AS NOVIDADES
   if (imoveisParaExibir.length === 0) {
     const { data: novidades } = await supabase
       .from('imoveis')
@@ -68,7 +68,7 @@ export default async function PaginaImoveis({
                   <h1 className="text-3xl md:text-4xl font-serif text-terras-marrom mt-2">Acervo Rural</h1>
                   <p className="text-terras-marrom/70 mt-2 font-light text-sm">
                     {mostrandoSugestoes 
-                      ? "Não encontramos resultados exatos, mas separamos estas novidades para você:" 
+                      ? "Nenhum resultado encontrado para os filtros aplicados." 
                       : `Mostrando ${imoveisParaExibir.length} de ${count} propriedades encontradas`}
                   </p>
               </div>
@@ -80,7 +80,16 @@ export default async function PaginaImoveis({
               </aside>
 
               <div className="lg:col-span-3">
-                {/* LISTAGEM DE CARDS (Seja filtro ou sugestão) */}
+                
+                {/* MENSAGEM DE ERRO EM DESTAQUE */}
+                {mostrandoSugestoes && (
+                  <div className="col-span-full mb-10 py-12 text-center border-2 border-dashed border-terras-marrom/20 rounded-lg bg-terras-marrom/5">
+                    <p className="text-xl text-terras-marrom font-serif mb-2">Ops! Não encontramos resultados exatos.</p>
+                    <p className="text-sm text-terras-verde-musgo mb-0">Mas separamos estas novidades para você:</p>
+                  </div>
+                )}
+
+                {/* GRADE DE IMÓVEIS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {imoveisParaExibir.map((imovel) => (
                       <Link 
@@ -127,10 +136,9 @@ export default async function PaginaImoveis({
                   ))}
                 </div>
                 
-                {/* Se realmente não tiver NADA no banco (nem sugestão), aí mostramos a mensagem final */}
-                {imoveisParaExibir.length === 0 && (
-                   <div className="col-span-2 py-20 text-center border-2 border-dashed border-terras-marrom/20 rounded-lg bg-terras-marrom/5">
-                     <p className="text-xl text-terras-marrom font-serif mb-2">Infelizmente não temos imóveis cadastrados ainda.</p>
+                {imoveisParaExibir.length === 0 && !mostrandoSugestoes && (
+                   <div className="py-20 text-center border-2 border-dashed border-terras-marrom/20 rounded-lg bg-terras-marrom/5">
+                     <p className="text-xl text-terras-marrom font-serif">Nenhum imóvel disponível no momento.</p>
                    </div>
                 )}
 
@@ -144,8 +152,32 @@ export default async function PaginaImoveis({
         </div>
       </div>
 
-      <footer className="bg-terras-marrom text-terras-bege py-20 border-t border-white/10 mt-auto">
-         {/* ... resto do seu footer ... */}
+      <footer id="contato" className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
+          <div className="col-span-1 md:col-span-2 space-y-6">
+            <h3 className="text-3xl font-serif font-bold flex items-center gap-2">
+              <span className="text-terras-amarelo">Terras</span>Rurais
+            </h3>
+            <p className="text-terras-bege/70 max-w-sm">
+              Seu parceiro de confiança para compra, venda e arrendamento de imóveis rurais. Conectando você ao melhor do campo.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
+            <p className="text-terras-bege/90">(11) 99999-9999</p>
+            <p className="text-terras-bege/90">contato@terrasrurais.com.br</p>
+            <p className="text-terras-bege/90">Rodovia dos Bandeirantes, km 50 - SP</p>
+          </div>
+          <div className="space-y-4">
+            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
+            <div className="flex gap-4 text-terras-bege/90">
+                {/* Ícones de redes sociais podem entrar aqui */}
+            </div>
+          </div>
+        </div>
+        <div className="text-center mt-20 text-xs text-terras-bege/50 uppercase tracking-widest pt-8 border-t border-terras-bege/5">
+          © 2026 Terras Rurais. Todos os direitos reservados.
+        </div>
       </footer>
     </div>
   );

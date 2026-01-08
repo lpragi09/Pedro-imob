@@ -107,25 +107,32 @@ export default async function DetalhesImovel({ params }: Props) {
       </main>
 
       {/* Footer (Terras Rurais) */}
-      <footer className="bg-terras-marrom text-terras-bege py-20 border-t border-white/10 mt-auto">
+      <footer id="contato" className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
           <div className="col-span-1 md:col-span-2 space-y-6">
-            <h3 className="text-2xl font-serif font-bold">
-                <span className="text-terras-amarelo">Terras</span>Rurais
+            {/* Logo em texto (pode ser substituída pela imagem depois) */}
+            <h3 className="text-3xl font-serif font-bold flex items-center gap-2">
+              <span className="text-terras-amarelo">Terras</span>Rurais
             </h3>
-            <p className="text-terras-bege/60 max-w-sm">
-              Conectando você às melhores oportunidades de investimento em terras rurais, sítios e fazendas.
+            <p className="text-terras-bege/70 max-w-sm">
+              Seu parceiro de confiança para compra, venda e arrendamento de imóveis rurais. Conectando você ao melhor do campo.
             </p>
           </div>
           <div className="space-y-4">
+            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
+            <p className="text-terras-bege/90">(11) 99999-9999</p>
+            <p className="text-terras-bege/90">contato@terrasrurais.com.br</p>
+            <p className="text-terras-bege/90">Rodovia dos Bandeirantes, km 50 - SP</p>
+          </div>
+          <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
-            <div className="flex gap-4">
-               <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Instagram className="w-4 h-4"/> Instagram</a>
-               <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Facebook className="w-4 h-4"/> Facebook</a>
+            <div className="flex gap-4 text-terras-bege/90">
+              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Instagram className="w-5 h-5"/> Instagram</a>
+              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Facebook className="w-5 h-5"/> Facebook</a>
             </div>
           </div>
         </div>
-        <div className="text-center mt-20 text-[10px] text-terras-bege/30 uppercase tracking-widest">
+        <div className="text-center mt-20 text-xs text-terras-bege/50 uppercase tracking-widest pt-8 border-t border-terras-bege/5">
           © 2026 Terras Rurais. Todos os direitos reservados.
         </div>
       </footer>
