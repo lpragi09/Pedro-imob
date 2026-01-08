@@ -28,16 +28,23 @@ export default async function HomeImobiliaria() {
             Especialistas em realizar sonhos e encontrar o lar perfeito para sua família.
           </p>
           
-          {/* Busca Limpa (Sem brilho, fonte padrão) */}
+          {/* Busca Limpa e Funcional */}
           <div className="mt-8 max-w-2xl mx-auto">
-             <div className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-2 flex items-center shadow-2xl">
+             <form action="/imoveis" className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-2 flex items-center shadow-2xl">
                 <MapPin className="text-slate-300 w-5 h-5 ml-4" />
-                {/* Fonte alterada para font-sans (padrão) */}
-                <input type="text" placeholder="Qual cidade ou bairro?" className="bg-transparent w-full px-4 py-3 outline-none text-white placeholder:text-slate-400 font-sans text-base" />
-                <button className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition duration-300 flex items-center gap-2">
+                
+                {/* O input agora tem name="busca" para passar na URL */}
+                <input 
+                  name="busca" 
+                  type="text" 
+                  placeholder="Qual cidade ou bairro?" 
+                  className="bg-transparent w-full px-4 py-3 outline-none text-white placeholder:text-slate-400 font-sans text-base" 
+                />
+                
+                <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition duration-300 flex items-center gap-2">
                    <Search className="w-4 h-4"/> Buscar
                 </button>
-             </div>
+             </form>
           </div>
         </div>
       </div>
