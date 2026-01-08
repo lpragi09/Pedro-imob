@@ -13,12 +13,12 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Fonte de Títulos (Luxo) */
+/* Configuração das Fontes */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-playfair), serif;
 }
 
-/* Efeito de Vidro Fosco (Glassmorphism) */
+/* Efeito de Vidro (Glassmorphism) */
 .glass {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -26,13 +26,7 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.glass-dark {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Sombras de Alto Padrão */
+/* Sombra de Luxo */
 .shadow-luxury {
   box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
 }
