@@ -15,11 +15,9 @@ export function ImoveisFilter() {
   const [banheiros, setBanheiros] = useState(searchParams.get('banheiros') || '');
   const [vagas, setVagas] = useState(searchParams.get('vagas') || '');
   
-  // Padrão 0 e 5 milhões
   const [minPreco, setMinPreco] = useState(Number(searchParams.get('min_preco')) || 0);
   const [maxPreco, setMaxPreco] = useState(Number(searchParams.get('max_preco')) || 5000000);
 
-  // Sincroniza o visual se o usuário mudar a URL manualmente ou voltar
   useEffect(() => {
     setCidade(searchParams.get('cidade') || '');
     setTipo(searchParams.get('tipo') || '');
@@ -46,7 +44,6 @@ export function ImoveisFilter() {
     if (banheiros) params.set('banheiros', banheiros); else params.delete('banheiros');
     if (vagas) params.set('vagas', vagas); else params.delete('vagas');
     
-    // Filtro de Preço
     if (minPreco > 0) params.set('min_preco', minPreco.toString()); 
     else params.delete('min_preco');
     
@@ -121,8 +118,8 @@ export function ImoveisFilter() {
               <input 
                   type="range" 
                   min="0" 
-                  max="2000000" 
-                  step="1000" // <--- AQUI: Pula de 1.000 em 1.000
+                  max="500000" // Reduzi para 500k para dar precisão no arrastar
+                  step="1000" // Passo de 1.000 em 1.000
                   value={minPreco} 
                   onChange={(e) => setMinPreco(Number(e.target.value))} 
                   className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" 
@@ -139,7 +136,7 @@ export function ImoveisFilter() {
                   type="range" 
                   min="0" 
                   max="5000000" 
-                  step="50000" // O máximo continua pulando mais rápido (50k)
+                  step="50000" 
                   value={maxPreco} 
                   onChange={(e) => setMaxPreco(Number(e.target.value))} 
                   className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" 
