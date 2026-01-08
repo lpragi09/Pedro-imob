@@ -27,7 +27,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   
   // Estados do Login
-  const [usuario, setUsuario] = useState(''); // Mudei de 'email' para 'usuario'
+  const [usuario, setUsuario] = useState(''); 
   const [password, setPassword] = useState('');
 
   // Estados do CRUD
@@ -68,8 +68,6 @@ export default function AdminPage() {
     e.preventDefault();
     setLoading(true);
 
-    // --- O TRUQUE DO ADMIN AQUI ---
-    // Se digitar só "admin", completamos com o email falso
     let emailFinal = usuario.trim();
     if (emailFinal === 'admin') {
         emailFinal = 'admin@terras.com';
@@ -87,6 +85,26 @@ export default function AdminPage() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/');
+  };
+
+  // --- NOVA FUNÇÃO DE MANIPULAÇÃO DE ARQUIVOS ---
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const novosArquivos = Array.from(e.target.files);
+      setArquivos((prev) => [...prev, ...novosArquivos]);
+
+      // Gera previews imediatos para o usuário ver as fotos antes de salvar
+      novosArquivos.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setForm((prev) => ({
+            ...prev,
+            imagens: [...(prev.imagens || []), reader.result as string]
+          }));
+        };
+        reader.readAsDataURL(file);
+      });
+    }
   };
 
   // --- UPLOAD DE IMAGENS ---
@@ -117,7 +135,8 @@ export default function AdminPage() {
     setSalvando(true);
 
     try {
-      let novasImagens = form.imagens || [];
+      // Filtramos apenas URLs que já são do Supabase (remover previews em base64)
+      let novasImagens = form.imagens?.filter(img => img.startsWith('http')) || [];
       
       if (arquivos.length > 0) {
         const urlsUpload = await uploadImagens(arquivos);
@@ -167,7 +186,6 @@ export default function AdminPage() {
     setModalAberto(true);
   };
 
-  // --- TELA DE LOGIN (ATUALIZADA PARA USUÁRIO) ---
   if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-terras-bege p-4">
@@ -182,7 +200,6 @@ export default function AdminPage() {
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              {/* CAMPO DE USUÁRIO (TEXTO) */}
               <label className="block text-xs font-bold text-terras-marrom uppercase mb-1">Usuário</label>
               <input 
                 type="text" 
@@ -212,7 +229,6 @@ export default function AdminPage() {
     );
   }
 
-  // --- PAINEL PRINCIPAL ---
   return (
     <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans">
       <header className="bg-white border-b border-terras-marrom/10 sticky top-0 z-40 shadow-sm">
@@ -269,7 +285,6 @@ export default function AdminPage() {
         </div>
       </main>
 
-      {/* MODAL */}
       {modalAberto && (
         <div className="fixed inset-0 bg-terras-marrom/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl animate-in zoom-in-95 p-6 md:p-10 relative">
@@ -281,7 +296,6 @@ export default function AdminPage() {
              </h2>
 
              <form onSubmit={salvarImovel} className="space-y-6">
-                
                 <div className="grid md:grid-cols-2 gap-6">
                    <div className="space-y-4">
                       <div><label className="label-admin">Título</label><input required type="text" value={form.titulo || ''} onChange={e => setForm({...form, titulo: e.target.value})} className="input-admin" /></div>
@@ -292,13 +306,12 @@ export default function AdminPage() {
                       <div className="grid grid-cols-3 gap-4">
                          <div><label className="label-admin">Cidade</label><input required type="text" value={form.cidade || ''} onChange={e => setForm({...form, cidade: e.target.value})} className="input-admin" /></div>
                          <div><label className="label-admin">Bairro</label><input type="text" value={form.bairro || ''} onChange={e => setForm({...form, bairro: e.target.value})} className="input-admin" /></div>
-                         
                       </div>
                    </div>
 
                    <div className="space-y-4">
                       <div className="grid grid-cols-4 gap-2">
-                         <div><label className="label-admin">Qts</label><input type="number" value={form.quartos || ''} onChange={e => setForm({...form, quartos: Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">Qua</label><input type="number" value={form.quartos || ''} onChange={e => setForm({...form, quartos: Number(e.target.value)})} className="input-admin text-center" /></div>
                          <div><label className="label-admin">Ban</label><input type="number" value={form.banheiros || ''} onChange={e => setForm({...form, banheiros: Number(e.target.value)})} className="input-admin text-center" /></div>
                          <div><label className="label-admin">Vag</label><input type="number" value={form.vagas || ''} onChange={e => setForm({...form, vagas: Number(e.target.value)})} className="input-admin text-center" /></div>
                          <div><label className="label-admin">m²</label><input type="number" value={form.area || ''} onChange={e => setForm({...form, area: Number(e.target.value)})} className="input-admin text-center" /></div>
@@ -318,7 +331,7 @@ export default function AdminPage() {
                       ))}
                    </div>
                    <div className="border-2 border-dashed border-terras-marrom/20 rounded-xl bg-terras-bege p-8 text-center hover:bg-terras-bege/50 hover:border-terras-laranja transition cursor-pointer relative">
-                      <input type="file" multiple accept="image/*" onChange={e => { if(e.target.files) setArquivos(Array.from(e.target.files)) }} className="absolute inset-0 opacity-0 cursor-pointer" />
+                      <input type="file" multiple accept="image/*" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
                       <div className="flex flex-col items-center gap-2 text-terras-marrom/60">
                          <Upload className="w-8 h-8 text-terras-laranja" /><span className="text-sm font-bold">Adicionar fotos</span>
                       </div>
