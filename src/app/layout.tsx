@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-playfair' });
 
 export const metadata: Metadata = {
-  title: "ImobPrime | Exclusive Real Estate",
+  title: "ImobPrime | Realizando Sonhos!",
   description: "Imóveis de alto padrão.",
 };
 
