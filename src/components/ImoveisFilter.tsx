@@ -8,19 +8,17 @@ export function ImoveisFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Pegamos os valores iniciais da URL ou definimos padrões
+  // Pegamos os valores iniciais da URL
   const [tipo, setTipo] = useState(searchParams.get('tipo') || '');
   const [quartos, setQuartos] = useState(searchParams.get('quartos') || '');
   
-  // Slider de Preço (Valores numéricos)
+  // Slider de Preço
   const [minPreco, setMinPreco] = useState(Number(searchParams.get('min_preco')) || 0);
   const [maxPreco, setMaxPreco] = useState(Number(searchParams.get('max_preco')) || 5000000);
 
-  // Formata o dinheiro (R$ 1.000,00)
   const formatMoney = (val: number) => 
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
-  // Função que aplica o filtro
   const aplicarFiltros = (e?: React.FormEvent) => {
     e?.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
@@ -31,7 +29,6 @@ export function ImoveisFilter() {
     if (minPreco > 0) params.set('min_preco', minPreco.toString()); 
     else params.delete('min_preco');
     
-    // Se o maximo for menor que 5mi (limite do slider), aplica. Se for o máximo, remove pra não limitar.
     if (maxPreco < 5000000) params.set('max_preco', maxPreco.toString());
     else params.delete('max_preco');
 
@@ -47,7 +44,7 @@ export function ImoveisFilter() {
 
       <form onSubmit={aplicarFiltros} className="space-y-8">
         
-        {/* Tipo de Imóvel */}
+        {/* Tipo */}
         <div>
           <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Tipo</label>
           <div className="flex gap-2">
@@ -68,7 +65,7 @@ export function ImoveisFilter() {
           </div>
         </div>
 
-        {/* Slider de Preço Mínimo */}
+        {/* Slider Mínimo */}
         <div>
            <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
               <span>Mínimo</span>
@@ -81,11 +78,11 @@ export function ImoveisFilter() {
              step="50000" 
              value={minPreco}
              onChange={(e) => setMinPreco(Number(e.target.value))}
-             className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500 hover:accent-yellow-400"
+             className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
            />
         </div>
 
-        {/* Slider de Preço Máximo */}
+        {/* Slider Máximo */}
         <div>
            <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
               <span>Máximo</span>
@@ -98,7 +95,7 @@ export function ImoveisFilter() {
              step="100000" 
              value={maxPreco}
              onChange={(e) => setMaxPreco(Number(e.target.value))}
-             className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500 hover:accent-yellow-400"
+             className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
            />
         </div>
 
@@ -114,11 +111,9 @@ export function ImoveisFilter() {
             <option value="2">2+ Quartos</option>
             <option value="3">3+ Quartos</option>
             <option value="4">4+ Quartos</option>
-            <option value="5">5+ Quartos</option>
           </select>
         </div>
 
-        {/* Botões */}
         <button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold uppercase tracking-widest text-xs py-3 rounded-sm transition shadow-lg shadow-yellow-900/20">
           Aplicar Filtros
         </button>
