@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { MapPin, Bed, Ruler, ArrowRight, Image as ImageIcon, Bath, Car } from 'lucide-react';
 import { ImoveisFilter } from '@/components/ImoveisFilter';
+import { Pagination } from '@/components/Pagination'; // <--- Importei aqui
 
 export const revalidate = 0;
 
@@ -16,41 +17,47 @@ export default async function PaginaImoveis({
 }) {
   const params = await searchParams;
   
-  // Construção da Query
-  let query = supabase.from('imoveis').select('*').order('created_at', { ascending: false });
+  // --- CONFIGURAÇÃO DA PAGINAÇÃO ---
+  const ITEMS_POR_PAGINA = 6;
+  const paginaAtual = Number(params.page) || 1;
+  const inicio = (paginaAtual - 1) * ITEMS_POR_PAGINA;
+  const fim = inicio + ITEMS_POR_PAGINA - 1;
 
-  // Filtros de Texto
+  // Construção da Query (Adicionamos { count: 'exact' } para saber o total)
+  let query = supabase.from('imoveis').select('*', { count: 'exact' }).order('created_at', { ascending: false });
+
+  // --- FILTROS ---
   if (params.busca) {
     query = query.or(`titulo.ilike.%${params.busca}%,cidade.ilike.%${params.busca}%,bairro.ilike.%${params.busca}%`);
   }
-  if (params.cidade) {
-    query = query.ilike('cidade', `%${params.cidade}%`);
-  }
-
-  // Tipo
+  if (params.cidade) query = query.ilike('cidade', `%${params.cidade}%`);
   if (params.tipo) query = query.eq('tipo', params.tipo);
 
-  // LOGICA NOVA: Exata para 1-4, "5+" para 5.
+  // Lógica Exata vs 5+
   if (params.quartos) {
     if (params.quartos === '5') query = query.gte('quartos', 5);
     else query = query.eq('quartos', params.quartos);
   }
-
   if (params.banheiros) {
     if (params.banheiros === '5') query = query.gte('banheiros', 5);
     else query = query.eq('banheiros', params.banheiros);
   }
-
   if (params.vagas) {
     if (params.vagas === '5') query = query.gte('vagas', 5);
     else query = query.eq('vagas', params.vagas);
   }
   
-  // Preço
   if (params.min_preco) query = query.gte('preco', params.min_preco);
   if (params.max_preco) query = query.lte('preco', params.max_preco);
 
-  const { data: imoveis } = await query;
+  // --- APLICA A PAGINAÇÃO NO BANCO ---
+  query = query.range(inicio, fim);
+
+  const { data: imoveis, count } = await query;
+  
+  // Calcula quantas páginas existem no total
+  const totalImoveis = count || 0;
+  const totalPaginas = Math.ceil(totalImoveis / ITEMS_POR_PAGINA);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans pt-28 pb-12">
@@ -62,7 +69,7 @@ export default async function PaginaImoveis({
             <span className="text-yellow-500 font-bold uppercase tracking-widest text-xs">Catálogo</span>
             <h1 className="text-3xl md:text-4xl font-serif text-white mt-2">Acervo Exclusivo</h1>
             <p className="text-slate-400 mt-2 font-light text-sm">
-              {imoveis?.length} propriedades encontradas {params.busca && `para "${params.busca}"`} {params.cidade && `em "${params.cidade}"`}
+              Mostrando {imoveis?.length} de {totalImoveis} propriedades encontradas
             </p>
           </div>
         </div>
@@ -79,7 +86,7 @@ export default async function PaginaImoveis({
               {(!imoveis || imoveis.length === 0) && (
                 <div className="col-span-2 py-20 text-center border border-dashed border-slate-800 rounded-sm bg-slate-900/50">
                   <p className="text-xl text-slate-500 font-serif">Nenhum imóvel encontrado.</p>
-                  <p className="text-sm text-slate-600 mt-2">Tente ajustar os filtros de preço ou localização.</p>
+                  <p className="text-sm text-slate-600 mt-2">Tente ajustar os filtros.</p>
                 </div>
               )}
 
@@ -131,8 +138,11 @@ export default async function PaginaImoveis({
                 </Link>
               ))}
             </div>
-          </div>
 
+            {/* AQUI ESTÁ A PAGINAÇÃO */}
+            <Pagination paginaAtual={paginaAtual} totalPaginas={totalPaginas} />
+
+          </div>
         </div>
       </div>
     </div>
