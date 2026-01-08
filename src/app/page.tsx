@@ -2,8 +2,6 @@ import Link from 'next/link';
 import { Search, MapPin, Key, Instagram, Facebook, Mail, Phone, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
-// --- A MÁGICA ESTÁ AQUI ---
-// Isso diz pro Next.js: "Não guarde cache, olhe o banco toda vez!"
 export const revalidate = 0;
 
 const formatarPreco = (valor: number) => {
@@ -11,7 +9,6 @@ const formatarPreco = (valor: number) => {
 }
 
 export default async function HomeImobiliaria() {
-  
   const { data: imoveis } = await supabase
     .from('imoveis')
     .select('*')
@@ -20,7 +17,7 @@ export default async function HomeImobiliaria() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       
-      {/* HERO SECTION (ID: topo) */}
+      {/* HERO SECTION */}
       <div id="topo" className="relative bg-slate-900 py-20 px-4">
         <div className="absolute inset-0 overflow-hidden">
            <div className="absolute inset-0 bg-gradient-to-r from-slate-900 to-slate-900/80 z-10"></div>
@@ -34,7 +31,6 @@ export default async function HomeImobiliaria() {
           <p className="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto">
             Especialistas em realizar sonhos e encontrar o lar perfeito para sua família.
           </p>
-
           <div className="bg-white p-2 rounded-2xl shadow-2xl shadow-black/20 max-w-3xl mx-auto flex flex-col md:flex-row gap-2 mt-8">
             <div className="flex-1 flex items-center px-4 bg-slate-100 rounded-xl">
               <MapPin className="text-slate-400 w-5 h-5 mr-3" />
@@ -47,7 +43,7 @@ export default async function HomeImobiliaria() {
         </div>
       </div>
 
-      {/* SEÇÃO IMÓVEIS (ID: imoveis) */}
+      {/* SEÇÃO IMÓVEIS */}
       <main id="imoveis" className="max-w-7xl mx-auto px-4 py-20">
         <div className="flex justify-between items-end mb-8">
           <div>
@@ -75,7 +71,6 @@ export default async function HomeImobiliaria() {
                   {imovel.tipo}
                 </span>
                 
-                {/* LÓGICA DA IMAGEM ATUALIZADA */}
                 {imovel.imagens && imovel.imagens.length > 0 ? (
                   <img 
                     src={imovel.imagens[0]} 
@@ -91,7 +86,7 @@ export default async function HomeImobiliaria() {
               
               <div className="p-6">
                 <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-sm text-slate-500 font-medium line-clamp-1">{imovel.descricao}</span>
+                  <span className="text-sm text-slate-500 font-medium line-clamp-1">{imovel.cidade}</span>
                   <span className="text-blue-600 font-black text-xl shrink-0 ml-2">
                     {formatarPreco(imovel.preco)}
                   </span>
@@ -107,14 +102,13 @@ export default async function HomeImobiliaria() {
         </div>
       </main>
 
-      {/* SEÇÃO SOBRE (ID: sobre) */}
+      {/* SEÇÃO SOBRE */}
       <section id="sobre" className="bg-slate-100 py-20">
         <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-slate-900">Sobre a ImobPrime</h2>
             <p className="text-slate-600 leading-relaxed">
-              Somos uma imobiliária dedicada a transformar a busca pelo imóvel ideal em uma experiência simples e segura. 
-              Com anos de mercado, focamos em atendimento personalizado para entender exatamente o que você e sua família precisam.
+              Somos uma imobiliária dedicada a transformar a busca pelo imóvel ideal em uma experiência simples e segura.
             </p>
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="bg-white p-4 rounded-xl border border-slate-200">
@@ -133,19 +127,15 @@ export default async function HomeImobiliaria() {
         </div>
       </section>
 
-      {/* FOOTER / CONTATO (ID: contato) */}
+      {/* FOOTER */}
       <footer id="contato" className="bg-slate-900 text-slate-300 py-16">
         <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-12">
-          
-          {/* Coluna 1 */}
           <div className="space-y-4">
             <h3 className="text-white text-xl font-bold">ImobPrime</h3>
             <p className="text-sm leading-relaxed max-w-xs">
-              Seu parceiro de confiança para compra, venda e aluguel de imóveis de alto padrão e oportunidades únicas.
+              Seu parceiro de confiança para compra, venda e aluguel.
             </p>
           </div>
-
-          {/* Coluna 2 */}
           <div className="space-y-4">
             <h3 className="text-white text-lg font-bold">Contatos</h3>
             <div className="flex flex-col gap-3 text-sm">
@@ -154,8 +144,6 @@ export default async function HomeImobiliaria() {
               <a href="#" className="flex items-center gap-2 hover:text-blue-400 transition"><MapPin className="w-4 h-4"/> Av. Paulista, 1000 - SP</a>
             </div>
           </div>
-
-          {/* Coluna 3 */}
           <div className="space-y-4">
             <h3 className="text-white text-lg font-bold">Redes Sociais</h3>
             <div className="flex gap-4">
@@ -163,10 +151,9 @@ export default async function HomeImobiliaria() {
               <a href="#" className="bg-slate-800 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition"><Facebook className="w-5 h-5"/></a>
             </div>
           </div>
-
         </div>
         <div className="border-t border-slate-800 mt-12 pt-8 text-center text-xs text-slate-500">
-          © 2024 ImobPrime. Todos os direitos reservados.
+          © 2026 ImobPrime. Todos os direitos reservados.
         </div>
       </footer>
     </div>
