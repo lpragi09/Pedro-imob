@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google"; // Importando a fonte nova
 import "./globals.css";
-import { Navbar } from "@/components/Navbar"; // Importando a nova Navbar
+import { Navbar } from "@/components/Navbar";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-playfair' });
 
 export const metadata: Metadata = {
-  title: "ImobPrime - Sua Imobiliária",
-  description: "Encontre o imóvel dos seus sonhos.",
+  title: "ImobPrime | Exclusive Real Estate",
+  description: "Imóveis de alto padrão.",
 };
 
 export default function RootLayout({
@@ -17,8 +18,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
-        <Navbar /> {/* Ela vai aparecer em cima de todas as páginas */}
+      <body className={`${inter.variable} ${playfair.variable} font-sans bg-slate-900`}>
+        <Navbar />
         {children}
       </body>
     </html>
