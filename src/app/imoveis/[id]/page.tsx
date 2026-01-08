@@ -10,21 +10,30 @@ const formatarPreco = (valor: number) => {
 }
 
 export default async function PaginaDetalheImovel({ params }: { params: Promise<{ id: string }> }) {
+  // 1. Aguarda os parâmetros corretamente
   const { id } = await params;
-  const { data: imovel } = await supabase.from('imoveis').select('*').eq('id', id).single();
 
-  if (!imovel) {
-    notFound();
+  // 2. Tenta buscar no banco (sem validação de regex antes para evitar erros)
+  const { data: imovel, error } = await supabase
+    .from('imoveis')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  // 3. Se o banco der erro ou não achar nada, chama a página 404
+  if (error || !imovel) {
+    console.error("Erro ao buscar imóvel:", error); // Isso ajuda a ver o erro no log da Vercel
+    return notFound();
   }
 
-  const textoWhatsApp = encodeURIComponent(`Olá! Gostaria de mais informações sobre o imóvel "${imovel.titulo}" (Cód. ${imovel.id.slice(0, 8)}) que vi no site Terras Rurais.`);
-  const linkWhatsApp = `https://wa.me/5511999999999?text=${textoWhatsApp}`; // Substitua pelo número real
+  // Prepara link do WhatsApp
+  const textoWhatsApp = encodeURIComponent(`Olá! Gostaria de mais informações sobre o imóvel "${imovel.titulo}" que vi no site Terras Rurais.`);
+  const linkWhatsApp = `https://wa.me/5511999999999?text=${textoWhatsApp}`; 
 
   return (
-    // Fundo bege, texto marrom
     <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans pb-20">
       
-      {/* Header da Página */}
+      {/* Header Fixo */}
       <header className="bg-terras-marrom py-6 px-6 md:px-12 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <Link href="/imoveis" className="text-terras-bege/80 hover:text-terras-laranja transition flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
           <ArrowLeft className="w-4 h-4" /> Voltar ao Catálogo
@@ -34,23 +43,26 @@ export default async function PaginaDetalheImovel({ params }: { params: Promise<
         </h1>
       </header>
 
-      {/* Galeria de Imagens (Grid Estilo Mosaico) */}
+      {/* Galeria de Imagens */}
       <div className="h-[50vh] md:h-[65vh] bg-terras-marrom/5 relative">
          {imovel.imagens && imovel.imagens.length > 0 ? (
            <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 h-full gap-1 p-1">
-             {/* Imagem Principal (Grande) */}
+             
+             {/* Imagem Principal */}
              <div className="md:col-span-2 md:row-span-2 relative rounded-lg overflow-hidden group">
                 <img src={imovel.imagens[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={imovel.titulo} />
                 <div className="absolute inset-0 bg-terras-marrom/10 group-hover:bg-transparent transition-colors"></div>
              </div>
-             {/* Outras Imagens (Menores) */}
+
+             {/* Outras Imagens (Com a correção de tipo string/number) */}
              {imovel.imagens.slice(1, 5).map((img: string, index: number) => (
                <div key={index} className="relative rounded-lg overflow-hidden group hidden md:block">
                   <img src={img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={`Foto ${index + 2}`} />
                   <div className="absolute inset-0 bg-terras-marrom/10 group-hover:bg-transparent transition-colors"></div>
                </div>
              ))}
-              {imovel.imagens.length < 2 && (
+
+             {imovel.imagens.length < 2 && (
                  <div className="md:col-span-2 md:row-span-2 bg-terras-marrom/10 flex items-center justify-center text-terras-marrom/30 rounded-lg"><ImageIcon size={64} /></div>
               )}
            </div>
@@ -58,13 +70,12 @@ export default async function PaginaDetalheImovel({ params }: { params: Promise<
            <div className="w-full h-full flex items-center justify-center text-terras-marrom/30"><ImageIcon size={100} strokeWidth={1} /></div>
          )}
 
-         {/* Botão de Compartilhar */}
          <button className="absolute top-6 right-6 bg-white/90 p-3 rounded-full text-terras-marrom hover:text-terras-laranja shadow-lg transition-transform hover:scale-110 z-20">
             <Share2 className="w-5 h-5" />
          </button>
       </div>
 
-      {/* Conteúdo Principal */}
+      {/* Infos Principais */}
       <main className="max-w-5xl mx-auto px-6 md:px-12 -mt-20 relative z-30">
         <div className="bg-white rounded-xl p-8 md:p-12 shadow-2xl shadow-terras-marrom/10 border border-terras-marrom/5">
           
@@ -84,7 +95,6 @@ export default async function PaginaDetalheImovel({ params }: { params: Promise<
             </div>
           </div>
 
-          {/* Ícones de Características */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-8 border-y border-terras-marrom/10 mb-10">
              <div className="flex flex-col items-center justify-center p-4 bg-terras-bege/50 rounded-lg border border-terras-marrom/5">
                 <Bed className="w-8 h-8 text-terras-verde-musgo mb-2" strokeWidth={1.5} />
@@ -109,15 +119,13 @@ export default async function PaginaDetalheImovel({ params }: { params: Promise<
           </div>
 
           <div className="grid md:grid-cols-3 gap-12">
-             {/* Descrição */}
              <div className="md:col-span-2 space-y-6">
                 <h2 className="text-2xl font-serif font-bold text-terras-marrom">Sobre a Propriedade</h2>
-                <div className="prose prose-lg prose-p:text-terras-marrom/80 prose-headings:text-terras-marrom prose-headings:font-serif prose-strong:text-terras-marrom max-w-none">
-                   <p className="whitespace-pre-line leading-relaxed">{imovel.descricao}</p>
+                <div className="prose prose-lg prose-p:text-terras-marrom/80 max-w-none whitespace-pre-line leading-relaxed">
+                   {imovel.descricao}
                 </div>
              </div>
 
-             {/* Sidebar de Contato */}
              <div className="space-y-6">
                 <div className="bg-terras-bege p-8 rounded-xl border border-terras-marrom/10 sticky top-32 shadow-lg">
                    <h3 className="text-xl font-serif font-bold text-terras-marrom mb-2">Interessado?</h3>
@@ -127,7 +135,6 @@ export default async function PaginaDetalheImovel({ params }: { params: Promise<
                       href={linkWhatsApp} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      // Botão do WhatsApp LARANJA
                       className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-4 px-6 rounded-full shadow-lg shadow-green-900/10 transition-all hover:-translate-y-1 group mb-4"
                    >
                       <MessageCircle className="w-6 h-6 group-hover:animate-bounce" />
@@ -142,7 +149,6 @@ export default async function PaginaDetalheImovel({ params }: { params: Promise<
 
         </div>
       </main>
-
     </div>
   );
 }
