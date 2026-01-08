@@ -35,7 +35,6 @@ export default function AdminPanel() {
     if (data) setImoveis(data);
   }
 
-  // Lida com seleção de NOVAS imagens
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const novosArquivos = Array.from(e.target.files);
@@ -45,13 +44,11 @@ export default function AdminPanel() {
     }
   };
 
-  // Remove imagem NOVA (que ainda não subiu)
   const removerImagemDoPreview = (index: number) => {
     setArquivosSelecionados(prev => prev.filter((_, i) => i !== index));
     setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
 
-  // NOVO: Remove imagem ANTIGA (que já estava no banco)
   const removerImagemExistente = (index: number) => {
     if (!imovelEmEdicao) return;
     const novasImagens = imovelEmEdicao.imagens.filter((_, i) => i !== index);
@@ -78,10 +75,8 @@ export default function AdminPanel() {
     try {
       const formData = new FormData(event.currentTarget);
       
-      // Pega as imagens que sobraram da edição (se houver) ou inicia vazio
       let urlsFinais = imovelEmEdicao?.imagens || [];
       
-      // Se tiver novos arquivos, faz upload e junta na lista
       if (arquivosSelecionados.length > 0) {
         const novasUrls = await uploadImagens(arquivosSelecionados);
         urlsFinais = [...urlsFinais, ...novasUrls];
@@ -97,7 +92,7 @@ export default function AdminPanel() {
         titulo: formData.get('titulo'),
         descricao: formData.get('descricao'),
         preco: Number(formData.get('preco')),
-        tipo: formData.get('tipo'),
+        tipo: formData.get('tipo'), // Agora vai pegar o valor correto
         quartos: Number(formData.get('quartos')),
         banheiros: Number(formData.get('banheiros')),
         vagas: Number(formData.get('vagas')),
@@ -116,12 +111,11 @@ export default function AdminPanel() {
         alert("Imóvel cadastrado com sucesso!");
       }
 
-      // Limpa tudo
       setImovelEmEdicao(null); 
       setArquivosSelecionados([]); 
       setPreviewUrls([]);
-      (event.target as HTMLFormElement).reset();
       
+      // Não precisamos resetar o form manualmente pois o 'key' vai cuidar disso ao mudar o estado
       await carregarImoveis(); 
       router.refresh();
 
@@ -173,17 +167,30 @@ export default function AdminPanel() {
                         {imovelEmEdicao && <button onClick={() => { setImovelEmEdicao(null); setPreviewUrls([]); }} className="text-xs text-red-500 hover:text-red-400 uppercase tracking-widest font-bold flex gap-2"><X className="w-4 h-4"/> Cancelar</button>}
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* A MÁGICA ESTÁ AQUI: KEY no Form */}
+                    <form key={imovelEmEdicao ? imovelEmEdicao.id : 'novo'} onSubmit={handleSubmit} className="space-y-6">
+                        
                         <div><label className={labelClass}>Título do Anúncio</label><input name="titulo" defaultValue={imovelEmEdicao?.titulo} required className={inputClass} placeholder="Ex: Penthouse no Jardins" /></div>
                         <div><label className={labelClass}>Descrição Completa</label><textarea name="descricao" defaultValue={imovelEmEdicao?.descricao} required rows={4} className={inputClass} placeholder="Detalhes que encantam..." /></div>
+                        
                         <div className="grid grid-cols-2 gap-4">
                             <div><label className={labelClass}>Cidade</label><input name="cidade" defaultValue={imovelEmEdicao?.cidade} required className={inputClass} /></div>
                             <div><label className={labelClass}>Bairro</label><input name="bairro" defaultValue={imovelEmEdicao?.bairro} required className={inputClass} /></div>
                         </div>
+                        
                         <div className="grid grid-cols-2 gap-4">
                             <div><label className={labelClass}>Preço (R$)</label><input name="preco" defaultValue={imovelEmEdicao?.preco} required type="number" className={inputClass} /></div>
-                            <div><label className={labelClass}>Tipo</label><select name="tipo" defaultValue={imovelEmEdicao?.tipo} className={inputClass}><option value="VENDA">Venda</option><option value="ALUGUEL">Aluguel</option></select></div>
+                            
+                            {/* Select de TIPO - Agora vai atualizar corretamente */}
+                            <div>
+                              <label className={labelClass}>Tipo</label>
+                              <select name="tipo" defaultValue={imovelEmEdicao?.tipo || "VENDA"} className={inputClass}>
+                                <option value="VENDA">Venda</option>
+                                <option value="ALUGUEL">Aluguel</option>
+                              </select>
+                            </div>
                         </div>
+                        
                         <div className="grid grid-cols-4 gap-2">
                             <div><label className={labelClass}>Quartos</label><input name="quartos" defaultValue={imovelEmEdicao?.quartos} required type="number" className={inputClass} /></div>
                             <div><label className={labelClass}>Banheiros</label><input name="banheiros" defaultValue={imovelEmEdicao?.banheiros} required type="number" className={inputClass} /></div>
@@ -191,7 +198,7 @@ export default function AdminPanel() {
                             <div><label className={labelClass}>Área (m²)</label><input name="area" defaultValue={imovelEmEdicao?.area} required type="number" className={inputClass} /></div>
                         </div>
                         
-                        {/* AREA DE UPLOAD E PREVIEW */}
+                        {/* AREA DE FOTOS */}
                         <div>
                             <label className={labelClass}>Fotos</label>
                             
@@ -201,28 +208,22 @@ export default function AdminPanel() {
                                 <span className="text-xs text-slate-500 uppercase tracking-widest font-bold">Adicionar Novas Imagens</span>
                             </div>
 
-                            {/* GRID DE PREVIEW */}
                             <div className="grid grid-cols-4 gap-2">
-                                
-                                {/* Imagens JÁ EXISTENTES (Do Banco) */}
                                 {imovelEmEdicao?.imagens?.map((img, idx) => (
                                     <div key={`old-${idx}`} className="relative h-16 rounded-sm overflow-hidden border border-yellow-600/50 group">
                                         <img src={img} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" />
                                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                                             <button type="button" onClick={() => removerImagemExistente(idx)} className="text-red-500 hover:scale-110 transition"><Trash2 className="w-5 h-5"/></button>
                                         </div>
-                                        <div className="absolute top-0 right-0 bg-yellow-600 text-[8px] text-black px-1 font-bold">SALVA</div>
                                     </div>
                                 ))}
 
-                                {/* Imagens NOVAS (Preview do Upload) */}
                                 {previewUrls.map((url, idx) => (
                                     <div key={`new-${idx}`} className="relative h-16 rounded-sm overflow-hidden border border-green-500/50 group">
                                         <img src={url} className="w-full h-full object-cover" />
                                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                                             <button type="button" onClick={() => removerImagemDoPreview(idx)} className="text-red-500 hover:scale-110 transition"><X className="w-5 h-5"/></button>
                                         </div>
-                                        <div className="absolute top-0 right-0 bg-green-500 text-[8px] text-black px-1 font-bold">NOVA</div>
                                     </div>
                                 ))}
                             </div>
@@ -245,7 +246,10 @@ export default function AdminPanel() {
                             <img src={imovel.imagens ? imovel.imagens[0] : ''} className="w-20 h-20 object-cover bg-slate-900 grayscale group-hover:grayscale-0 transition duration-500" />
                             <div className="flex-1 min-w-0">
                                 <h3 className="font-bold text-white truncate">{imovel.titulo}</h3>
-                                <p className="text-xs text-slate-500 uppercase tracking-wider mt-1">{imovel.cidade}</p>
+                                <div className="flex gap-2 items-center mt-1">
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${imovel.tipo === 'VENDA' ? 'bg-white text-black' : 'bg-yellow-600 text-black'}`}>{imovel.tipo}</span>
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider">{imovel.cidade}</p>
+                                </div>
                                 <p className="text-yellow-600 font-bold mt-2 text-sm">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(imovel.preco)}</p>
                             </div>
                             <div className="flex flex-col gap-2">
