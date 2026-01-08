@@ -15,7 +15,7 @@ export function ImoveisFilter() {
   const [banheiros, setBanheiros] = useState(searchParams.get('banheiros') || '');
   const [vagas, setVagas] = useState(searchParams.get('vagas') || '');
   
-  // Voltamos para números (padrão 0 e 5 milhões)
+  // Padrão 0 e 5 milhões
   const [minPreco, setMinPreco] = useState(Number(searchParams.get('min_preco')) || 0);
   const [maxPreco, setMaxPreco] = useState(Number(searchParams.get('max_preco')) || 5000000);
 
@@ -109,39 +109,41 @@ export function ImoveisFilter() {
           </div>
         </div>
 
-        {/* Faixa de Preço (VOLTOU A SER SLIDER/BOLINHA) */}
+        {/* Faixa de Preço */}
         <div className="space-y-4 pt-4 border-t border-white/5">
+            
+            {/* INPUT MÍNIMO */}
             <div>
-            <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
-                <span>Mínimo</span>
-                <span className="text-yellow-500">{formatMoney(minPreco)}</span>
-            </div>
-            {/* Step reduzido para 1000 para facilitar aluguéis */}
-            <input 
-                type="range" 
-                min="0" 
-                max="2000000" 
-                step="1000" 
-                value={minPreco} 
-                onChange={(e) => setMinPreco(Number(e.target.value))} 
-                className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" 
-            />
+              <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
+                  <span>Mínimo</span>
+                  <span className="text-yellow-500">{formatMoney(minPreco)}</span>
+              </div>
+              <input 
+                  type="range" 
+                  min="0" 
+                  max="2000000" 
+                  step="1000" // <--- AQUI: Pula de 1.000 em 1.000
+                  value={minPreco} 
+                  onChange={(e) => setMinPreco(Number(e.target.value))} 
+                  className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" 
+              />
             </div>
 
+            {/* INPUT MÁXIMO */}
             <div>
-            <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
-                <span>Máximo</span>
-                <span className="text-yellow-500">{maxPreco === 5000000 ? '+ R$ 5 mi' : formatMoney(maxPreco)}</span>
-            </div>
-            <input 
-                type="range" 
-                min="0" 
-                max="5000000" 
-                step="50000" 
-                value={maxPreco} 
-                onChange={(e) => setMaxPreco(Number(e.target.value))} 
-                className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" 
-            />
+              <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
+                  <span>Máximo</span>
+                  <span className="text-yellow-500">{maxPreco === 5000000 ? '+ R$ 5 mi' : formatMoney(maxPreco)}</span>
+              </div>
+              <input 
+                  type="range" 
+                  min="0" 
+                  max="5000000" 
+                  step="50000" // O máximo continua pulando mais rápido (50k)
+                  value={maxPreco} 
+                  onChange={(e) => setMaxPreco(Number(e.target.value))} 
+                  className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" 
+              />
             </div>
         </div>
 
