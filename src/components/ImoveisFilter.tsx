@@ -38,6 +38,9 @@ export function ImoveisFilter() {
     router.push(`/imoveis?${params.toString()}`);
   };
 
+  // Classe padrão para os selects ficarem iguais
+  const selectClass = "w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300 text-center font-bold";
+
   return (
     <div className="bg-slate-900 border border-white/10 p-6 rounded-sm sticky top-32">
       <div className="flex items-center gap-2 mb-6 text-yellow-500">
@@ -69,7 +72,7 @@ export function ImoveisFilter() {
         </div>
 
         {/* Faixa de Preço */}
-        <div className="space-y-4 pt-2 border-t border-white/5">
+        <div className="space-y-4 pt-4 border-t border-white/5">
             <div>
             <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
                 <span>Mínimo</span>
@@ -87,38 +90,44 @@ export function ImoveisFilter() {
             </div>
         </div>
 
-        {/* Características */}
-        <div className="pt-2 border-t border-white/5 space-y-4">
-            <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Quartos</label>
-                <select value={quartos} onChange={(e) => setQuartos(e.target.value)} className="w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300">
-                    <option value="">Indiferente</option>
-                    <option value="1">1+ Quarto</option>
-                    <option value="2">2+ Quartos</option>
-                    <option value="3">3+ Quartos</option>
-                    <option value="4">4+ Quartos</option>
-                </select>
-            </div>
+        {/* Características (Agora só números) */}
+        <div className="pt-4 border-t border-white/5 space-y-4">
+            
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2 text-center">Quartos</label>
+                    <select value={quartos} onChange={(e) => setQuartos(e.target.value)} className={selectClass}>
+                        <option value="">Todos</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
 
-            <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Banheiros</label>
-                <select value={banheiros} onChange={(e) => setBanheiros(e.target.value)} className="w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300">
-                    <option value="">Indiferente</option>
-                    <option value="1">1+ Banheiro</option>
-                    <option value="2">2+ Banheiros</option>
-                    <option value="3">3+ Banheiros</option>
-                    <option value="4">4+ Banheiros</option>
-                </select>
+                <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2 text-center">Banheiros</label>
+                    <select value={banheiros} onChange={(e) => setBanheiros(e.target.value)} className={selectClass}>
+                        <option value="">Todos</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
             </div>
 
             <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas de Garagem</label>
-                <select value={vagas} onChange={(e) => setVagas(e.target.value)} className="w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300">
-                    <option value="">Indiferente</option>
-                    <option value="1">1+ Vaga</option>
-                    <option value="2">2+ Vagas</option>
-                    <option value="3">3+ Vagas</option>
-                    <option value="4">4+ Vagas</option>
+                <select value={vagas} onChange={(e) => setVagas(e.target.value)} className={selectClass}>
+                    <option value="">Qualquer quantidade</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
                 </select>
             </div>
         </div>
