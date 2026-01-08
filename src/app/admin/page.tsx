@@ -13,7 +13,6 @@ type Imovel = {
   preco: number;
   cidade: string;
   bairro: string;
-  estado: string;
   quartos: number;
   banheiros: number;
   vagas: number;
@@ -293,7 +292,7 @@ export default function AdminPage() {
                       <div className="grid grid-cols-3 gap-4">
                          <div><label className="label-admin">Cidade</label><input required type="text" value={form.cidade || ''} onChange={e => setForm({...form, cidade: e.target.value})} className="input-admin" /></div>
                          <div><label className="label-admin">Bairro</label><input type="text" value={form.bairro || ''} onChange={e => setForm({...form, bairro: e.target.value})} className="input-admin" /></div>
-                         <div><label className="label-admin">Estado</label><input required type="text" value={form.estado || ''} onChange={e => setForm({...form, estado: e.target.value})} className="input-admin" maxLength={2} /></div>
+                         
                       </div>
                    </div>
 

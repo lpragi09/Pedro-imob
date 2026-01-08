@@ -2,10 +2,8 @@ import { supabase } from '@/lib/supabase';
 import { MapPin, Bed, Ruler, ArrowLeft, MessageCircle, Bath, Car, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-// Certifique-se que este componente existe na sua pasta components
 import { ImageGallery } from '@/components/ImageGallery';
 
-// Força o Next.js a sempre buscar dados novos
 export const revalidate = 0;
 
 async function getImovel(id: string) {
@@ -24,7 +22,6 @@ export default async function DetalhesImovel({ params }: Props) {
   const { id } = await params;
   const imovel = await getImovel(id);
 
-  // Se não encontrar o imóvel, mostra a página 404 padrão
   if (!imovel) return notFound();
 
   const textoWhatsApp = encodeURIComponent(`Olá! Vi o imóvel "${imovel.titulo}" no site Terras Rurais e quero mais detalhes.`);
@@ -33,22 +30,17 @@ export default async function DetalhesImovel({ params }: Props) {
   return (
     <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans flex flex-col selection:bg-terras-laranja selection:text-white">
       
-      {/* Barra de Navegação Superior (Estilo Terras Rurais) */}
-      <div className="bg-terras-marrom w-full py-4 shadow-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <Link href="/imoveis" className="inline-flex items-center gap-2 text-terras-bege/80 hover:text-terras-laranja transition uppercase tracking-widest text-[10px] font-bold">
-            <ArrowLeft className="w-4 h-4" /> Voltar ao acervo
-          </Link>
-          <div className="text-terras-bege font-serif font-bold text-lg">
-            <span className="text-terras-amarelo">Terras</span>Rurais
-          </div>
-        </div>
+      {/* Botão Voltar (Agora sem a barra marrom e sem a logo à direita) */}
+      <div className="max-w-7xl mx-auto px-6 pt-10 pb-6 w-full">
+        <Link href="/imoveis" className="inline-flex items-center gap-2 text-terras-marrom/60 hover:text-terras-laranja transition uppercase tracking-widest text-[10px] font-bold">
+          <ArrowLeft className="w-4 h-4" /> Voltar ao acervo
+        </Link>
       </div>
 
       {/* Conteúdo Principal */}
-      <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 flex-1 w-full py-12 md:py-20">
+      <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 flex-1 w-full pb-20">
         
-        {/* Galeria Responsiva (Código que você gostava) */}
+        {/* Galeria Responsiva */}
         <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
           <ImageGallery imagens={imovel.imagens} />
         </div>
@@ -115,7 +107,7 @@ export default async function DetalhesImovel({ params }: Props) {
       </main>
 
       {/* Footer (Terras Rurais) */}
-      <footer className="bg-terras-marrom text-terras-bege py-20 border-t border-white/10">
+      <footer className="bg-terras-marrom text-terras-bege py-20 border-t border-white/10 mt-auto">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
           <div className="col-span-1 md:col-span-2 space-y-6">
             <h3 className="text-2xl font-serif font-bold">
