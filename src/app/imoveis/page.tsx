@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { MapPin, Bed, Ruler, ArrowRight, Image as ImageIcon } from 'lucide-react';
+import { MapPin, Bed, Ruler, ArrowRight, Image as ImageIcon, Bath, Car } from 'lucide-react';
 import { ImoveisFilter } from '@/components/ImoveisFilter';
 
 export const revalidate = 0;
@@ -23,7 +23,13 @@ export default async function PaginaImoveis({
     query = query.or(`titulo.ilike.%${params.busca}%,cidade.ilike.%${params.busca}%,bairro.ilike.%${params.busca}%`);
   }
   if (params.tipo) query = query.eq('tipo', params.tipo);
+  
+  // Filtros Numéricos (Maior ou igual)
   if (params.quartos) query = query.gte('quartos', params.quartos);
+  if (params.banheiros) query = query.gte('banheiros', params.banheiros);
+  if (params.vagas) query = query.gte('vagas', params.vagas);
+  
+  // Filtro de Preço
   if (params.min_preco) query = query.gte('preco', params.min_preco);
   if (params.max_preco) query = query.lte('preco', params.max_preco);
 
@@ -46,7 +52,7 @@ export default async function PaginaImoveis({
 
         <div className="grid lg:grid-cols-4 gap-8">
           
-          {/* BARRA LATERAL COM FILTROS */}
+          {/* BARRA LATERAL COM NOVOS FILTROS */}
           <aside className="lg:col-span-1">
             <ImoveisFilter />
           </aside>
@@ -86,19 +92,23 @@ export default async function PaginaImoveis({
                   
                   <div className="p-6">
                     <div className="mb-4">
-                       <h3 className="text-xl font-serif text-white group-hover:text-yellow-500 transition line-clamp-1">{imovel.titulo}</h3>
+                       {/* FONTE ALTERADA: Removido font-serif, agora é font-bold padrão */}
+                       <h3 className="text-xl font-bold text-white group-hover:text-yellow-500 transition line-clamp-1">{imovel.titulo}</h3>
                        <p className="text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1 mt-1">
                          <MapPin className="w-3 h-3" /> {imovel.bairro || imovel.cidade}
                        </p>
                     </div>
 
-                    <div className="flex gap-4 text-xs text-slate-400 border-y border-white/5 py-3 mb-4">
+                    <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-slate-400 border-y border-white/5 py-3 mb-4">
                        <span className="flex items-center gap-1"><Bed className="w-4 h-4 text-slate-600"/> {imovel.quartos} Quartos</span>
+                       <span className="flex items-center gap-1"><Bath className="w-4 h-4 text-slate-600"/> {imovel.banheiros} Banheiros</span>
+                       <span className="flex items-center gap-1"><Car className="w-4 h-4 text-slate-600"/> {imovel.vagas} Vagas</span>
                        <span className="flex items-center gap-1"><Ruler className="w-4 h-4 text-slate-600"/> {imovel.area}m²</span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl font-serif text-yellow-500">
+                      {/* FONTE ALTERADA: Removido font-serif, agora é font-bold padrão */}
+                      <span className="text-2xl font-bold text-yellow-500">
                         {formatarPreco(imovel.preco)}
                       </span>
                       <ArrowRight className="text-slate-600 w-5 h-5 group-hover:text-white group-hover:translate-x-1 transition" />

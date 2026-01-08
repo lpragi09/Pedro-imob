@@ -8,11 +8,12 @@ export function ImoveisFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Pegamos os valores iniciais da URL
+  // Estados dos filtros
   const [tipo, setTipo] = useState(searchParams.get('tipo') || '');
   const [quartos, setQuartos] = useState(searchParams.get('quartos') || '');
+  const [banheiros, setBanheiros] = useState(searchParams.get('banheiros') || '');
+  const [vagas, setVagas] = useState(searchParams.get('vagas') || '');
   
-  // Slider de Preço
   const [minPreco, setMinPreco] = useState(Number(searchParams.get('min_preco')) || 0);
   const [maxPreco, setMaxPreco] = useState(Number(searchParams.get('max_preco')) || 5000000);
 
@@ -25,6 +26,8 @@ export function ImoveisFilter() {
 
     if (tipo) params.set('tipo', tipo); else params.delete('tipo');
     if (quartos) params.set('quartos', quartos); else params.delete('quartos');
+    if (banheiros) params.set('banheiros', banheiros); else params.delete('banheiros');
+    if (vagas) params.set('vagas', vagas); else params.delete('vagas');
     
     if (minPreco > 0) params.set('min_preco', minPreco.toString()); 
     else params.delete('min_preco');
@@ -42,11 +45,11 @@ export function ImoveisFilter() {
         <span className="font-bold uppercase tracking-widest text-xs">Filtrar Busca</span>
       </div>
 
-      <form onSubmit={aplicarFiltros} className="space-y-8">
+      <form onSubmit={aplicarFiltros} className="space-y-6">
         
         {/* Tipo */}
         <div>
-          <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Tipo</label>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Tipo de Contrato</label>
           <div className="flex gap-2">
             {['VENDA', 'ALUGUEL'].map((t) => (
               <button
@@ -65,65 +68,67 @@ export function ImoveisFilter() {
           </div>
         </div>
 
-        {/* Slider Mínimo */}
-        <div>
-           <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
-              <span>Mínimo</span>
-              <span className="text-yellow-500">{formatMoney(minPreco)}</span>
-           </div>
-           <input 
-             type="range" 
-             min="0" 
-             max="2000000" 
-             step="50000" 
-             value={minPreco}
-             onChange={(e) => setMinPreco(Number(e.target.value))}
-             className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
-           />
+        {/* Faixa de Preço */}
+        <div className="space-y-4 pt-2 border-t border-white/5">
+            <div>
+            <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
+                <span>Mínimo</span>
+                <span className="text-yellow-500">{formatMoney(minPreco)}</span>
+            </div>
+            <input type="range" min="0" max="2000000" step="50000" value={minPreco} onChange={(e) => setMinPreco(Number(e.target.value))} className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" />
+            </div>
+
+            <div>
+            <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
+                <span>Máximo</span>
+                <span className="text-yellow-500">{maxPreco === 5000000 ? '+ R$ 5 mi' : formatMoney(maxPreco)}</span>
+            </div>
+            <input type="range" min="0" max="5000000" step="100000" value={maxPreco} onChange={(e) => setMaxPreco(Number(e.target.value))} className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500" />
+            </div>
         </div>
 
-        {/* Slider Máximo */}
-        <div>
-           <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase">
-              <span>Máximo</span>
-              <span className="text-yellow-500">{maxPreco === 5000000 ? '+ R$ 5 mi' : formatMoney(maxPreco)}</span>
-           </div>
-           <input 
-             type="range" 
-             min="0" 
-             max="5000000" 
-             step="100000" 
-             value={maxPreco}
-             onChange={(e) => setMaxPreco(Number(e.target.value))}
-             className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
-           />
+        {/* Características */}
+        <div className="pt-2 border-t border-white/5 space-y-4">
+            <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Quartos</label>
+                <select value={quartos} onChange={(e) => setQuartos(e.target.value)} className="w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300">
+                    <option value="">Indiferente</option>
+                    <option value="1">1+ Quarto</option>
+                    <option value="2">2+ Quartos</option>
+                    <option value="3">3+ Quartos</option>
+                    <option value="4">4+ Quartos</option>
+                </select>
+            </div>
+
+            <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Banheiros</label>
+                <select value={banheiros} onChange={(e) => setBanheiros(e.target.value)} className="w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300">
+                    <option value="">Indiferente</option>
+                    <option value="1">1+ Banheiro</option>
+                    <option value="2">2+ Banheiros</option>
+                    <option value="3">3+ Banheiros</option>
+                    <option value="4">4+ Banheiros</option>
+                </select>
+            </div>
+
+            <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Vagas de Garagem</label>
+                <select value={vagas} onChange={(e) => setVagas(e.target.value)} className="w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300">
+                    <option value="">Indiferente</option>
+                    <option value="1">1+ Vaga</option>
+                    <option value="2">2+ Vagas</option>
+                    <option value="3">3+ Vagas</option>
+                    <option value="4">4+ Vagas</option>
+                </select>
+            </div>
         </div>
 
-        {/* Quartos */}
-        <div>
-          <label className="block text-xs font-bold text-slate-500 uppercase mb-3">Quartos</label>
-          <select 
-            value={quartos} 
-            onChange={(e) => setQuartos(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 transition text-slate-300"
-          >
-            <option value="">Qualquer quantidade</option>
-            <option value="2">2+ Quartos</option>
-            <option value="3">3+ Quartos</option>
-            <option value="4">4+ Quartos</option>
-          </select>
-        </div>
-
-        <button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold uppercase tracking-widest text-xs py-3 rounded-sm transition shadow-lg shadow-yellow-900/20">
+        <button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-bold uppercase tracking-widest text-xs py-3 rounded-sm transition shadow-lg shadow-yellow-900/20 mt-4">
           Aplicar Filtros
         </button>
         
-        {(tipo || quartos || minPreco > 0 || maxPreco < 5000000) && (
-          <button 
-            type="button"
-            onClick={() => router.push('/imoveis')}
-            className="flex items-center justify-center gap-2 w-full border border-slate-700 hover:bg-slate-800 text-slate-400 text-xs py-3 rounded-sm transition"
-          >
+        {(tipo || quartos || banheiros || vagas || minPreco > 0 || maxPreco < 5000000) && (
+          <button type="button" onClick={() => router.push('/imoveis')} className="flex items-center justify-center gap-2 w-full border border-slate-700 hover:bg-slate-800 text-slate-400 text-xs py-3 rounded-sm transition">
             <X className="w-3 h-3" /> Limpar Filtros
           </button>
         )}
