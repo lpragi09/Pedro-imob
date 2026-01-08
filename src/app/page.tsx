@@ -136,7 +136,7 @@ export default async function HomeImobiliaria({
         </div>
 
         {/* PAGINAÇÃO (Os estilos serão atualizados no componente) */}
-        <Pagination paginaAtual={paginaAtual} totalPaginas={totalPaginas} />
+        <Pagination paginaAtual={paginaAtual} totalPaginas={totalPaginas} caminho="/" />
 
       </main>
 
