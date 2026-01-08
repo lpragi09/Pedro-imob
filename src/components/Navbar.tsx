@@ -54,49 +54,52 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* MENU MOBILE (MODIFICADO PARA NÃO COBRIR TUDO) */}
+      {/* MENU MOBILE (HORIZONTAL - METADE DA TELA) */}
       {menuAberto && (
         <>
-          {/* Overlay escuro ao fundo para dar foco ao menu */}
+          {/* Overlay escuro para o restante da tela */}
           <div 
-            className="fixed inset-0 bg-black/40 md:hidden z-40" 
+            className="fixed inset-0 bg-black/60 md:hidden z-40" 
             onClick={() => setMenuAberto(false)}
           />
           
-          {/* O Menu em si - agora como um painel lateral */}
-          <div className="fixed top-0 right-0 h-full w-[280px] bg-[#3a281d] z-50 p-8 flex flex-col gap-6 shadow-2xl animate-in slide-in-from-right duration-300">
-            <div className="flex justify-end mb-4">
-                <button onClick={() => setMenuAberto(false)}><X size={28} className="text-terras-bege/50" /></button>
+          {/* Painel que desce do topo e ocupa 50% da altura (Horizontal) */}
+          <div className="fixed top-0 left-0 w-full h-[50vh] bg-[#3a281d] z-50 p-6 flex flex-col shadow-2xl animate-in slide-in-from-top duration-300">
+            <div className="flex justify-between items-center mb-8">
+                <div className="text-xl font-serif font-bold italic">Menu</div>
+                <button onClick={() => setMenuAberto(false)}><X size={32} className="text-terras-bege/70" /></button>
             </div>
             
-            <Link 
-              href="/" 
-              onClick={() => setMenuAberto(false)} 
-              className="text-terras-bege text-lg font-bold uppercase tracking-widest hover:text-terras-laranja transition"
-            >
-              Início
-            </Link>
-            <Link 
-              href="/#imoveis" 
-              onClick={() => setMenuAberto(false)} 
-              className="text-terras-bege text-lg font-bold uppercase tracking-widest hover:text-terras-laranja transition"
-            >
-              Propriedades
-            </Link>
-            <Link 
-              href="/#sobre" 
-              onClick={() => setMenuAberto(false)} 
-              className="text-terras-bege text-lg font-bold uppercase tracking-widest hover:text-terras-laranja transition"
-            >
-              Quem Somos
-            </Link>
-            <Link 
-              href="/#contato" 
-              onClick={() => setMenuAberto(false)} 
-              className="text-terras-bege text-lg font-bold uppercase tracking-widest hover:text-terras-laranja transition"
-            >
-              Contato
-            </Link>
+            <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                <Link 
+                  href="/" 
+                  onClick={() => setMenuAberto(false)} 
+                  className="text-terras-bege text-sm font-bold uppercase tracking-widest hover:text-terras-laranja border-l-2 border-terras-laranja/30 pl-3"
+                >
+                  Início
+                </Link>
+                <Link 
+                  href="/#imoveis" 
+                  onClick={() => setMenuAberto(false)} 
+                  className="text-terras-bege text-sm font-bold uppercase tracking-widest hover:text-terras-laranja border-l-2 border-terras-laranja/30 pl-3"
+                >
+                  Propriedades
+                </Link>
+                <Link 
+                  href="/#sobre" 
+                  onClick={() => setMenuAberto(false)} 
+                  className="text-terras-bege text-sm font-bold uppercase tracking-widest hover:text-terras-laranja border-l-2 border-terras-laranja/30 pl-3"
+                >
+                  Quem Somos
+                </Link>
+                <Link 
+                  href="/#contato" 
+                  onClick={() => setMenuAberto(false)} 
+                  className="text-terras-bege text-sm font-bold uppercase tracking-widest hover:text-terras-laranja border-l-2 border-terras-laranja/30 pl-3"
+                >
+                  Contato
+                </Link>
+            </div>
             
             <a 
               href="https://wa.me/5511999999999" 
