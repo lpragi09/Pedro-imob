@@ -1,100 +1,95 @@
 import Link from 'next/link';
-import { Search, MapPin, Key, Instagram, Facebook, Mail, Phone, Image as ImageIcon } from 'lucide-react';
+import { Search, MapPin, ArrowRight, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 export const revalidate = 0;
 
 const formatarPreco = (valor: number) => {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(valor);
 }
 
 export default async function HomeImobiliaria() {
-  const { data: imoveis } = await supabase
-    .from('imoveis')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const { data: imoveis } = await supabase.from('imoveis').select('*').order('created_at', { ascending: false });
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-slate-950 text-slate-200">
       
-      {/* HERO SECTION */}
-      <div id="topo" className="relative bg-slate-900 py-20 px-4">
-        <div className="absolute inset-0 overflow-hidden">
-           <div className="absolute inset-0 bg-gradient-to-r from-slate-900 to-slate-900/80 z-10"></div>
-           <img src="https://images.unsplash.com/photo-1600596542815-e32870110274?auto=format&fit=crop&q=80" className="w-full h-full object-cover opacity-50" alt="Casa moderna" />
-        </div>
+      {/* HERO SECTION - Fundo Fixo (Parallax Simples) */}
+      <div id="topo" className="relative h-screen w-full flex items-center justify-center bg-fixed bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop")' }}>
+        {/* Camada Escura */}
+        <div className="absolute inset-0 bg-black/50 z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/0 via-slate-950/20 to-slate-950 z-0"></div>
 
-        <div className="relative z-20 max-w-4xl mx-auto text-center space-y-6">
-          <h1 className="text-4xl md:text-6xl font-black text-white leading-tight">
-            Encontre o lugar que você <br/>sempre sonhou.
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-6">
+          <span className="text-yellow-500 font-bold tracking-[0.4em] uppercase text-xs md:text-sm animate-pulse">Exclusive Real Estate</span>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl text-white font-serif leading-tight drop-shadow-2xl">
+            A arte de <br/><span className="italic font-light text-slate-300">viver bem.</span>
           </h1>
-          <p className="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto">
-            Especialistas em realizar sonhos e encontrar o lar perfeito para sua família.
-          </p>
-          <div className="bg-white p-2 rounded-2xl shadow-2xl shadow-black/20 max-w-3xl mx-auto flex flex-col md:flex-row gap-2 mt-8">
-            <div className="flex-1 flex items-center px-4 bg-slate-100 rounded-xl">
-              <MapPin className="text-slate-400 w-5 h-5 mr-3" />
-              <input type="text" placeholder="Qual cidade ou bairro?" className="bg-transparent w-full py-4 outline-none text-slate-700 font-medium placeholder:text-slate-400" />
-            </div>
-            <button className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition">
-              <Search className="w-5 h-5" /> Buscar
-            </button>
+          
+          {/* Busca Estilizada */}
+          <div className="mt-12 max-w-md mx-auto relative group">
+             <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+             <div className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-full p-2 flex items-center">
+                <MapPin className="text-slate-400 w-5 h-5 ml-4" />
+                <input type="text" placeholder="Localização..." className="bg-transparent w-full px-4 py-2 outline-none text-white placeholder:text-slate-400 font-light" />
+                <button className="bg-white text-black hover:bg-yellow-400 hover:text-black rounded-full p-3 transition-colors duration-300">
+                   <ArrowRight className="w-5 h-5"/>
+                </button>
+             </div>
           </div>
         </div>
       </div>
 
       {/* SEÇÃO IMÓVEIS */}
-      <main id="imoveis" className="max-w-7xl mx-auto px-4 py-20">
-        <div className="flex justify-between items-end mb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-slate-900">Nossos Imóveis</h2>
-            <p className="text-slate-500 mt-2">Confira as novidades que acabaram de chegar</p>
+      <main id="imoveis" className="max-w-7xl mx-auto px-6 py-32 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div className="space-y-2">
+            <span className="text-yellow-500 uppercase tracking-widest text-xs font-bold block">Curadoria</span>
+            <h2 className="text-4xl md:text-5xl text-white font-serif">Acervo Selecionado</h2>
           </div>
+          <Link href="/imoveis" className="text-slate-400 hover:text-white transition text-sm uppercase tracking-widest border-b border-transparent hover:border-yellow-500 pb-1">
+            Ver Coleção Completa
+          </Link>
         </div>
 
+        {/* GRID DE CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {(!imoveis || imoveis.length === 0) && (
-            <div className="col-span-3 text-center py-10">
-              <p className="text-slate-500 text-lg">Nenhum imóvel encontrado no momento.</p>
-              <p className="text-sm text-slate-400">Acesse o painel /admin para cadastrar.</p>
-            </div>
+             <p className="text-slate-500 col-span-3 text-center py-20 font-light italic">Nenhuma propriedade disponível no momento.</p>
           )}
 
           {imoveis?.map((imovel) => (
             <Link 
               href={`/imoveis/${imovel.id}`} 
               key={imovel.id} 
-              className="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 cursor-pointer block"
+              className="glass-card group relative block h-[500px] w-full overflow-hidden rounded-sm cursor-pointer"
             >
-              <div className="h-64 overflow-hidden relative bg-slate-200">
-                <span className={`absolute top-4 left-4 text-white text-xs font-bold px-3 py-1 rounded-full z-10 ${imovel.tipo === 'VENDA' ? 'bg-green-500' : 'bg-blue-500'}`}>
+              {/* Imagem com Zoom */}
+              <div className="absolute inset-0 overflow-hidden">
+                 {imovel.imagens && imovel.imagens.length > 0 ? (
+                  <img src={imovel.imagens[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={imovel.titulo} />
+                ) : (
+                  <div className="w-full h-full bg-slate-900 flex items-center justify-center text-slate-700"><ImageIcon size={48} /></div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-500"></div>
+              </div>
+
+              {/* Informações */}
+              <div className="absolute bottom-0 left-0 w-full p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-white/10 text-white backdrop-blur-md mb-3 inline-block border border-white/10`}>
                   {imovel.tipo}
                 </span>
+                <h3 className="text-2xl text-white mb-2 font-serif group-hover:text-yellow-400 transition-colors">
+                  {imovel.titulo}
+                </h3>
+                <p className="text-slate-400 font-light text-sm mb-4 line-clamp-1">{imovel.cidade} {imovel.bairro && `• ${imovel.bairro}`}</p>
                 
-                {imovel.imagens && imovel.imagens.length > 0 ? (
-                  <img 
-                    src={imovel.imagens[0]} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition duration-700" 
-                    alt={imovel.titulo} 
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-400">
-                    <ImageIcon className="w-10 h-10" />
-                  </div>
-                )}
-              </div>
-              
-              <div className="p-6">
-                <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-sm text-slate-500 font-medium line-clamp-1">{imovel.cidade}</span>
-                  <span className="text-blue-600 font-black text-xl shrink-0 ml-2">
-                    {formatarPreco(imovel.preco)}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-800 mb-4 line-clamp-1">{imovel.titulo}</h3>
-                <div className="flex gap-4 text-slate-500 text-sm border-t border-slate-100 pt-4">
-                  <span className="flex items-center gap-1"><Key className="w-4 h-4"/> {imovel.quartos} Quartos</span>
-                  <span className="flex items-center gap-1"><MapPin className="w-4 h-4"/> {imovel.area}m²</span>
+                <div className="flex justify-between items-center border-t border-white/10 pt-4 opacity-70 group-hover:opacity-100 transition-opacity delay-100">
+                   <div className="flex gap-4 text-xs text-slate-300 uppercase tracking-wider">
+                      <span>{imovel.quartos} Quartos</span>
+                      <span>{imovel.area} m²</span>
+                   </div>
+                   <span className="text-xl font-serif text-white">{formatarPreco(imovel.preco)}</span>
                 </div>
               </div>
             </Link>
@@ -103,57 +98,63 @@ export default async function HomeImobiliaria() {
       </main>
 
       {/* SEÇÃO SOBRE */}
-      <section id="sobre" className="bg-slate-100 py-20">
-        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-slate-900">Sobre a ImobPrime</h2>
-            <p className="text-slate-600 leading-relaxed">
-              Somos uma imobiliária dedicada a transformar a busca pelo imóvel ideal em uma experiência simples e segura.
+      <section id="sobre" className="py-32 bg-slate-900 relative border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
+          <div className="space-y-8">
+            <span className="text-yellow-500 uppercase tracking-widest text-xs font-bold">Nossa Essência</span>
+            <h2 className="text-4xl md:text-5xl text-white font-serif leading-tight">
+              Mais do que morar,<br/> uma experiência.
+            </h2>
+            <p className="text-slate-400 text-lg font-light leading-relaxed">
+              Redefinimos o conceito de alto padrão. Não vendemos apenas metros quadrados; fazemos a curadoria de cenários onde os melhores momentos da sua vida vão acontecer.
             </p>
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              <div className="bg-white p-4 rounded-xl border border-slate-200">
-                <h4 className="text-2xl font-black text-blue-600">+500</h4>
-                <p className="text-sm text-slate-500">Famílias Felizes</p>
+            <div className="grid grid-cols-2 gap-8 pt-4">
+              <div>
+                <h4 className="text-4xl font-serif text-white mb-1">10+</h4>
+                <p className="text-xs text-slate-500 uppercase tracking-widest">Anos de Mercado</p>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-slate-200">
-                <h4 className="text-2xl font-black text-blue-600">10 Anos</h4>
-                <p className="text-sm text-slate-500">De História</p>
+              <div>
+                <h4 className="text-4xl font-serif text-white mb-1">R$ 500mi</h4>
+                <p className="text-xs text-slate-500 uppercase tracking-widest">Em Vendas</p>
               </div>
             </div>
           </div>
-          <div className="h-80 rounded-2xl overflow-hidden shadow-xl">
-            <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80" className="w-full h-full object-cover" alt="Escritório" />
+          <div className="relative h-[600px] w-full">
+            <img 
+              src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2671&auto=format&fit=crop" 
+              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" 
+              alt="Interior de Luxo" 
+            />
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer id="contato" className="bg-slate-900 text-slate-300 py-16">
-        <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-12">
-          <div className="space-y-4">
-            <h3 className="text-white text-xl font-bold">ImobPrime</h3>
-            <p className="text-sm leading-relaxed max-w-xs">
-              Seu parceiro de confiança para compra, venda e aluguel.
+      <footer id="contato" className="bg-black text-white py-20 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
+          <div className="col-span-1 md:col-span-2 space-y-6">
+            <h3 className="text-2xl font-serif">Imob<span className="text-yellow-600">Prime</span></h3>
+            <p className="text-slate-500 max-w-sm">
+              Sede Global<br/>
+              Av. Brigadeiro Faria Lima, 9999<br/>
+              São Paulo - SP
             </p>
           </div>
           <div className="space-y-4">
-            <h3 className="text-white text-lg font-bold">Contatos</h3>
-            <div className="flex flex-col gap-3 text-sm">
-              <a href="#" className="flex items-center gap-2 hover:text-blue-400 transition"><Phone className="w-4 h-4"/> (11) 99999-9999</a>
-              <a href="#" className="flex items-center gap-2 hover:text-blue-400 transition"><Mail className="w-4 h-4"/> contato@imobprime.com.br</a>
-              <a href="#" className="flex items-center gap-2 hover:text-blue-400 transition"><MapPin className="w-4 h-4"/> Av. Paulista, 1000 - SP</a>
-            </div>
+            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Contato</h4>
+            <p className="text-slate-300">(11) 99999-9999</p>
+            <p className="text-slate-300">contato@imobprime.com</p>
           </div>
           <div className="space-y-4">
-            <h3 className="text-white text-lg font-bold">Redes Sociais</h3>
-            <div className="flex gap-4">
-              <a href="#" className="bg-slate-800 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition"><Instagram className="w-5 h-5"/></a>
-              <a href="#" className="bg-slate-800 p-3 rounded-lg hover:bg-blue-600 hover:text-white transition"><Facebook className="w-5 h-5"/></a>
+            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Social</h4>
+            <div className="flex gap-4 text-slate-300">
+              <a href="#" className="hover:text-yellow-500 transition">Instagram</a>
+              <a href="#" className="hover:text-yellow-500 transition">LinkedIn</a>
             </div>
           </div>
         </div>
-        <div className="border-t border-slate-800 mt-12 pt-8 text-center text-xs text-slate-500">
-          © 2026 ImobPrime. Todos os direitos reservados.
+        <div className="text-center mt-20 text-xs text-slate-800 uppercase tracking-widest">
+          © 2026 ImobPrime Real Estate.
         </div>
       </footer>
     </div>

@@ -2,17 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Configuração Segura das Fontes */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-serif: var(--font-playfair), serif;
+  --font-sans: var(--font-inter), sans-serif;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Utilitários de Design (Vidro e Sombras) */
+@layer components {
+  .glass-nav {
+    @apply bg-slate-950/80 backdrop-blur-md border-b border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-sm border border-white/10 hover:border-yellow-500/50 transition-all duration-500;
+  }
 }
