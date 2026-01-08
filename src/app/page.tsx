@@ -33,7 +33,6 @@ export default async function HomeImobiliaria() {
              <form action="/imoveis" className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-2 flex items-center shadow-2xl">
                 <MapPin className="text-slate-300 w-5 h-5 ml-4" />
                 
-                {/* O input agora tem name="busca" para passar na URL */}
                 <input 
                   name="busca" 
                   type="text" 
@@ -41,7 +40,8 @@ export default async function HomeImobiliaria() {
                   className="bg-transparent w-full px-4 py-3 outline-none text-white placeholder:text-slate-400 font-sans text-base" 
                 />
                 
-                <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition duration-300 flex items-center gap-2">
+                {/* BOTÃO MUDADO PARA DOURADO */}
+                <button type="submit" className="bg-yellow-600 hover:bg-yellow-500 text-black px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition duration-300 flex items-center gap-2 shadow-lg shadow-yellow-900/20">
                    <Search className="w-4 h-4"/> Buscar
                 </button>
              </form>
@@ -61,7 +61,7 @@ export default async function HomeImobiliaria() {
           </Link>
         </div>
 
-        {/* GRID DE CARDS (Design Novo, Conteudo Antigo) */}
+        {/* GRID DE CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {(!imoveis || imoveis.length === 0) && (
              <p className="text-slate-500 col-span-3 text-center py-20 font-light italic">Nenhum imóvel encontrado no momento.</p>
@@ -104,7 +104,7 @@ export default async function HomeImobiliaria() {
         </div>
       </main>
 
-      {/* SEÇÃO SOBRE (Layout Novo, Texto Antigo) */}
+      {/* SEÇÃO SOBRE */}
       <section id="sobre" className="py-32 bg-slate-900 relative border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
           <div className="space-y-8">
@@ -126,16 +126,17 @@ export default async function HomeImobiliaria() {
             </div>
           </div>
           <div className="relative h-[500px] w-full">
+            {/* EFEITO PRETO E BRANCO REMOVIDO: A imagem agora é colorida sempre */}
             <img 
               src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80" 
-              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 rounded-sm" 
+              className="w-full h-full object-cover transition-all duration-1000 rounded-sm" 
               alt="Escritório" 
             />
           </div>
         </div>
       </section>
 
-      {/* FOOTER (Layout Novo, Info Antiga) */}
+      {/* FOOTER */}
       <footer id="contato" className="bg-black text-white py-20 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
           <div className="col-span-1 md:col-span-2 space-y-6">
