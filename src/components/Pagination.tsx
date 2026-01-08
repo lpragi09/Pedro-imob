@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
@@ -11,19 +11,20 @@ interface PaginationProps {
 export function Pagination({ paginaAtual, totalPaginas }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname(); // <--- O SEGREDO: Pega a página atual automaticamente
 
-  // Função que muda a URL mantendo os filtros
   const irParaPagina = (pagina: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', pagina.toString());
-    router.push(`/imoveis?${params.toString()}`);
+    
+    // Agora ele redireciona para a mesma página onde você está (pathname)
+    router.push(`${pathname}?${params.toString()}`, { scroll: false }); 
   };
 
-  if (totalPaginas <= 1) return null; // Não mostra paginação se só tiver 1 página
+  if (totalPaginas <= 1) return null;
 
   return (
     <div className="flex justify-center items-center gap-2 mt-12">
-      {/* Botão Anterior */}
       <button
         disabled={paginaAtual === 1}
         onClick={() => irParaPagina(paginaAtual - 1)}
@@ -32,7 +33,6 @@ export function Pagination({ paginaAtual, totalPaginas }: PaginationProps) {
         <ChevronLeft className="w-5 h-5" />
       </button>
 
-      {/* Números das Páginas */}
       {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((num) => (
         <button
           key={num}
@@ -47,7 +47,6 @@ export function Pagination({ paginaAtual, totalPaginas }: PaginationProps) {
         </button>
       ))}
 
-      {/* Botão Próximo */}
       <button
         disabled={paginaAtual === totalPaginas}
         onClick={() => irParaPagina(paginaAtual + 1)}

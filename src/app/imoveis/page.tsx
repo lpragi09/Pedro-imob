@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { MapPin, Bed, Ruler, ArrowRight, Image as ImageIcon, Bath, Car } from 'lucide-react';
 import { ImoveisFilter } from '@/components/ImoveisFilter';
-import { Pagination } from '@/components/Pagination'; // <--- Importei aqui
+import { Pagination } from '@/components/Pagination'; // <--- Importando a paginação
 
 export const revalidate = 0;
 
@@ -23,14 +23,17 @@ export default async function PaginaImoveis({
   const inicio = (paginaAtual - 1) * ITEMS_POR_PAGINA;
   const fim = inicio + ITEMS_POR_PAGINA - 1;
 
-  // Construção da Query (Adicionamos { count: 'exact' } para saber o total)
+  // Query Base + Contagem Total
   let query = supabase.from('imoveis').select('*', { count: 'exact' }).order('created_at', { ascending: false });
 
-  // --- FILTROS ---
+  // --- APLICAÇÃO DOS FILTROS ---
   if (params.busca) {
     query = query.or(`titulo.ilike.%${params.busca}%,cidade.ilike.%${params.busca}%,bairro.ilike.%${params.busca}%`);
   }
-  if (params.cidade) query = query.ilike('cidade', `%${params.cidade}%`);
+  if (params.cidade) {
+    query = query.ilike('cidade', `%${params.cidade}%`);
+  }
+
   if (params.tipo) query = query.eq('tipo', params.tipo);
 
   // Lógica Exata vs 5+
@@ -47,15 +50,16 @@ export default async function PaginaImoveis({
     else query = query.eq('vagas', params.vagas);
   }
   
+  // Preço
   if (params.min_preco) query = query.gte('preco', params.min_preco);
   if (params.max_preco) query = query.lte('preco', params.max_preco);
 
-  // --- APLICA A PAGINAÇÃO NO BANCO ---
+  // --- LIMITA A PÁGINA ATUAL ---
   query = query.range(inicio, fim);
 
   const { data: imoveis, count } = await query;
-  
-  // Calcula quantas páginas existem no total
+
+  // Cálculos Finais
   const totalImoveis = count || 0;
   const totalPaginas = Math.ceil(totalImoveis / ITEMS_POR_PAGINA);
 
@@ -69,13 +73,15 @@ export default async function PaginaImoveis({
             <span className="text-yellow-500 font-bold uppercase tracking-widest text-xs">Catálogo</span>
             <h1 className="text-3xl md:text-4xl font-serif text-white mt-2">Acervo Exclusivo</h1>
             <p className="text-slate-400 mt-2 font-light text-sm">
-              Mostrando {imoveis?.length} de {totalImoveis} propriedades encontradas
+              Mostrando {imoveis?.length} de {totalImoveis} propriedades encontradas 
+              {params.cidade && ` em "${params.cidade}"`}
             </p>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-4 gap-8">
           
+          {/* BARRA LATERAL */}
           <aside className="lg:col-span-1">
             <ImoveisFilter />
           </aside>
@@ -86,7 +92,7 @@ export default async function PaginaImoveis({
               {(!imoveis || imoveis.length === 0) && (
                 <div className="col-span-2 py-20 text-center border border-dashed border-slate-800 rounded-sm bg-slate-900/50">
                   <p className="text-xl text-slate-500 font-serif">Nenhum imóvel encontrado.</p>
-                  <p className="text-sm text-slate-600 mt-2">Tente ajustar os filtros.</p>
+                  <p className="text-sm text-slate-600 mt-2">Tente ajustar os filtros de preço ou localização.</p>
                 </div>
               )}
 
@@ -139,7 +145,7 @@ export default async function PaginaImoveis({
               ))}
             </div>
 
-            {/* AQUI ESTÁ A PAGINAÇÃO */}
+            {/* BARRA DE PAGINAÇÃO (INTELIGENTE) */}
             <Pagination paginaAtual={paginaAtual} totalPaginas={totalPaginas} />
 
           </div>
