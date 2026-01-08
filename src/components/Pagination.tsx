@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
@@ -11,58 +11,34 @@ interface PaginationProps {
 export function Pagination({ paginaAtual, totalPaginas }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pathname = usePathname();
 
-  const irParaPagina = (pagina: number) => {
+  const mudarPagina = (novaPagina: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('page', pagina.toString());
-    
-    // Atualiza a URL mantendo o scroll parado (para não dar pulos bruscos)
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    
-    // --- EFEITO DE SCROLL SUAVE PARA CIMA ---
-    const secaoImoveis = document.getElementById('imoveis');
-    
-    if (secaoImoveis) {
-      // Se achar a seção 'imoveis' (que existe na Home), rola até ela com um desconto para o cabeçalho
-      const y = secaoImoveis.getBoundingClientRect().top + window.scrollY - 120;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    } else {
-      // Se não achar (estamos na página interna /imoveis), rola para o topo absoluto
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    params.set('page', novaPagina.toString());
+    router.push(`/imoveis?${params.toString()}`);
   };
 
   if (totalPaginas <= 1) return null;
 
   return (
-    <div className="flex justify-center items-center gap-2 mt-12">
+    <div className="flex justify-center items-center gap-4 mt-16">
       <button
+        onClick={() => mudarPagina(paginaAtual - 1)}
         disabled={paginaAtual === 1}
-        onClick={() => irParaPagina(paginaAtual - 1)}
-        className="p-2 rounded-sm bg-slate-900 border border-slate-800 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed hover:border-yellow-600 hover:text-white transition"
+        // Botões com novas cores: borda marrom, texto marrom, hover laranja
+        className="p-3 border border-terras-marrom/20 rounded-full text-terras-marrom hover:bg-terras-laranja hover:text-terras-bege hover:border-terras-laranja disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-terras-marrom disabled:hover:border-terras-marrom/20 transition-all"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
-
-      {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((num) => (
-        <button
-          key={num}
-          onClick={() => irParaPagina(num)}
-          className={`w-10 h-10 rounded-sm font-bold text-sm border transition ${
-            paginaAtual === num
-              ? 'bg-yellow-600 border-yellow-600 text-black'
-              : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600 hover:text-white'
-          }`}
-        >
-          {num}
-        </button>
-      ))}
+      
+      <span className="text-sm font-bold text-terras-marrom font-serif">
+        Página <span className="text-terras-laranja text-base">{paginaAtual}</span> de {totalPaginas}
+      </span>
 
       <button
+        onClick={() => mudarPagina(paginaAtual + 1)}
         disabled={paginaAtual === totalPaginas}
-        onClick={() => irParaPagina(paginaAtual + 1)}
-        className="p-2 rounded-sm bg-slate-900 border border-slate-800 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed hover:border-yellow-600 hover:text-white transition"
+        className="p-3 border border-terras-marrom/20 rounded-full text-terras-marrom hover:bg-terras-laranja hover:text-terras-bege hover:border-terras-laranja disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-terras-marrom disabled:hover:border-terras-marrom/20 transition-all"
       >
         <ChevronRight className="w-5 h-5" />
       </button>

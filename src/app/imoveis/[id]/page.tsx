@@ -1,130 +1,148 @@
 import { supabase } from '@/lib/supabase';
-import { MapPin, Bed, Ruler, ArrowLeft, Phone, Bath, Car, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
-import { ImageGallery } from '@/components/ImageGallery';
+import { MapPin, Bed, Ruler, ArrowLeft, Image as ImageIcon, Bath, Car, Share2, MessageCircle } from 'lucide-react';
+import { notFound } from 'next/navigation';
 
-async function getImovel(id: string) {
-  const { data } = await supabase.from('imoveis').select('*').eq('id', id).single();
-  return data;
+export const revalidate = 0;
+
+const formatarPreco = (valor: number) => {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(valor);
 }
 
-type Props = { params: Promise<{ id: string }> };
-
-export default async function DetalhesImovel({ params }: Props) {
+export default async function PaginaDetalheImovel({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const imovel = await getImovel(id);
+  const { data: imovel } = await supabase.from('imoveis').select('*').eq('id', id).single();
 
-  if (!imovel) return <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">Imóvel não encontrado</div>;
+  if (!imovel) {
+    notFound();
+  }
 
-  const textoWhatsApp = `Olá! Vi o imóvel "${imovel.titulo}" no site e quero mais detalhes.`;
-  const linkWhatsApp = `https://wa.me/5511999999999?text=${encodeURIComponent(textoWhatsApp)}`;
+  const textoWhatsApp = encodeURIComponent(`Olá! Gostaria de mais informações sobre o imóvel "${imovel.titulo}" (Cód. ${imovel.id.slice(0, 8)}) que vi no site Terras Rurais.`);
+  const linkWhatsApp = `https://wa.me/5511999999999?text=${textoWhatsApp}`; // Substitua pelo número real
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex flex-col selection:bg-yellow-500 selection:text-black">
+    // Fundo bege, texto marrom
+    <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans pb-20">
       
-      {/* Botão Voltar */}
-      <div className="max-w-7xl mx-auto px-6 pt-28 pb-6 w-full">
-        <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition uppercase tracking-widest text-xs font-bold">
-          <ArrowLeft className="w-4 h-4" /> Voltar para o acervo
+      {/* Header da Página */}
+      <header className="bg-terras-marrom py-6 px-6 md:px-12 flex items-center justify-between sticky top-0 z-50 shadow-md">
+        <Link href="/imoveis" className="text-terras-bege/80 hover:text-terras-laranja transition flex items-center gap-2 text-sm font-bold uppercase tracking-wider">
+          <ArrowLeft className="w-4 h-4" /> Voltar ao Catálogo
         </Link>
+        <h1 className="text-xl font-serif font-bold text-terras-bege hidden md:block">
+          <span className="text-terras-amarelo">Terras</span>Rurais
+        </h1>
+      </header>
+
+      {/* Galeria de Imagens (Grid Estilo Mosaico) */}
+      <div className="h-[50vh] md:h-[65vh] bg-terras-marrom/5 relative">
+         {imovel.imagens && imovel.imagens.length > 0 ? (
+           <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 h-full gap-1 p-1">
+             {/* Imagem Principal (Grande) */}
+             <div className="md:col-span-2 md:row-span-2 relative rounded-lg overflow-hidden group">
+                <img src={imovel.imagens[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={imovel.titulo} />
+                <div className="absolute inset-0 bg-terras-marrom/10 group-hover:bg-transparent transition-colors"></div>
+             </div>
+             {/* Outras Imagens (Menores) */}
+             {imovel.imagens.slice(1, 5).map((img: string, index: number) => (
+               <div key={index} className="relative rounded-lg overflow-hidden group hidden md:block">
+                  <img src={img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={`${imovel.titulo} - Foto ${index + 2}`} />
+                  <div className="absolute inset-0 bg-terras-marrom/10 group-hover:bg-transparent transition-colors"></div>
+               </div>
+             ))}
+              {imovel.imagens.length < 2 && (
+                 <div className="md:col-span-2 md:row-span-2 bg-terras-marrom/10 flex items-center justify-center text-terras-marrom/30 rounded-lg"><ImageIcon size={64} /></div>
+              )}
+           </div>
+         ) : (
+           <div className="w-full h-full flex items-center justify-center text-terras-marrom/30"><ImageIcon size={100} strokeWidth={1} /></div>
+         )}
+
+         {/* Botão de Compartilhar */}
+         <button className="absolute top-6 right-6 bg-white/90 p-3 rounded-full text-terras-marrom hover:text-terras-laranja shadow-lg transition-transform hover:scale-110 z-20">
+            <Share2 className="w-5 h-5" />
+         </button>
       </div>
 
       {/* Conteúdo Principal */}
-      <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 flex-1 w-full pb-20">
-        
-        {/* Galeria */}
-        <div className="h-[400px] md:h-[600px] bg-slate-900 rounded-sm overflow-hidden border border-white/10 shadow-2xl relative group">
-          <ImageGallery imagens={imovel.imagens} />
-          <div className="absolute inset-0 border border-white/5 pointer-events-none"></div>
-        </div>
-
-        {/* Informações */}
-        <div className="flex flex-col justify-center space-y-8">
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <span className={`inline-block px-4 py-1 text-xs font-bold uppercase tracking-widest text-black ${imovel.tipo === 'VENDA' ? 'bg-white' : 'bg-yellow-500'}`}>
-                {imovel.tipo}
-              </span>
-              <span className="text-slate-400 font-light flex items-center gap-2 text-sm uppercase tracking-wider">
-                <MapPin className="w-4 h-4 text-yellow-600"/> {imovel.bairro}, {imovel.cidade}
-              </span>
+      <main className="max-w-5xl mx-auto px-6 md:px-12 -mt-20 relative z-30">
+        <div className="bg-white rounded-xl p-8 md:p-12 shadow-2xl shadow-terras-marrom/10 border border-terras-marrom/5">
+          
+          <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
+            <div>
+               <span className={`inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4 shadow-sm ${imovel.tipo === 'VENDA' ? 'bg-terras-marrom text-terras-bege' : 'bg-terras-amarelo text-terras-marrom'}`}>
+                  {imovel.tipo === 'VENDA' ? 'À Venda' : 'Para Arrendar'}
+               </span>
+               <h1 className="text-3xl md:text-5xl font-serif font-bold text-terras-marrom mb-3 leading-tight">{imovel.titulo}</h1>
+               <p className="text-lg text-terras-verde-musgo flex items-center gap-2 font-medium">
+                 <MapPin className="w-5 h-5 inline-block" /> {imovel.cidade}, {imovel.estado} {imovel.bairro && `— ${imovel.bairro}`}
+               </p>
             </div>
-            
-            {/* FONTE CORRIGIDA: Negrito Padrão */}
-            <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
-              {imovel.titulo}
-            </h1>
-            <p className="text-lg text-slate-400 font-light leading-relaxed border-l-2 border-yellow-600 pl-6">
-              {imovel.descricao}
-            </p>
-          </div>
-
-          {/* PREÇO CORRIGIDO: Negrito Padrão */}
-          <div className="text-4xl md:text-5xl font-bold text-yellow-500">
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(imovel.preco)}
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-8 border-y border-white/10">
-            <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
-              <Bed className="text-slate-300 w-6 h-6 mb-3"/>
-              {/* NÚMERO CORRIGIDO */}
-              <p className="text-2xl font-bold text-white">{imovel.quartos}</p>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Quartos</p>
-            </div>
-            <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
-              <Bath className="text-slate-300 w-6 h-6 mb-3"/>
-              {/* NÚMERO CORRIGIDO */}
-              <p className="text-2xl font-bold text-white">{imovel.banheiros || 1}</p>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Banheiros</p>
-            </div>
-            <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
-              <Car className="text-slate-300 w-6 h-6 mb-3"/>
-              {/* NÚMERO CORRIGIDO */}
-              <p className="text-2xl font-bold text-white">{imovel.vagas || 0}</p>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Vagas</p>
-            </div>
-            <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
-              <Ruler className="text-slate-300 w-6 h-6 mb-3"/>
-              {/* NÚMERO CORRIGIDO */}
-              <p className="text-2xl font-bold text-white">{imovel.area}</p>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Área (m²)</p>
+            <div className="text-left md:text-right">
+               <p className="text-sm text-terras-marrom/70 uppercase tracking-wider font-bold mb-1">Valor do Investimento</p>
+               <p className="text-4xl md:text-5xl font-serif font-bold text-terras-laranja">{formatarPreco(imovel.preco)}</p>
             </div>
           </div>
 
-          <a href={linkWhatsApp} target="_blank" className="group bg-white hover:bg-yellow-500 text-black px-8 py-5 rounded-sm font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(234,179,8,0.4)]">
-            <Phone className="w-4 h-4" /> Tenho Interesse
-            <ArrowLeft className="w-4 h-4 rotate-180 group-hover:translate-x-1 transition" />
-          </a>
+          {/* Ícones de Características */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-8 border-y border-terras-marrom/10 mb-10">
+             <div className="flex flex-col items-center justify-center p-4 bg-terras-bege/50 rounded-lg border border-terras-marrom/5">
+                <Bed className="w-8 h-8 text-terras-verde-musgo mb-2" strokeWidth={1.5} />
+                <span className="text-2xl font-bold text-terras-marrom">{imovel.quartos}</span>
+                <span className="text-xs text-terras-marrom/70 uppercase tracking-widest">Dormitórios</span>
+             </div>
+             <div className="flex flex-col items-center justify-center p-4 bg-terras-bege/50 rounded-lg border border-terras-marrom/5">
+                <Bath className="w-8 h-8 text-terras-verde-musgo mb-2" strokeWidth={1.5} />
+                <span className="text-2xl font-bold text-terras-marrom">{imovel.banheiros}</span>
+                <span className="text-xs text-terras-marrom/70 uppercase tracking-widest">Banheiros</span>
+             </div>
+             <div className="flex flex-col items-center justify-center p-4 bg-terras-bege/50 rounded-lg border border-terras-marrom/5">
+                <Car className="w-8 h-8 text-terras-verde-musgo mb-2" strokeWidth={1.5} />
+                <span className="text-2xl font-bold text-terras-marrom">{imovel.vagas}</span>
+                <span className="text-xs text-terras-marrom/70 uppercase tracking-widest">Vagas</span>
+             </div>
+             <div className="flex flex-col items-center justify-center p-4 bg-terras-bege/50 rounded-lg border border-terras-marrom/5">
+                <Ruler className="w-8 h-8 text-terras-verde-musgo mb-2" strokeWidth={1.5} />
+                <span className="text-2xl font-bold text-terras-marrom">{imovel.area} <span className="text-sm">m²</span></span>
+                <span className="text-xs text-terras-marrom/70 uppercase tracking-widest">Área Total</span>
+             </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-12">
+             {/* Descrição */}
+             <div className="md:col-span-2 space-y-6">
+                <h2 className="text-2xl font-serif font-bold text-terras-marrom">Sobre a Propriedade</h2>
+                <div className="prose prose-lg prose-p:text-terras-marrom/80 prose-headings:text-terras-marrom prose-headings:font-serif prose-strong:text-terras-marrom max-w-none">
+                   <p className="whitespace-pre-line leading-relaxed">{imovel.descricao}</p>
+                </div>
+             </div>
+
+             {/* Sidebar de Contato */}
+             <div className="space-y-6">
+                <div className="bg-terras-bege p-8 rounded-xl border border-terras-marrom/10 sticky top-32 shadow-lg">
+                   <h3 className="text-xl font-serif font-bold text-terras-marrom mb-2">Interessado?</h3>
+                   <p className="text-terras-marrom/80 text-sm mb-6">Entre em contato agora mesmo para agendar uma visita e conhecer este imóvel.</p>
+                   
+                   <a 
+                      href={linkWhatsApp} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      // Botão do WhatsApp LARANJA
+                      className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-4 px-6 rounded-full shadow-lg shadow-green-900/10 transition-all hover:-translate-y-1 group mb-4"
+                   >
+                      <MessageCircle className="w-6 h-6 group-hover:animate-bounce" />
+                      Conversar no WhatsApp
+                   </a>
+                   <p className="text-center text-xs text-terras-marrom/60">
+                     Resposta rápida em horário comercial.
+                   </p>
+                </div>
+             </div>
+          </div>
+
         </div>
       </main>
 
-      {/* FOOTER */}
-      <footer id="contato" className="bg-black text-white py-20 border-t border-white/10 mt-auto">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
-          <div className="col-span-1 md:col-span-2 space-y-6">
-            <h3 className="text-2xl font-bold">Imob<span className="text-yellow-600">Prime</span></h3>
-            <p className="text-slate-500 max-w-sm">
-              Seu parceiro de confiança para compra, venda e aluguel de imóveis de alto padrão.
-            </p>
-          </div>
-          <div className="space-y-4">
-            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Contato</h4>
-            <p className="text-slate-300">(11) 99999-9999</p>
-            <p className="text-slate-300">contato@imobprime.com.br</p>
-            <p className="text-slate-300">Av. Paulista, 1000 - SP</p>
-          </div>
-          <div className="space-y-4">
-            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Redes Sociais</h4>
-            <div className="flex gap-4 text-slate-300">
-               <a href="#" className="hover:text-yellow-500 transition flex items-center gap-2"><Instagram className="w-4 h-4"/> Instagram</a>
-               <a href="#" className="hover:text-yellow-500 transition flex items-center gap-2"><Facebook className="w-4 h-4"/> Facebook</a>
-            </div>
-          </div>
-        </div>
-        <div className="text-center mt-20 text-xs text-slate-800 uppercase tracking-widest">
-          © 2026 ImobPrime. Todos os direitos reservados.
-        </div>
-      </footer>
     </div>
   );
 }

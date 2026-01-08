@@ -17,63 +17,43 @@ export default async function PaginaImoveis({
 }) {
   const params = await searchParams;
   
-  // --- CONFIGURAÇÃO DA PAGINAÇÃO ---
   const ITEMS_POR_PAGINA = 6;
   const paginaAtual = Number(params.page) || 1;
   const inicio = (paginaAtual - 1) * ITEMS_POR_PAGINA;
   const fim = inicio + ITEMS_POR_PAGINA - 1;
 
-  // Query Base
   let query = supabase.from('imoveis').select('*', { count: 'exact' }).order('created_at', { ascending: false });
 
-  // --- APLICAÇÃO DOS FILTROS ---
-  if (params.busca) {
-    query = query.or(`titulo.ilike.%${params.busca}%,cidade.ilike.%${params.busca}%,bairro.ilike.%${params.busca}%`);
-  }
-  if (params.cidade) {
-    query = query.ilike('cidade', `%${params.cidade}%`);
-  }
-
+  if (params.busca) query = query.or(`titulo.ilike.%${params.busca}%,cidade.ilike.%${params.busca}%,bairro.ilike.%${params.busca}%`);
+  if (params.cidade) query = query.ilike('cidade', `%${params.cidade}%`);
   if (params.tipo) query = query.eq('tipo', params.tipo);
-
-  if (params.quartos) {
-    if (params.quartos === '5') query = query.gte('quartos', 5);
-    else query = query.eq('quartos', params.quartos);
-  }
-  if (params.banheiros) {
-    if (params.banheiros === '5') query = query.gte('banheiros', 5);
-    else query = query.eq('banheiros', params.banheiros);
-  }
-  if (params.vagas) {
-    if (params.vagas === '5') query = query.gte('vagas', 5);
-    else query = query.eq('vagas', params.vagas);
-  }
-  
+  if (params.quartos) { if (params.quartos === '5') query = query.gte('quartos', 5); else query = query.eq('quartos', params.quartos); }
+  if (params.banheiros) { if (params.banheiros === '5') query = query.gte('banheiros', 5); else query = query.eq('banheiros', params.banheiros); }
+  if (params.vagas) { if (params.vagas === '5') query = query.gte('vagas', 5); else query = query.eq('vagas', params.vagas); }
   if (params.min_preco) query = query.gte('preco', params.min_preco);
   if (params.max_preco) query = query.lte('preco', params.max_preco);
 
-  // --- LIMITA A PÁGINA ATUAL ---
   query = query.range(inicio, fim);
-
   const { data: imoveis, count } = await query;
-
-  // Cálculos Finais
   const totalImoveis = count || 0;
   const totalPaginas = Math.ceil(totalImoveis / ITEMS_POR_PAGINA);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex flex-col justify-between">
+    // Fundo bege, texto marrom
+    <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans flex flex-col justify-between">
       
-      {/* CONTEÚDO PRINCIPAL */}
-      <div className="pt-28 pb-12 w-full">
-        <div className="max-w-7xl mx-auto px-6">
+      <div className="pt-28 pb-12 w-full relative">
+        {/* Adicionei um fundo sutil de "topo" para a página não ficar muito chapada */}
+        <div className="absolute top-0 left-0 w-full h-64 bg-terras-marrom/5 z-0"></div>
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
             
-            {/* Cabeçalho */}
-            <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-white/10 pb-6 gap-4">
+            {/* Cabeçalho com cores novas */}
+            <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-terras-marrom/10 pb-6 gap-4">
             <div>
-                <span className="text-yellow-500 font-bold uppercase tracking-widest text-xs">Catálogo</span>
-                <h1 className="text-3xl md:text-4xl font-serif text-white mt-2">Acervo Exclusivo</h1>
-                <p className="text-slate-400 mt-2 font-light text-sm">
+                <span className="text-terras-laranja font-bold uppercase tracking-widest text-xs font-serif">Catálogo</span>
+                <h1 className="text-3xl md:text-4xl font-serif text-terras-marrom mt-2">Acervo Rural</h1>
+                <p className="text-terras-marrom/70 mt-2 font-light text-sm">
                 Mostrando {imoveis?.length} de {totalImoveis} propriedades encontradas 
                 {params.cidade && ` em "${params.cidade}"`}
                 </p>
@@ -82,71 +62,65 @@ export default async function PaginaImoveis({
 
             <div className="grid lg:grid-cols-4 gap-8">
             
-            {/* BARRA LATERAL */}
             <aside className="lg:col-span-1">
                 <ImoveisFilter />
             </aside>
 
-            {/* GRADE DE IMÓVEIS */}
             <div className="lg:col-span-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {(!imoveis || imoveis.length === 0) && (
-                    <div className="col-span-2 py-20 text-center border border-dashed border-slate-800 rounded-sm bg-slate-900/50">
-                    <p className="text-xl text-slate-500 font-serif">Nenhum imóvel encontrado.</p>
-                    <p className="text-sm text-slate-600 mt-2">Tente ajustar os filtros de preço ou localização.</p>
+                    <div className="col-span-2 py-20 text-center border-2 border-dashed border-terras-marrom/20 rounded-lg bg-terras-marrom/5">
+                    <p className="text-xl text-terras-marrom font-serif mb-2">Nenhuma propriedade encontrada.</p>
+                    <p className="text-sm text-terras-verde-musgo">Tente ajustar os filtros de localização ou valor.</p>
                     </div>
                 )}
 
+                {/* Cards de Imóveis (Usam o novo estilo definido na Home) */}
                 {imoveis?.map((imovel) => (
                     <Link 
                     href={`/imoveis/${imovel.id}`} 
                     key={imovel.id} 
-                    className="bg-slate-900 border border-white/5 hover:border-yellow-600/50 group block overflow-hidden rounded-sm transition-all duration-300 hover:shadow-2xl hover:shadow-black/50"
+                    className="group block bg-white border border-terras-marrom/10 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-terras-marrom/10 hover:-translate-y-1"
                     >
                     <div className="h-64 overflow-hidden relative">
-                        <span className={`absolute top-4 left-4 text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest text-black ${imovel.tipo === 'VENDA' ? 'bg-white' : 'bg-yellow-500'}`}>
+                        <span className={`absolute top-4 left-4 text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest rounded-full shadow-sm ${imovel.tipo === 'VENDA' ? 'bg-terras-marrom text-terras-bege' : 'bg-terras-amarelo text-terras-marrom'}`}>
                         {imovel.tipo}
                         </span>
                         
                         {imovel.imagens && imovel.imagens.length > 0 ? (
-                        <img 
-                            src={imovel.imagens[0]} 
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
-                            alt={imovel.titulo} 
-                        />
+                        <img src={imovel.imagens[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={imovel.titulo} />
                         ) : (
-                        <div className="w-full h-full bg-slate-800 flex items-center justify-center text-slate-600"><ImageIcon /></div>
+                        <div className="w-full h-full bg-terras-bege flex items-center justify-center text-terras-marrom/50"><ImageIcon /></div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-terras-marrom/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                     
                     <div className="p-6">
-                        <div className="mb-4">
-                        <h3 className="text-xl font-bold text-white group-hover:text-yellow-500 transition line-clamp-1">{imovel.titulo}</h3>
-                        <p className="text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1 mt-1">
-                            <MapPin className="w-3 h-3" /> {imovel.bairro || imovel.cidade}
+                        <h3 className="text-xl text-terras-marrom mb-2 font-bold font-serif group-hover:text-terras-laranja transition-colors line-clamp-1">
+                          {imovel.titulo}
+                        </h3>
+                        <p className="text-terras-verde-musgo font-medium text-sm mb-4 flex items-center gap-1">
+                          <MapPin className="w-4 h-4 inline" /> {imovel.bairro || imovel.cidade}
                         </p>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-slate-400 border-y border-white/5 py-3 mb-4">
-                        <span className="flex items-center gap-1"><Bed className="w-4 h-4 text-slate-600"/> {imovel.quartos} Quartos</span>
-                        <span className="flex items-center gap-1"><Bath className="w-4 h-4 text-slate-600"/> {imovel.banheiros} Banheiros</span>
-                        <span className="flex items-center gap-1"><Car className="w-4 h-4 text-slate-600"/> {imovel.vagas} Vagas</span>
-                        <span className="flex items-center gap-1"><Ruler className="w-4 h-4 text-slate-600"/> {imovel.area}m²</span>
+                        <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-terras-marrom/80 border-y border-terras-marrom/10 py-4 mb-4">
+                        <span className="flex items-center gap-2"><Bed className="w-4 h-4 text-terras-verde-musgo"/> {imovel.quartos} Quartos</span>
+                        <span className="flex items-center gap-2"><Bath className="w-4 h-4 text-terras-verde-musgo"/> {imovel.banheiros} Banheiros</span>
+                        <span className="flex items-center gap-2"><Car className="w-4 h-4 text-terras-verde-musgo"/> {imovel.vagas} Vagas</span>
+                        <span className="flex items-center gap-2"><Ruler className="w-4 h-4 text-terras-verde-musgo"/> {imovel.area}m²</span>
                         </div>
 
                         <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold text-yellow-500">
+                        <span className="text-2xl font-bold text-terras-laranja font-serif">
                             {formatarPreco(imovel.preco)}
                         </span>
-                        <ArrowRight className="text-slate-600 w-5 h-5 group-hover:text-white group-hover:translate-x-1 transition" />
+                        <ArrowRight className="text-terras-marrom/60 w-5 h-5 group-hover:text-terras-laranja group-hover:translate-x-1 transition" />
                         </div>
                     </div>
                     </Link>
                 ))}
                 </div>
 
-                {/* BARRA DE PAGINAÇÃO */}
                 <Pagination paginaAtual={paginaAtual} totalPaginas={totalPaginas} />
 
             </div>
@@ -154,31 +128,33 @@ export default async function PaginaImoveis({
         </div>
       </div>
 
-      {/* FOOTER - ADICIONADO AQUI */}
-      <footer id="contato" className="bg-black text-white py-20 border-t border-white/10 mt-auto">
+      {/* FOOTER - Igual ao da Home */}
+      <footer id="contato" className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10 mt-auto">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
           <div className="col-span-1 md:col-span-2 space-y-6">
-            <h3 className="text-2xl font-serif">Imob<span className="text-yellow-600">Prime</span></h3>
-            <p className="text-slate-500 max-w-sm">
-              Seu parceiro de confiança para compra, venda e aluguel de imóveis de alto padrão e oportunidades únicas.
+            <h3 className="text-3xl font-serif font-bold flex items-center gap-2">
+              <span className="text-terras-amarelo">Terras</span>Rurais
+            </h3>
+            <p className="text-terras-bege/70 max-w-sm">
+              Seu parceiro de confiança para compra, venda e arrendamento de imóveis rurais. Conectando você ao melhor do campo.
             </p>
           </div>
           <div className="space-y-4">
-            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Contato</h4>
-            <p className="text-slate-300">(11) 99999-9999</p>
-            <p className="text-slate-300">contato@imobprime.com.br</p>
-            <p className="text-slate-300">Av. Paulista, 1000 - SP</p>
+            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
+            <p className="text-terras-bege/90">(11) 99999-9999</p>
+            <p className="text-terras-bege/90">contato@terrasrurais.com.br</p>
+            <p className="text-terras-bege/90">Rodovia dos Bandeirantes, km 50 - SP</p>
           </div>
           <div className="space-y-4">
-            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Redes Sociais</h4>
-            <div className="flex gap-4 text-slate-300">
-              <a href="#" className="hover:text-yellow-500 transition flex items-center gap-2"><Instagram className="w-4 h-4"/> Instagram</a>
-              <a href="#" className="hover:text-yellow-500 transition flex items-center gap-2"><Facebook className="w-4 h-4"/> Facebook</a>
+            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
+            <div className="flex gap-4 text-terras-bege/90">
+              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Instagram className="w-5 h-5"/> Instagram</a>
+              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Facebook className="w-5 h-5"/> Facebook</a>
             </div>
           </div>
         </div>
-        <div className="text-center mt-20 text-xs text-slate-800 uppercase tracking-widest">
-          © 2026 ImobPrime. Todos os direitos reservados.
+        <div className="text-center mt-20 text-xs text-terras-bege/50 uppercase tracking-widest pt-8 border-t border-terras-bege/5">
+          © 2026 Terras Rurais. Todos os direitos reservados.
         </div>
       </footer>
 

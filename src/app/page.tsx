@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search, MapPin, Image as ImageIcon, Instagram, Facebook } from 'lucide-react';
+import { Search, MapPin, Image as ImageIcon, Instagram, Facebook, ArrowRight, Bed, Bath, Car, Ruler } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Pagination } from '@/components/Pagination'; 
 
@@ -33,30 +33,35 @@ export default async function HomeImobiliaria({
   const totalPaginas = Math.ceil(totalImoveis / ITEMS_POR_PAGINA);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans">
+    <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans">
       
-      {/* HERO SECTION */}
+      {/* HERO SECTION - Banner Rural */}
       <div 
         id="topo" 
+        // Troquei a imagem por uma de fazenda
         className="relative h-screen w-full flex items-center justify-center bg-scroll md:bg-fixed bg-cover bg-center" 
-        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop")' }}
+        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2664&auto=format&fit=crop")' }}
       >
-        <div className="absolute inset-0 bg-black/50 z-0"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/0 via-slate-950/20 to-slate-950 z-0"></div>
+        {/* Degradê agora é marrom */}
+        <div className="absolute inset-0 bg-terras-marrom/40 z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-terras-marrom/0 via-terras-marrom/30 to-terras-bege z-0"></div>
 
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-6">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl text-white font-serif leading-tight drop-shadow-2xl">
-            Encontre o lugar que você <br/>sempre sonhou.
+          {/* Título agora é na cor bege claro para destacar */}
+          <h1 className="text-4xl md:text-6xl lg:text-7xl text-terras-bege font-serif leading-tight drop-shadow-2xl">
+            Encontre sua terra,<br/>seu refúgio no campo.
           </h1>
-          <p className="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto font-light">
-            Especialistas em realizar sonhos e encontrar o lar perfeito para sua família.
+          <p className="text-terras-bege/90 text-lg md:text-xl max-w-2xl mx-auto font-light">
+            Especialistas em conectar você às melhores propriedades rurais, sítios e fazendas da região.
           </p>
           
           <div className="mt-8 max-w-2xl mx-auto">
-             <form action="/imoveis" className="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-2 flex items-center shadow-2xl">
-                <MapPin className="text-slate-300 w-5 h-5 ml-4" />
-                <input name="busca" type="text" placeholder="Qual cidade ou bairro?" className="bg-transparent w-full px-4 py-3 outline-none text-white placeholder:text-slate-400 font-sans text-base" />
-                <button type="submit" className="bg-yellow-600 hover:bg-yellow-500 text-black px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition duration-300 flex items-center gap-2 shadow-lg shadow-yellow-900/20">
+             {/* Barra de busca com cores novas */}
+             <form action="/imoveis" className="relative bg-terras-bege/90 backdrop-blur-md border border-terras-marrom/20 rounded-full p-2 flex items-center shadow-2xl shadow-terras-marrom/10">
+                <MapPin className="text-terras-marrom w-5 h-5 ml-4" />
+                <input name="busca" type="text" placeholder="Qual cidade ou região?" className="bg-transparent w-full px-4 py-3 outline-none text-terras-marrom placeholder:text-terras-marrom/60 font-sans text-base" />
+                {/* Botão de busca agora é LARANJA */}
+                <button type="submit" className="bg-terras-laranja hover:bg-terras-amarelo text-terras-bege px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition duration-300 flex items-center gap-2 shadow-lg shadow-terras-laranja/20">
                    <Search className="w-4 h-4"/> Buscar
                 </button>
              </form>
@@ -68,118 +73,133 @@ export default async function HomeImobiliaria({
       <main id="imoveis" className="max-w-7xl mx-auto px-6 py-32 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="space-y-2">
-            <h2 className="text-4xl md:text-5xl text-white font-serif">Nossos Imóveis</h2>
-            <p className="text-slate-400 font-light">Confira as novidades que acabaram de chegar</p>
+            <h2 className="text-4xl md:text-5xl text-terras-marrom font-serif">Propriedades em Destaque</h2>
+            <p className="text-terras-verde-musgo font-light">Confira as novidades que acabaram de chegar</p>
           </div>
-          <Link href="/imoveis" className="text-slate-400 hover:text-white transition text-sm uppercase tracking-widest border-b border-transparent hover:border-yellow-500 pb-1">
-            Ver Todos
+          <Link href="/imoveis" className="text-terras-marrom hover:text-terras-laranja transition text-sm uppercase tracking-widest border-b border-transparent hover:border-terras-laranja pb-1 font-bold">
+            Ver Todas
           </Link>
         </div>
 
-        {/* GRID DE CARDS */}
+        {/* GRID DE CARDS - NOVO ESTILO RÚSTICO */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {(!imoveis || imoveis.length === 0) && (
-             <p className="text-slate-500 col-span-3 text-center py-20 font-light italic">Nenhum imóvel encontrado no momento.</p>
+             <p className="text-terras-marrom/70 col-span-3 text-center py-20 font-light italic">Nenhuma propriedade encontrada no momento.</p>
           )}
 
           {imoveis?.map((imovel) => (
             <Link 
               href={`/imoveis/${imovel.id}`} 
               key={imovel.id} 
-              className="glass-card group relative block h-[500px] w-full overflow-hidden rounded-sm cursor-pointer"
+              // Card agora tem fundo branco/bege, borda sutil e sombra suave
+              className="group block bg-white border border-terras-marrom/10 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-terras-marrom/10 hover:-translate-y-1"
             >
-              <div className="absolute inset-0 overflow-hidden">
+              <div className="h-72 overflow-hidden relative">
+                 {/* Tag de Tipo com cores da logo */}
+                 <span className={`absolute top-4 left-4 text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest rounded-full shadow-sm ${imovel.tipo === 'VENDA' ? 'bg-terras-marrom text-terras-bege' : 'bg-terras-amarelo text-terras-marrom'}`}>
+                  {imovel.tipo}
+                </span>
+
                  {imovel.imagens && imovel.imagens.length > 0 ? (
                   <img src={imovel.imagens[0]} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt={imovel.titulo} />
                 ) : (
-                  <div className="w-full h-full bg-slate-900 flex items-center justify-center text-slate-700"><ImageIcon size={48} /></div>
+                  <div className="w-full h-full bg-terras-bege flex items-center justify-center text-terras-marrom/50"><ImageIcon size={48} /></div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-500"></div>
+                {/* Degradê sutil na base da imagem */}
+                <div className="absolute inset-0 bg-gradient-to-t from-terras-marrom/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
 
-              <div className="absolute bottom-0 left-0 w-full p-8 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-white/10 text-white backdrop-blur-md mb-3 inline-block border border-white/10`}>
-                  {imovel.tipo}
-                </span>
-                <h3 className="text-2xl text-white mb-2 font-bold group-hover:text-yellow-400 transition-colors">
+              <div className="p-6">
+                <h3 className="text-xl text-terras-marrom mb-2 font-bold font-serif group-hover:text-terras-laranja transition-colors line-clamp-1">
                   {imovel.titulo}
                 </h3>
-                <p className="text-slate-400 font-light text-sm mb-4 line-clamp-1">{imovel.cidade} {imovel.bairro && `• ${imovel.bairro}`}</p>
+                <p className="text-terras-verde-musgo font-medium text-sm mb-4 flex items-center gap-1">
+                  <MapPin className="w-4 h-4 inline" /> {imovel.cidade} {imovel.bairro && `• ${imovel.bairro}`}
+                </p>
                 
-                <div className="flex justify-between items-center border-t border-white/10 pt-4 opacity-70 group-hover:opacity-100 transition-opacity delay-100">
-                   <div className="flex gap-4 text-xs text-slate-300 uppercase tracking-wider">
-                      <span>{imovel.quartos} Quartos</span>
-                      <span>{imovel.area} m²</span>
-                   </div>
-                   {/* AQUI ESTÁ A MUDANÇA: Preço agora é text-yellow-500 */}
-                   <span className="text-xl font-bold text-yellow-500">{formatarPreco(imovel.preco)}</span>
+                {/* Ícones com a cor verde musgo */}
+                <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs text-terras-marrom/80 border-y border-terras-marrom/10 py-4 mb-4">
+                    <span className="flex items-center gap-2"><Bed className="w-4 h-4 text-terras-verde-musgo"/> {imovel.quartos} Quartos</span>
+                    <span className="flex items-center gap-2"><Bath className="w-4 h-4 text-terras-verde-musgo"/> {imovel.banheiros} Banheiros</span>
+                    <span className="flex items-center gap-2"><Car className="w-4 h-4 text-terras-verde-musgo"/> {imovel.vagas} Vagas</span>
+                    <span className="flex items-center gap-2"><Ruler className="w-4 h-4 text-terras-verde-musgo"/> {imovel.area}m²</span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                   {/* Preço em LARANJA */}
+                   <span className="text-2xl font-bold text-terras-laranja font-serif">{formatarPreco(imovel.preco)}</span>
+                   <ArrowRight className="text-terras-marrom/60 w-5 h-5 group-hover:text-terras-laranja group-hover:translate-x-1 transition" />
                 </div>
               </div>
             </Link>
           ))}
         </div>
 
-        {/* --- PAGINAÇÃO NA HOME --- */}
+        {/* PAGINAÇÃO (Os estilos serão atualizados no componente) */}
         <Pagination paginaAtual={paginaAtual} totalPaginas={totalPaginas} />
 
       </main>
 
-      {/* SEÇÃO SOBRE */}
-      <section id="sobre" className="py-32 bg-slate-900 relative border-t border-white/5">
+      {/* SEÇÃO SOBRE - Fundo Marrom */}
+      <section id="sobre" className="py-32 bg-terras-marrom text-terras-bege relative">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
           <div className="space-y-8">
-            <h2 className="text-4xl md:text-5xl text-white font-serif leading-tight">
-              Sobre a ImobPrime
+            <h2 className="text-4xl md:text-5xl font-serif leading-tight">
+              Sobre a Terras Rurais
             </h2>
-            <p className="text-slate-400 text-lg font-light leading-relaxed">
-              Somos uma imobiliária dedicada a transformar a busca pelo imóvel ideal em uma experiência simples e segura. Com anos de mercado, focamos em atendimento personalizado para entender exatamente o que você e sua família precisam.
+            <p className="text-terras-bege/80 text-lg font-light leading-relaxed">
+              Somos apaixonados pelo campo e dedicados a conectar pessoas às suas raízes. Com anos de experiência no mercado rural, entendemos as necessidades únicas de quem busca uma propriedade para produzir, viver ou descansar.
             </p>
             <div className="grid grid-cols-2 gap-8 pt-4">
               <div>
-                <h4 className="text-4xl font-serif text-white mb-1">+500</h4>
-                <p className="text-xs text-slate-500 uppercase tracking-widest">Famílias Felizes</p>
+                <h4 className="text-4xl font-serif text-terras-amarelo mb-1">+300</h4>
+                <p className="text-xs text-terras-bege/70 uppercase tracking-widest">Propriedades Negociadas</p>
               </div>
               <div>
-                <h4 className="text-4xl font-serif text-white mb-1">10 Anos</h4>
-                <p className="text-xs text-slate-500 uppercase tracking-widest">De História</p>
+                <h4 className="text-4xl font-serif text-terras-amarelo mb-1">15 Anos</h4>
+                <p className="text-xs text-terras-bege/70 uppercase tracking-widest">De Tradição no Campo</p>
               </div>
             </div>
           </div>
-          <div className="relative h-[500px] w-full">
+          {/* Imagem da seção Sobre */}
+          <div className="relative h-[500px] w-full rounded-lg overflow-hidden shadow-2xl shadow-black/20">
             <img 
-              src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80" 
-              className="w-full h-full object-cover transition-all duration-1000 rounded-sm" 
-              alt="Escritório" 
+              src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=2070&auto=format&fit=crop" // Imagem de estrada rural
+              className="w-full h-full object-cover" 
+              alt="Paisagem Rural" 
             />
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer id="contato" className="bg-black text-white py-20 border-t border-white/10">
+      {/* FOOTER - Fundo Marrom Escuro */}
+      <footer id="contato" className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
           <div className="col-span-1 md:col-span-2 space-y-6">
-            <h3 className="text-2xl font-serif">Imob<span className="text-yellow-600">Prime</span></h3>
-            <p className="text-slate-500 max-w-sm">
-              Seu parceiro de confiança para compra, venda e aluguel de imóveis de alto padrão e oportunidades únicas.
+            {/* Logo em texto (pode ser substituída pela imagem depois) */}
+            <h3 className="text-3xl font-serif font-bold flex items-center gap-2">
+              <span className="text-terras-amarelo">Terras</span>Rurais
+            </h3>
+            <p className="text-terras-bege/70 max-w-sm">
+              Seu parceiro de confiança para compra, venda e arrendamento de imóveis rurais. Conectando você ao melhor do campo.
             </p>
           </div>
           <div className="space-y-4">
-            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Contato</h4>
-            <p className="text-slate-300">(11) 99999-9999</p>
-            <p className="text-slate-300">contato@imobprime.com.br</p>
-            <p className="text-slate-300">Av. Paulista, 1000 - SP</p>
+            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
+            <p className="text-terras-bege/90">(11) 99999-9999</p>
+            <p className="text-terras-bege/90">contato@terrasrurais.com.br</p>
+            <p className="text-terras-bege/90">Rodovia dos Bandeirantes, km 50 - SP</p>
           </div>
           <div className="space-y-4">
-            <h4 className="uppercase tracking-widest text-xs font-bold text-slate-400">Redes Sociais</h4>
-            <div className="flex gap-4 text-slate-300">
-              <a href="#" className="hover:text-yellow-500 transition flex items-center gap-2"><Instagram className="w-4 h-4"/> Instagram</a>
-              <a href="#" className="hover:text-yellow-500 transition flex items-center gap-2"><Facebook className="w-4 h-4"/> Facebook</a>
+            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
+            <div className="flex gap-4 text-terras-bege/90">
+              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Instagram className="w-5 h-5"/> Instagram</a>
+              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Facebook className="w-5 h-5"/> Facebook</a>
             </div>
           </div>
         </div>
-        <div className="text-center mt-20 text-xs text-slate-800 uppercase tracking-widest">
-          © 2026 ImobPrime. Todos os direitos reservados.
+        <div className="text-center mt-20 text-xs text-terras-bege/50 uppercase tracking-widest pt-8 border-t border-terras-bege/5">
+          © 2026 Terras Rurais. Todos os direitos reservados.
         </div>
       </footer>
     </div>

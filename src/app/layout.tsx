@@ -1,16 +1,26 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
 
-// Fonte moderna para textos
-const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
-// Fonte clássica para títulos
-const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-playfair' });
+// Fontes (mantive as mesmas, combinam bem)
+const inter = Inter({ 
+  subsets: ["latin"], 
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({ 
+  subsets: ["latin"], 
+  variable: '--font-playfair-display',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: "ImobPrime | Realizando Sonhos!",
-  description: "Imóveis de alto padrão.",
+  title: "Terras Rurais | Imóveis no Campo",
+  description: "Especialistas em venda e aluguel de propriedades rurais, sítios e fazendas.",
+  icons: {
+    icon: "/favicon.ico", // Você pode gerar um favicon novo com a casinha da logo depois!
+  },
 };
 
 export default function RootLayout({
@@ -19,10 +29,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      {/* Adicionamos as variaveis de fonte e o fundo escuro aqui */}
-      <body className={`${inter.variable} ${playfair.variable} bg-slate-950 text-slate-200 font-sans`}>
-        <Navbar />
+    <html lang="pt-BR" className={`scroll-smooth ${inter.variable} ${playfair.variable}`}>
+      {/* AQUI MUDOU: Fundo bege e texto marrom */}
+      <body className="bg-terras-bege text-terras-marrom antialiased">
         {children}
       </body>
     </html>
