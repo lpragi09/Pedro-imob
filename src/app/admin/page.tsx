@@ -57,13 +57,27 @@ export default function AdminPanel() {
 
   async function uploadImagens(files: File[]): Promise<string[]> {
     const urls: string[] = [];
+    
     for (const file of files) {
+      // Cria um nome limpo para evitar erros com caracteres especiais
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const { error } = await supabase.storage.from('imoveis').upload(fileName, file);
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+      // AQUI ESTÁ O SEGREDO DA QUALIDADE:
+      // Adicionamos 'contentType', 'cacheControl' e 'upsert'
+      const { error } = await supabase.storage
+        .from('imoveis')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: file.type // <--- Força o tipo correto (image/jpeg, image/png)
+        });
+
       if (!error) {
         const { data } = supabase.storage.from('imoveis').getPublicUrl(fileName);
         urls.push(data.publicUrl);
+      } else {
+        console.error("Erro no upload:", error);
       }
     }
     return urls;

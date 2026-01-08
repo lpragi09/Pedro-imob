@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Search, MapPin, Image as ImageIcon, Instagram, Facebook } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { Pagination } from '@/components/Pagination'; // <--- Importando a paginação
+import { Pagination } from '@/components/Pagination'; 
 
 export const revalidate = 0;
 
@@ -9,7 +9,6 @@ const formatarPreco = (valor: number) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(valor);
 }
 
-// Agora a Home recebe parametros para saber em qual página está (page=1, page=2...)
 export default async function HomeImobiliaria({
   searchParams,
 }: {
@@ -28,7 +27,7 @@ export default async function HomeImobiliaria({
     .from('imoveis')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
-    .range(inicio, fim); // Pega só os 6 dessa página
+    .range(inicio, fim); 
 
   const totalImoveis = count || 0;
   const totalPaginas = Math.ceil(totalImoveis / ITEMS_POR_PAGINA);
@@ -36,8 +35,12 @@ export default async function HomeImobiliaria({
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans">
       
-      {/* HERO SECTION - Fundo Fixo */}
-      <div id="topo" className="relative h-screen w-full flex items-center justify-center bg-fixed bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop")' }}>
+      {/* HERO SECTION - Fundo Fixo (Corrigido para Mobile) */}
+      <div 
+        id="topo" 
+        className="relative h-screen w-full flex items-center justify-center bg-scroll md:bg-fixed bg-cover bg-center" 
+        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop")' }}
+      >
         <div className="absolute inset-0 bg-black/50 z-0"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/0 via-slate-950/20 to-slate-950 z-0"></div>
 
