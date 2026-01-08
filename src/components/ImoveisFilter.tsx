@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Filter, X, MapPin } from 'lucide-react';
 
@@ -18,6 +18,17 @@ export function ImoveisFilter() {
   const [minPreco, setMinPreco] = useState(Number(searchParams.get('min_preco')) || 0);
   const [maxPreco, setMaxPreco] = useState(Number(searchParams.get('max_preco')) || 5000000);
 
+  // Sincroniza o visual se o usuário usar o botão "Voltar" do navegador
+  useEffect(() => {
+    setCidade(searchParams.get('cidade') || '');
+    setTipo(searchParams.get('tipo') || '');
+    setQuartos(searchParams.get('quartos') || '');
+    setBanheiros(searchParams.get('banheiros') || '');
+    setVagas(searchParams.get('vagas') || '');
+    setMinPreco(Number(searchParams.get('min_preco')) || 0);
+    setMaxPreco(Number(searchParams.get('max_preco')) || 5000000);
+  }, [searchParams]);
+
   const formatMoney = (val: number) => 
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
@@ -31,6 +42,9 @@ export function ImoveisFilter() {
     if (banheiros) params.set('banheiros', banheiros); else params.delete('banheiros');
     if (vagas) params.set('vagas', vagas); else params.delete('vagas');
     
+    // Reseta a paginação para 1 sempre que filtrar
+    params.delete('page');
+    
     if (minPreco > 0) params.set('min_preco', minPreco.toString()); 
     else params.delete('min_preco');
     
@@ -38,6 +52,21 @@ export function ImoveisFilter() {
     else params.delete('max_preco');
 
     router.push(`/imoveis?${params.toString()}`);
+  };
+
+  // --- NOVA FUNÇÃO PARA LIMPAR VISUAL E URL ---
+  const limparFiltros = () => {
+    // 1. Zera o visual
+    setCidade('');
+    setTipo('');
+    setQuartos('');
+    setBanheiros('');
+    setVagas('');
+    setMinPreco(0);
+    setMaxPreco(5000000);
+
+    // 2. Limpa a URL
+    router.push('/imoveis');
   };
 
   const inputClass = "w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300 placeholder:text-slate-600";
@@ -112,7 +141,7 @@ export function ImoveisFilter() {
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
-                        <option value="5">5+</option> {/* Mudou para 5+ */}
+                        <option value="5">5+</option>
                     </select>
                 </div>
                 <div>
@@ -123,7 +152,7 @@ export function ImoveisFilter() {
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
-                        <option value="5">5+</option> {/* Mudou para 5+ */}
+                        <option value="5">5+</option>
                     </select>
                 </div>
             </div>
@@ -136,7 +165,7 @@ export function ImoveisFilter() {
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
-                    <option value="5">5+</option> {/* Mudou para 5+ */}
+                    <option value="5">5+</option>
                 </select>
             </div>
         </div>
@@ -146,7 +175,7 @@ export function ImoveisFilter() {
         </button>
         
         {(cidade || tipo || quartos || banheiros || vagas || minPreco > 0 || maxPreco < 5000000) && (
-          <button type="button" onClick={() => router.push('/imoveis')} className="flex items-center justify-center gap-2 w-full border border-slate-700 hover:bg-slate-800 text-slate-400 text-xs py-3 rounded-sm transition">
+          <button type="button" onClick={limparFiltros} className="flex items-center justify-center gap-2 w-full border border-slate-700 hover:bg-slate-800 text-slate-400 text-xs py-3 rounded-sm transition">
             <X className="w-3 h-3" /> Limpar Filtros
           </button>
         )}
