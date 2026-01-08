@@ -19,17 +19,34 @@ export default async function PaginaImoveis({
   // Construção da Query
   let query = supabase.from('imoveis').select('*').order('created_at', { ascending: false });
 
+  // Filtros de Texto
   if (params.busca) {
     query = query.or(`titulo.ilike.%${params.busca}%,cidade.ilike.%${params.busca}%,bairro.ilike.%${params.busca}%`);
   }
+  if (params.cidade) {
+    query = query.ilike('cidade', `%${params.cidade}%`);
+  }
+
+  // Tipo
   if (params.tipo) query = query.eq('tipo', params.tipo);
+
+  // LOGICA NOVA: Exata para 1-4, "5+" para 5.
+  if (params.quartos) {
+    if (params.quartos === '5') query = query.gte('quartos', 5);
+    else query = query.eq('quartos', params.quartos);
+  }
+
+  if (params.banheiros) {
+    if (params.banheiros === '5') query = query.gte('banheiros', 5);
+    else query = query.eq('banheiros', params.banheiros);
+  }
+
+  if (params.vagas) {
+    if (params.vagas === '5') query = query.gte('vagas', 5);
+    else query = query.eq('vagas', params.vagas);
+  }
   
-  // Filtros Numéricos (Maior ou igual)
-  if (params.quartos) query = query.gte('quartos', params.quartos);
-  if (params.banheiros) query = query.gte('banheiros', params.banheiros);
-  if (params.vagas) query = query.gte('vagas', params.vagas);
-  
-  // Filtro de Preço
+  // Preço
   if (params.min_preco) query = query.gte('preco', params.min_preco);
   if (params.max_preco) query = query.lte('preco', params.max_preco);
 
@@ -45,14 +62,13 @@ export default async function PaginaImoveis({
             <span className="text-yellow-500 font-bold uppercase tracking-widest text-xs">Catálogo</span>
             <h1 className="text-3xl md:text-4xl font-serif text-white mt-2">Acervo Exclusivo</h1>
             <p className="text-slate-400 mt-2 font-light text-sm">
-              {imoveis?.length} propriedades encontradas {params.busca && `para "${params.busca}"`}
+              {imoveis?.length} propriedades encontradas {params.busca && `para "${params.busca}"`} {params.cidade && `em "${params.cidade}"`}
             </p>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-4 gap-8">
           
-          {/* BARRA LATERAL COM NOVOS FILTROS */}
           <aside className="lg:col-span-1">
             <ImoveisFilter />
           </aside>
@@ -92,7 +108,6 @@ export default async function PaginaImoveis({
                   
                   <div className="p-6">
                     <div className="mb-4">
-                       {/* FONTE ALTERADA: Removido font-serif, agora é font-bold padrão */}
                        <h3 className="text-xl font-bold text-white group-hover:text-yellow-500 transition line-clamp-1">{imovel.titulo}</h3>
                        <p className="text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1 mt-1">
                          <MapPin className="w-3 h-3" /> {imovel.bairro || imovel.cidade}
@@ -107,7 +122,6 @@ export default async function PaginaImoveis({
                     </div>
 
                     <div className="flex items-center justify-between">
-                      {/* FONTE ALTERADA: Removido font-serif, agora é font-bold padrão */}
                       <span className="text-2xl font-bold text-yellow-500">
                         {formatarPreco(imovel.preco)}
                       </span>

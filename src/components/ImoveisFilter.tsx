@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, MapPin } from 'lucide-react';
 
 export function ImoveisFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Estados dos filtros
+  const [cidade, setCidade] = useState(searchParams.get('cidade') || '');
   const [tipo, setTipo] = useState(searchParams.get('tipo') || '');
   const [quartos, setQuartos] = useState(searchParams.get('quartos') || '');
   const [banheiros, setBanheiros] = useState(searchParams.get('banheiros') || '');
@@ -24,6 +25,7 @@ export function ImoveisFilter() {
     e?.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
 
+    if (cidade) params.set('cidade', cidade); else params.delete('cidade');
     if (tipo) params.set('tipo', tipo); else params.delete('tipo');
     if (quartos) params.set('quartos', quartos); else params.delete('quartos');
     if (banheiros) params.set('banheiros', banheiros); else params.delete('banheiros');
@@ -38,7 +40,7 @@ export function ImoveisFilter() {
     router.push(`/imoveis?${params.toString()}`);
   };
 
-  // Classe padrão para os selects ficarem iguais
+  const inputClass = "w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300 placeholder:text-slate-600";
   const selectClass = "w-full bg-slate-950 border border-slate-800 p-3 rounded-sm text-sm outline-none focus:border-yellow-600 text-slate-300 text-center font-bold";
 
   return (
@@ -50,8 +52,17 @@ export function ImoveisFilter() {
 
       <form onSubmit={aplicarFiltros} className="space-y-6">
         
-        {/* Tipo */}
+        {/* Cidade */}
         <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Localização (Cidade)</label>
+          <div className="relative">
+             <input type="text" value={cidade} onChange={(e) => setCidade(e.target.value)} placeholder="Ex: São Paulo" className={inputClass} />
+             <MapPin className="absolute right-3 top-3 w-4 h-4 text-slate-600" />
+          </div>
+        </div>
+
+        {/* Tipo */}
+        <div className="pt-4 border-t border-white/5">
           <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Tipo de Contrato</label>
           <div className="flex gap-2">
             {['VENDA', 'ALUGUEL'].map((t) => (
@@ -90,9 +101,8 @@ export function ImoveisFilter() {
             </div>
         </div>
 
-        {/* Características (Agora só números) */}
+        {/* Características */}
         <div className="pt-4 border-t border-white/5 space-y-4">
-            
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-2 text-center">Quartos</label>
@@ -102,10 +112,9 @@ export function ImoveisFilter() {
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
-                        <option value="5">5</option>
+                        <option value="5">5+</option> {/* Mudou para 5+ */}
                     </select>
                 </div>
-
                 <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-2 text-center">Banheiros</label>
                     <select value={banheiros} onChange={(e) => setBanheiros(e.target.value)} className={selectClass}>
@@ -114,7 +123,7 @@ export function ImoveisFilter() {
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
-                        <option value="5">5</option>
+                        <option value="5">5+</option> {/* Mudou para 5+ */}
                     </select>
                 </div>
             </div>
@@ -127,7 +136,7 @@ export function ImoveisFilter() {
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
-                    <option value="5">5</option>
+                    <option value="5">5+</option> {/* Mudou para 5+ */}
                 </select>
             </div>
         </div>
@@ -136,7 +145,7 @@ export function ImoveisFilter() {
           Aplicar Filtros
         </button>
         
-        {(tipo || quartos || banheiros || vagas || minPreco > 0 || maxPreco < 5000000) && (
+        {(cidade || tipo || quartos || banheiros || vagas || minPreco > 0 || maxPreco < 5000000) && (
           <button type="button" onClick={() => router.push('/imoveis')} className="flex items-center justify-center gap-2 w-full border border-slate-700 hover:bg-slate-800 text-slate-400 text-xs py-3 rounded-sm transition">
             <X className="w-3 h-3" /> Limpar Filtros
           </button>

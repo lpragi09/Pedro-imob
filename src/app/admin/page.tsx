@@ -35,6 +35,7 @@ export default function AdminPanel() {
     if (data) setImoveis(data);
   }
 
+  // Lida com seleção de NOVAS imagens
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const novosArquivos = Array.from(e.target.files);
@@ -44,9 +45,17 @@ export default function AdminPanel() {
     }
   };
 
+  // Remove imagem NOVA (que ainda não subiu)
   const removerImagemDoPreview = (index: number) => {
     setArquivosSelecionados(prev => prev.filter((_, i) => i !== index));
     setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // NOVO: Remove imagem ANTIGA (que já estava no banco)
+  const removerImagemExistente = (index: number) => {
+    if (!imovelEmEdicao) return;
+    const novasImagens = imovelEmEdicao.imagens.filter((_, i) => i !== index);
+    setImovelEmEdicao({ ...imovelEmEdicao, imagens: novasImagens });
   };
 
   async function uploadImagens(files: File[]): Promise<string[]> {
@@ -68,12 +77,21 @@ export default function AdminPanel() {
     setLoading(true);
     try {
       const formData = new FormData(event.currentTarget);
+      
+      // Pega as imagens que sobraram da edição (se houver) ou inicia vazio
       let urlsFinais = imovelEmEdicao?.imagens || [];
+      
+      // Se tiver novos arquivos, faz upload e junta na lista
       if (arquivosSelecionados.length > 0) {
         const novasUrls = await uploadImagens(arquivosSelecionados);
         urlsFinais = [...urlsFinais, ...novasUrls];
       }
-      if (urlsFinais.length === 0) { alert("Adicione pelo menos uma foto."); setLoading(false); return; }
+
+      if (urlsFinais.length === 0) { 
+          alert("O imóvel precisa de pelo menos uma foto."); 
+          setLoading(false); 
+          return; 
+      }
 
       const dados = {
         titulo: formData.get('titulo'),
@@ -92,26 +110,41 @@ export default function AdminPanel() {
 
       if (imovelEmEdicao) {
         await supabase.from('imoveis').update(dados).eq('id', imovelEmEdicao.id);
-        alert("Atualizado com sucesso!");
+        alert("Imóvel atualizado com sucesso!");
       } else {
         await supabase.from('imoveis').insert([dados]);
-        alert("Cadastrado com sucesso!");
+        alert("Imóvel cadastrado com sucesso!");
       }
-      setImovelEmEdicao(null); setArquivosSelecionados([]); setPreviewUrls([]);
+
+      // Limpa tudo
+      setImovelEmEdicao(null); 
+      setArquivosSelecionados([]); 
+      setPreviewUrls([]);
       (event.target as HTMLFormElement).reset();
-      await carregarImoveis(); router.refresh();
-    } catch (error) { console.error(error); alert("Erro ao salvar."); } finally { setLoading(false); }
+      
+      await carregarImoveis(); 
+      router.refresh();
+
+    } catch (error) { 
+        console.error(error); 
+        alert("Erro ao salvar."); 
+    } finally { 
+        setLoading(false); 
+    }
   }
 
   async function deletarImovel(id: number) {
     if (confirm("Tem certeza que deseja remover este imóvel do catálogo?")) {
       await supabase.from('imoveis').delete().eq('id', id);
-      await carregarImoveis(); router.refresh();
+      await carregarImoveis(); 
+      router.refresh();
     }
   }
 
   function preencherFormulario(imovel: Imovel) {
-    setImovelEmEdicao(imovel); setArquivosSelecionados([]); setPreviewUrls([]);
+    setImovelEmEdicao(imovel); 
+    setArquivosSelecionados([]); 
+    setPreviewUrls([]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -126,7 +159,6 @@ export default function AdminPanel() {
         <div className="flex items-center gap-4 border-b border-white/10 pb-8">
            <div className="bg-yellow-600/10 p-3 rounded-full"><Shield className="text-yellow-600 w-8 h-8"/></div>
            <div>
-              {/* FONTE CORRIGIDA */}
               <h1 className="text-3xl font-bold text-white">Painel Administrativo</h1>
               <p className="text-slate-500 font-light">Gerencie o acervo exclusivo da ImobPrime</p>
            </div>
@@ -137,7 +169,6 @@ export default function AdminPanel() {
             <div className="lg:col-span-7 space-y-8">
                 <div className="bg-slate-900 p-8 rounded-sm border border-white/5 shadow-2xl">
                     <div className="flex justify-between items-center mb-8">
-                        {/* FONTE CORRIGIDA */}
                         <h2 className="text-xl font-bold text-white">{imovelEmEdicao ? 'Editar Propriedade' : 'Nova Propriedade'}</h2>
                         {imovelEmEdicao && <button onClick={() => { setImovelEmEdicao(null); setPreviewUrls([]); }} className="text-xs text-red-500 hover:text-red-400 uppercase tracking-widest font-bold flex gap-2"><X className="w-4 h-4"/> Cancelar</button>}
                     </div>
@@ -159,18 +190,44 @@ export default function AdminPanel() {
                             <div><label className={labelClass}>Vagas</label><input name="vagas" defaultValue={imovelEmEdicao?.vagas} required type="number" className={inputClass} /></div>
                             <div><label className={labelClass}>Área (m²)</label><input name="area" defaultValue={imovelEmEdicao?.area} required type="number" className={inputClass} /></div>
                         </div>
+                        
+                        {/* AREA DE UPLOAD E PREVIEW */}
                         <div>
                             <label className={labelClass}>Fotos</label>
-                            <div className="border border-dashed border-slate-700 bg-slate-950/50 rounded-sm p-8 flex flex-col items-center justify-center cursor-pointer hover:border-yellow-600/50 hover:bg-slate-950 transition relative group">
+                            
+                            <div className="border border-dashed border-slate-700 bg-slate-950/50 rounded-sm p-8 flex flex-col items-center justify-center cursor-pointer hover:border-yellow-600/50 hover:bg-slate-950 transition relative group mb-4">
                                 <input type="file" multiple accept="image/*" onChange={handleImageChange} className="absolute inset-0 opacity-0 cursor-pointer" />
                                 <Upload className="w-8 h-8 text-slate-600 group-hover:text-yellow-600 transition mb-2" />
-                                <span className="text-xs text-slate-500 uppercase tracking-widest font-bold">Adicionar Imagens</span>
+                                <span className="text-xs text-slate-500 uppercase tracking-widest font-bold">Adicionar Novas Imagens</span>
                             </div>
-                            <div className="grid grid-cols-4 gap-2 mt-4">
-                                {imovelEmEdicao?.imagens?.map((img, idx) => (<div key={`old-${idx}`} className="h-16 rounded-sm overflow-hidden border border-slate-700 opacity-50"><img src={img} className="w-full h-full object-cover" /></div>))}
-                                {previewUrls.map((url, idx) => (<div key={`new-${idx}`} className="relative h-16 rounded-sm overflow-hidden border border-yellow-600"><img src={url} className="w-full h-full object-cover" /><button type="button" onClick={() => removerImagemDoPreview(idx)} className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition"><X className="text-white w-4 h-4"/></button></div>))}
+
+                            {/* GRID DE PREVIEW */}
+                            <div className="grid grid-cols-4 gap-2">
+                                
+                                {/* Imagens JÁ EXISTENTES (Do Banco) */}
+                                {imovelEmEdicao?.imagens?.map((img, idx) => (
+                                    <div key={`old-${idx}`} className="relative h-16 rounded-sm overflow-hidden border border-yellow-600/50 group">
+                                        <img src={img} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition" />
+                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                                            <button type="button" onClick={() => removerImagemExistente(idx)} className="text-red-500 hover:scale-110 transition"><Trash2 className="w-5 h-5"/></button>
+                                        </div>
+                                        <div className="absolute top-0 right-0 bg-yellow-600 text-[8px] text-black px-1 font-bold">SALVA</div>
+                                    </div>
+                                ))}
+
+                                {/* Imagens NOVAS (Preview do Upload) */}
+                                {previewUrls.map((url, idx) => (
+                                    <div key={`new-${idx}`} className="relative h-16 rounded-sm overflow-hidden border border-green-500/50 group">
+                                        <img src={url} className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                                            <button type="button" onClick={() => removerImagemDoPreview(idx)} className="text-red-500 hover:scale-110 transition"><X className="w-5 h-5"/></button>
+                                        </div>
+                                        <div className="absolute top-0 right-0 bg-green-500 text-[8px] text-black px-1 font-bold">NOVA</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
+
                         <button disabled={loading} type="submit" className="w-full bg-white hover:bg-slate-200 text-black font-bold uppercase tracking-widest py-4 rounded-sm transition flex items-center justify-center gap-2">
                             {loading ? <Loader2 className="animate-spin" /> : <Save className="w-4 h-4" />} {imovelEmEdicao ? 'Salvar Alterações' : 'Publicar Imóvel'}
                         </button>
@@ -181,17 +238,14 @@ export default function AdminPanel() {
             {/* LISTA */}
             <div className="lg:col-span-5">
                 <div className="bg-slate-900 p-8 rounded-sm border border-white/5 shadow-2xl h-full">
-                    {/* FONTE CORRIGIDA */}
                     <h2 className="text-xl font-bold text-white mb-6">Acervo Atual</h2>
                     <div className="space-y-4 max-h-[800px] overflow-y-auto pr-2 custom-scrollbar">
                         {imoveis.map((imovel) => (
                         <div key={imovel.id} className="group p-4 bg-slate-950 border border-slate-800 hover:border-yellow-600/30 transition rounded-sm flex gap-4">
                             <img src={imovel.imagens ? imovel.imagens[0] : ''} className="w-20 h-20 object-cover bg-slate-900 grayscale group-hover:grayscale-0 transition duration-500" />
                             <div className="flex-1 min-w-0">
-                                {/* FONTE CORRIGIDA: SEM SERIFA */}
                                 <h3 className="font-bold text-white truncate">{imovel.titulo}</h3>
                                 <p className="text-xs text-slate-500 uppercase tracking-wider mt-1">{imovel.cidade}</p>
-                                {/* FONTE CORRIGIDA: SEM SERIFA */}
                                 <p className="text-yellow-600 font-bold mt-2 text-sm">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(imovel.preco)}</p>
                             </div>
                             <div className="flex flex-col gap-2">
