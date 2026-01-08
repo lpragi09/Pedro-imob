@@ -45,11 +45,11 @@ export default async function PaginaDetalheImovel({ params }: { params: Promise<
              </div>
              {/* Outras Imagens (Menores) */}
              {imovel.imagens.slice(1, 5).map((img: string, index: number) => (
-               <div key={index} className="relative rounded-lg overflow-hidden group hidden md:block">
-                  <img src={img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={`${imovel.titulo} - Foto ${index + 2}`} />
-                  <div className="absolute inset-0 bg-terras-marrom/10 group-hover:bg-transparent transition-colors"></div>
-               </div>
-             ))}
+   <div key={index} className="relative rounded-lg overflow-hidden group hidden md:block">
+      <img src={img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={`Foto ${index + 2}`} />
+      <div className="absolute inset-0 bg-terras-marrom/10 group-hover:bg-transparent transition-colors"></div>
+   </div>
+))}
               {imovel.imagens.length < 2 && (
                  <div className="md:col-span-2 md:row-span-2 bg-terras-marrom/10 flex items-center justify-center text-terras-marrom/30 rounded-lg"><ImageIcon size={64} /></div>
               )}

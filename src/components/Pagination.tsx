@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface PaginationProps {
   paginaAtual: number;
   totalPaginas: number;
-  caminho?: string; // Novo parâmetro opcional (padrão será '/imoveis')
+  caminho?: string;
 }
 
 export function Pagination({ paginaAtual, totalPaginas, caminho = '/imoveis' }: PaginationProps) {
@@ -17,8 +17,9 @@ export function Pagination({ paginaAtual, totalPaginas, caminho = '/imoveis' }: 
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', novaPagina.toString());
     
-    // Agora ele usa o caminho que a gente mandou, não mais fixo
-    router.push(`${caminho}?${params.toString()}`);
+    // AQUI ESTÁ O TRUQUE: Adicionei o #imoveis no final
+    // Isso força o navegador a descer até onde tem id="imoveis"
+    router.push(`${caminho}?${params.toString()}#imoveis`, { scroll: false });
   };
 
   if (totalPaginas <= 1) return null;
