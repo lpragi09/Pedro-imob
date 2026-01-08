@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Save, Trash2, Pencil, Loader2, X, Upload, Image as ImageIcon, Shield } from 'lucide-react';
+import { Save, Trash2, Pencil, Loader2, X, Upload, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Imovel = {
@@ -115,12 +115,12 @@ export default function AdminPanel() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Estilos Comuns para Inputs Dark
   const inputClass = "w-full p-4 bg-slate-950 border border-slate-800 rounded-sm outline-none text-slate-200 focus:border-yellow-600 focus:ring-1 focus:ring-yellow-600/50 transition font-light placeholder:text-slate-600";
   const labelClass = "block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2";
 
   return (
-    <div className="min-h-screen bg-black text-slate-200 py-12 px-4 font-sans selection:bg-yellow-900 selection:text-white">
+    // CORREÇÃO AQUI: pt-32 para descer o conteúdo e não bater na Navbar
+    <div className="min-h-screen bg-black text-slate-200 pt-32 pb-12 px-4 font-sans selection:bg-yellow-900 selection:text-white">
       <div className="max-w-5xl mx-auto space-y-12">
         
         {/* HEADER */}
@@ -133,7 +133,7 @@ export default function AdminPanel() {
         </div>
         
         <div className="grid lg:grid-cols-12 gap-8">
-            {/* FORMULÁRIO (Lado Esquerdo/Topo) */}
+            {/* FORMULÁRIO */}
             <div className="lg:col-span-7 space-y-8">
                 <div className="bg-slate-900 p-8 rounded-sm border border-white/5 shadow-2xl">
                     <div className="flex justify-between items-center mb-8">
@@ -144,24 +144,20 @@ export default function AdminPanel() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div><label className={labelClass}>Título do Anúncio</label><input name="titulo" defaultValue={imovelEmEdicao?.titulo} required className={inputClass} placeholder="Ex: Penthouse no Jardins" /></div>
                         <div><label className={labelClass}>Descrição Completa</label><textarea name="descricao" defaultValue={imovelEmEdicao?.descricao} required rows={4} className={inputClass} placeholder="Detalhes que encantam..." /></div>
-
                         <div className="grid grid-cols-2 gap-4">
                             <div><label className={labelClass}>Cidade</label><input name="cidade" defaultValue={imovelEmEdicao?.cidade} required className={inputClass} /></div>
                             <div><label className={labelClass}>Bairro</label><input name="bairro" defaultValue={imovelEmEdicao?.bairro} required className={inputClass} /></div>
                         </div>
-
                         <div className="grid grid-cols-2 gap-4">
                             <div><label className={labelClass}>Preço (R$)</label><input name="preco" defaultValue={imovelEmEdicao?.preco} required type="number" className={inputClass} /></div>
                             <div><label className={labelClass}>Tipo</label><select name="tipo" defaultValue={imovelEmEdicao?.tipo} className={inputClass}><option value="VENDA">Venda</option><option value="ALUGUEL">Aluguel</option></select></div>
                         </div>
-
                         <div className="grid grid-cols-4 gap-2">
                             <div><label className={labelClass}>Quartos</label><input name="quartos" defaultValue={imovelEmEdicao?.quartos} required type="number" className={inputClass} /></div>
                             <div><label className={labelClass}>Banheiros</label><input name="banheiros" defaultValue={imovelEmEdicao?.banheiros} required type="number" className={inputClass} /></div>
                             <div><label className={labelClass}>Vagas</label><input name="vagas" defaultValue={imovelEmEdicao?.vagas} required type="number" className={inputClass} /></div>
                             <div><label className={labelClass}>Área (m²)</label><input name="area" defaultValue={imovelEmEdicao?.area} required type="number" className={inputClass} /></div>
                         </div>
-
                         <div>
                             <label className={labelClass}>Fotos</label>
                             <div className="border border-dashed border-slate-700 bg-slate-950/50 rounded-sm p-8 flex flex-col items-center justify-center cursor-pointer hover:border-yellow-600/50 hover:bg-slate-950 transition relative group">
@@ -169,14 +165,11 @@ export default function AdminPanel() {
                                 <Upload className="w-8 h-8 text-slate-600 group-hover:text-yellow-600 transition mb-2" />
                                 <span className="text-xs text-slate-500 uppercase tracking-widest font-bold">Adicionar Imagens</span>
                             </div>
-                            
-                            {/* Previews */}
                             <div className="grid grid-cols-4 gap-2 mt-4">
                                 {imovelEmEdicao?.imagens?.map((img, idx) => (<div key={`old-${idx}`} className="h-16 rounded-sm overflow-hidden border border-slate-700 opacity-50"><img src={img} className="w-full h-full object-cover" /></div>))}
                                 {previewUrls.map((url, idx) => (<div key={`new-${idx}`} className="relative h-16 rounded-sm overflow-hidden border border-yellow-600"><img src={url} className="w-full h-full object-cover" /><button type="button" onClick={() => removerImagemDoPreview(idx)} className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition"><X className="text-white w-4 h-4"/></button></div>))}
                             </div>
                         </div>
-
                         <button disabled={loading} type="submit" className="w-full bg-white hover:bg-slate-200 text-black font-bold uppercase tracking-widest py-4 rounded-sm transition flex items-center justify-center gap-2">
                             {loading ? <Loader2 className="animate-spin" /> : <Save className="w-4 h-4" />} {imovelEmEdicao ? 'Salvar Alterações' : 'Publicar Imóvel'}
                         </button>
@@ -184,7 +177,7 @@ export default function AdminPanel() {
                 </div>
             </div>
 
-            {/* LISTA (Lado Direito/Baixo) */}
+            {/* LISTA */}
             <div className="lg:col-span-5">
                 <div className="bg-slate-900 p-8 rounded-sm border border-white/5 shadow-2xl h-full">
                     <h2 className="text-xl font-serif text-white mb-6">Acervo Atual</h2>
@@ -203,7 +196,6 @@ export default function AdminPanel() {
                             </div>
                         </div>
                         ))}
-                        {imoveis.length === 0 && <p className="text-slate-600 text-center py-10 italic">Nenhum imóvel cadastrado.</p>}
                     </div>
                 </div>
             </div>

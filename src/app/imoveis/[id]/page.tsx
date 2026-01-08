@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { MapPin, Bed, Ruler, ArrowLeft, Phone, Bath, Car, Mail, Instagram, Facebook } from 'lucide-react';
+import { MapPin, Bed, Ruler, ArrowLeft, Phone, Bath, Car, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
 import { ImageGallery } from '@/components/ImageGallery';
 
@@ -22,8 +22,8 @@ export default async function DetalhesImovel({ params }: Props) {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans flex flex-col selection:bg-yellow-500 selection:text-black">
       
-      {/* Botão Voltar */}
-      <div className="max-w-7xl mx-auto px-6 py-8 w-full">
+      {/* Botão Voltar (COM CORREÇÃO DE ESPAÇAMENTO: pt-28) */}
+      <div className="max-w-7xl mx-auto px-6 pt-28 pb-6 w-full">
         <Link href="/" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition uppercase tracking-widest text-xs font-bold">
           <ArrowLeft className="w-4 h-4" /> Voltar para o acervo
         </Link>
@@ -32,14 +32,13 @@ export default async function DetalhesImovel({ params }: Props) {
       {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 flex-1 w-full pb-20">
         
-        {/* Galeria (Lado Esquerdo) */}
+        {/* Galeria */}
         <div className="h-[400px] md:h-[600px] bg-slate-900 rounded-sm overflow-hidden border border-white/10 shadow-2xl relative group">
           <ImageGallery imagens={imovel.imagens} />
-          {/* Efeito de brilho na borda */}
           <div className="absolute inset-0 border border-white/5 pointer-events-none"></div>
         </div>
 
-        {/* Informações (Lado Direito) */}
+        {/* Informações */}
         <div className="flex flex-col justify-center space-y-8">
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -63,33 +62,27 @@ export default async function DetalhesImovel({ params }: Props) {
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(imovel.preco)}
           </div>
 
-          {/* Grid de Características (Estilo Dark Glass) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-8 border-y border-white/10">
-            
             <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
               <Bed className="text-slate-300 w-6 h-6 mb-3"/>
               <p className="text-2xl font-serif text-white">{imovel.quartos}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Quartos</p>
             </div>
-
             <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
               <Bath className="text-slate-300 w-6 h-6 mb-3"/>
               <p className="text-2xl font-serif text-white">{imovel.banheiros || 1}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Banheiros</p>
             </div>
-
             <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
               <Car className="text-slate-300 w-6 h-6 mb-3"/>
               <p className="text-2xl font-serif text-white">{imovel.vagas || 0}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Vagas</p>
             </div>
-
             <div className="flex flex-col items-center p-4 bg-white/5 backdrop-blur-sm border border-white/5 rounded-sm hover:border-yellow-500/30 transition duration-500">
               <Ruler className="text-slate-300 w-6 h-6 mb-3"/>
               <p className="text-2xl font-serif text-white">{imovel.area}</p>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Área (m²)</p>
             </div>
-
           </div>
 
           <a href={linkWhatsApp} target="_blank" className="group bg-white hover:bg-yellow-500 text-black px-8 py-5 rounded-sm font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(234,179,8,0.4)]">
