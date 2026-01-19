@@ -55,15 +55,10 @@ export function VideoGallery({ videos }: { videos: string[] }) {
             <ChevronRight className="w-6 h-6" />
           </button>
 
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-            {videos.map((_, idx) => (
-              <div
-                key={idx}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  idx === indexAtual ? "bg-white w-4" : "bg-white/50"
-                }`}
-              />
-            ))}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+            <div className="bg-black/50 text-white text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+              {indexAtual + 1} de {videos.length} vídeos
+            </div>
           </div>
         </>
       ) : null}
