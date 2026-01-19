@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { Trash2, Plus, Pencil, LogOut, Image as ImageIcon, Loader2, Save, X, Upload, User } from 'lucide-react';
+import { Trash2, Plus, Pencil, LogOut, Image as ImageIcon, Loader2, Save, X, Upload, User, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 
 // Tipagem do Imóvel
 type Imovel = {
@@ -20,6 +20,23 @@ type Imovel = {
   tipo: 'VENDA' | 'ALUGUEL';
   imagens: string[];
 };
+
+type FotoItem = {
+  id: string;
+  kind: 'existing' | 'new';
+  previewUrl: string;
+  url?: string;
+  file?: File;
+};
+
+const gerarId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+function moverItem<T>(arr: T[], from: number, to: number) {
+  const next = [...arr];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
+}
 
 export default function AdminPage() {
   const router = useRouter();
@@ -50,7 +67,8 @@ export default function AdminPage() {
     vagas: 0,
     area: 0,
   });
-  const [arquivos, setArquivos] = useState<File[]>([]);
+  const [fotos, setFotos] = useState<FotoItem[]>([]);
+  const [fotoArrastandoId, setFotoArrastandoId] = useState<string | null>(null);
 
   // 1. Verifica Sessão
   useEffect(() => {
@@ -100,44 +118,63 @@ export default function AdminPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const novosArquivos = Array.from(e.target.files);
-      setArquivos((prev) => [...prev, ...novosArquivos]);
+      const novasFotos: FotoItem[] = novosArquivos.map((file) => ({
+        id: gerarId(),
+        kind: 'new',
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
 
-      // Gera previews imediatos para o usuário ver as fotos antes de salvar
-      novosArquivos.forEach(file => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setForm((prev) => ({
-            ...prev,
-            imagens: [...(prev.imagens || []), reader.result as string]
-          }));
-        };
-        reader.readAsDataURL(file);
-      });
+      setFotos((prev) => [...prev, ...novasFotos]);
+      e.target.value = '';
     }
   };
 
   // --- UPLOAD DE IMAGENS ---
-  async function uploadImagens(files: File[]): Promise<string[]> {
-    const urls: string[] = [];
-    for (const file of files) {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+  async function uploadImagem(file: File): Promise<string> {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-      const { error } = await supabase.storage
-        .from('imoveis') 
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false,
-          contentType: file.type 
-        });
+    const { error } = await supabase.storage
+      .from('imoveis')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type,
+      });
 
-      if (!error) {
-        const { data } = supabase.storage.from('imoveis').getPublicUrl(fileName);
-        urls.push(data.publicUrl);
-      }
-    }
-    return urls;
+    if (error) throw error;
+
+    const { data } = supabase.storage.from('imoveis').getPublicUrl(fileName);
+    return data.publicUrl;
   }
+
+  const removerFoto = (id: string) => {
+    setFotos((prev) => {
+      const alvo = prev.find((f) => f.id === id);
+      if (alvo?.kind === 'new' && alvo.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(alvo.previewUrl);
+      }
+      return prev.filter((f) => f.id !== id);
+    });
+  };
+
+  const moverFotoPorIndice = (fromIndex: number, toIndex: number) => {
+    setFotos((prev) => {
+      if (toIndex < 0 || toIndex >= prev.length) return prev;
+      return moverItem(prev, fromIndex, toIndex);
+    });
+  };
+
+  const reordenarPorHover = (dragId: string, hoverId: string) => {
+    setFotos((prev) => {
+      if (dragId === hoverId) return prev;
+      const from = prev.findIndex((f) => f.id === dragId);
+      const to = prev.findIndex((f) => f.id === hoverId);
+      if (from === -1 || to === -1) return prev;
+      return moverItem(prev, from, to);
+    });
+  };
 
   const salvarImovel = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,17 +186,22 @@ export default function AdminPage() {
         return Number.isFinite(n) ? n : fallback;
       };
 
-      // Filtramos apenas URLs que já são do Supabase (remover previews em base64)
-      let novasImagens = form.imagens?.filter(img => img.startsWith('http')) || [];
-      
-      if (arquivos.length > 0) {
-        const urlsUpload = await uploadImagens(arquivos);
-        novasImagens = [...novasImagens, ...urlsUpload];
+      const imagensOrdenadas: string[] = [];
+      for (const foto of fotos) {
+        if (foto.kind === 'existing' && foto.url) {
+          imagensOrdenadas.push(foto.url);
+          continue;
+        }
+        if (foto.kind === 'new' && foto.file) {
+          const url = await uploadImagem(foto.file);
+          imagensOrdenadas.push(url);
+          continue;
+        }
       }
 
       const dadosFinais = { 
         ...form, 
-        imagens: novasImagens, 
+        imagens: imagensOrdenadas,
         preco: toNumber(form.preco),
         quartos: toNumber(form.quartos),
         banheiros: toNumber(form.banheiros),
@@ -178,7 +220,7 @@ export default function AdminPage() {
       setModalAberto(false);
       setEditandoImovel(null);
       setForm({ tipo: 'VENDA', imagens: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
-      setArquivos([]);
+      setFotos([]);
       carregarImoveis();
 
     } catch (error: any) {
@@ -205,14 +247,19 @@ export default function AdminPage() {
   const abrirModalEdicao = (imovel: Imovel) => {
     setEditandoImovel(imovel);
     setForm(imovel);
-    setArquivos([]);
+    setFotos((imovel.imagens || []).map((url) => ({
+      id: gerarId(),
+      kind: 'existing',
+      url,
+      previewUrl: url,
+    })));
     setModalAberto(true);
   };
 
   const abrirModalCriacao = () => {
     setEditandoImovel(null);
     setForm({ tipo: 'VENDA', imagens: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
-    setArquivos([]);
+    setFotos([]);
     setModalAberto(true);
   };
 
@@ -417,14 +464,72 @@ export default function AdminPage() {
 
                 <div className="border-t border-terras-marrom/10 pt-6">
                    <label className="label-admin mb-2 block">Fotos</label>
-                   <div className="flex gap-4 mb-4 overflow-x-auto pb-2">
-                      {form.imagens?.map((img, i) => (
-                        <div key={i} className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden group border border-terras-marrom/20">
-                           <img src={img} className="w-full h-full object-cover" />
-                           <button type="button" onClick={() => setForm({...form, imagens: form.imagens?.filter((_, idx) => idx !== i)})} className="absolute inset-0 bg-red-500/80 text-white opacity-0 group-hover:opacity-100 transition flex items-center justify-center font-bold text-xs">REMOVER</button>
-                        </div>
-                      ))}
-                   </div>
+                   {fotos.length > 0 ? (
+                    <div className="mb-4">
+                      <div className="text-[11px] text-terras-marrom/60 mb-3">
+                        Dica: arraste para reordenar ou use as setas para ajustar a ordem.
+                      </div>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                        {fotos.map((foto, index) => (
+                          <div
+                            key={foto.id}
+                            className={`relative rounded-lg overflow-hidden border border-terras-marrom/20 bg-white group ${fotoArrastandoId === foto.id ? 'ring-2 ring-terras-laranja' : ''}`}
+                            draggable
+                            onDragStart={() => setFotoArrastandoId(foto.id)}
+                            onDragEnd={() => setFotoArrastandoId(null)}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              if (!fotoArrastandoId) return;
+                              reordenarPorHover(fotoArrastandoId, foto.id);
+                            }}
+                          >
+                            <img src={foto.previewUrl} className="w-full h-24 object-cover" />
+
+                            <div className="absolute top-2 left-2 flex items-center gap-1">
+                              <span className="text-[10px] font-bold bg-terras-marrom/80 text-terras-bege px-2 py-1 rounded-full">
+                                {index + 1}
+                              </span>
+                            </div>
+
+                            <div className="absolute top-2 right-2 flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => moverFotoPorIndice(index, index - 1)}
+                                className="p-1.5 rounded-full bg-white/90 text-terras-marrom hover:text-terras-laranja shadow-sm disabled:opacity-40"
+                                aria-label="Mover foto para cima"
+                                disabled={index === 0}
+                              >
+                                <ChevronUp className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moverFotoPorIndice(index, index + 1)}
+                                className="p-1.5 rounded-full bg-white/90 text-terras-marrom hover:text-terras-laranja shadow-sm disabled:opacity-40"
+                                aria-label="Mover foto para baixo"
+                                disabled={index === fotos.length - 1}
+                              >
+                                <ChevronDown className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removerFoto(foto.id)}
+                                className="p-1.5 rounded-full bg-white/90 text-terras-marrom hover:text-red-600 shadow-sm"
+                                aria-label="Remover foto"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                              <div className="text-[10px] text-terras-bege/90 bg-black/50 rounded-full px-2 py-1 inline-flex items-center gap-1">
+                                <GripVertical className="w-3 h-3" /> Arraste
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                   ) : null}
                    <div className="border-2 border-dashed border-terras-marrom/20 rounded-xl bg-terras-bege p-8 text-center hover:bg-terras-bege/50 hover:border-terras-laranja transition cursor-pointer relative">
                       <input type="file" multiple accept="image/*" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
                       <div className="flex flex-col items-center gap-2 text-terras-marrom/60">
