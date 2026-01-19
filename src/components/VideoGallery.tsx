@@ -29,7 +29,7 @@ export function VideoGallery({ videos }: { videos: string[] }) {
       <video
         key={srcAtual}
         src={srcAtual}
-        className="w-full h-full object-contain bg-black"
+        className="w-full h-full object-cover"
         controls
         preload="metadata"
         playsInline

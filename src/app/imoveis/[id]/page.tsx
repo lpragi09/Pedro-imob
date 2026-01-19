@@ -49,13 +49,8 @@ export default async function DetalhesImovel({ params }: Props) {
           </div>
 
           {Array.isArray(imovel.videos) && imovel.videos.length > 0 ? (
-            <div className="bg-white rounded-lg border border-terras-marrom/10 shadow-lg p-5">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-terras-marrom/70 mb-4">
-                Vídeos
-              </h3>
-              <div className="rounded-lg overflow-hidden border border-terras-marrom/10 bg-black h-[260px] md:h-[320px]">
-                <VideoGallery videos={imovel.videos as string[]} />
-              </div>
+            <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
+              <VideoGallery videos={imovel.videos as string[]} />
             </div>
           ) : null}
         </div>
