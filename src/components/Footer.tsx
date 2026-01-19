@@ -4,10 +4,11 @@ import { Instagram } from "lucide-react";
 
 const linksNavegacao = [
   { label: "Início", href: "/#topo" },
-  { label: "Nossos serviços", href: "/#servicos" },
-  { label: "Trabalhe conosco", href: "/#trabalhe-conosco" },
-  { label: "Nossos cases", href: "/#cases" },
+  { label: "Propriedades", href: "/#imoveis" },
+  { label: "Quem Somos", href: "/#sobre" },
   { label: "Contato", href: "/#contato" },
+  // Leva direto para a página com filtros (acervo)
+  { label: "Acervo", href: "/imoveis#imoveis" },
 ];
 
 export function Footer() {
@@ -41,26 +42,6 @@ export function Footer() {
 
         <div className="space-y-4">
           <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">
-            Contato
-          </h4>
-          <a
-            href="https://wa.me/553599227700"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-terras-bege/90 hover:text-terras-laranja transition block"
-          >
-            (35) 9922-7700
-          </a>
-          <a
-            href="mailto:contato@terrasrurais.com.br"
-            className="text-terras-bege/90 hover:text-terras-laranja transition block"
-          >
-            contato@terrasrurais.com.br
-          </a>
-        </div>
-
-        <div className="space-y-4">
-          <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">
             Navegação
           </h4>
           <nav aria-label="Navegação do rodapé">
@@ -77,6 +58,26 @@ export function Footer() {
               ))}
             </ul>
           </nav>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">
+            Contatos
+          </h4>
+          <a
+            href="https://wa.me/553599227700"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-terras-bege/90 hover:text-terras-laranja transition block"
+          >
+            (35) 9922-7700
+          </a>
+          <a
+            href="mailto:contato@terrasrurais.com.br"
+            className="text-terras-bege/90 hover:text-terras-laranja transition block"
+          >
+            contato@terrasrurais.com.br
+          </a>
         </div>
 
         <div className="space-y-4">
