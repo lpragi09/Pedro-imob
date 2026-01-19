@@ -3,6 +3,7 @@ import { MapPin, Bed, Ruler, ArrowLeft, Bath, Car } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ImageGallery } from '@/components/ImageGallery';
+import { VideoGallery } from '@/components/VideoGallery';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { Footer } from '@/components/Footer';
 
@@ -52,18 +53,8 @@ export default async function DetalhesImovel({ params }: Props) {
               <h3 className="text-sm font-bold uppercase tracking-widest text-terras-marrom/70 mb-4">
                 Vídeos
               </h3>
-              <div className="grid grid-cols-1 gap-4">
-                {imovel.videos.map((src: string) => (
-                  <div key={src} className="rounded-lg overflow-hidden border border-terras-marrom/10 bg-black">
-                    <video
-                      src={src}
-                      className="w-full h-[260px] md:h-[320px] object-contain"
-                      controls
-                      preload="metadata"
-                      playsInline
-                    />
-                  </div>
-                ))}
+              <div className="rounded-lg overflow-hidden border border-terras-marrom/10 bg-black h-[260px] md:h-[320px]">
+                <VideoGallery videos={imovel.videos as string[]} />
               </div>
             </div>
           ) : null}
