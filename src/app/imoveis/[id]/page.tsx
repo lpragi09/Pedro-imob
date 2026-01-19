@@ -84,7 +84,7 @@ export default async function DetalhesImovel({ params }: Props) {
             </div>
             <div className="flex flex-col items-center p-4 bg-white border border-terras-marrom/5 rounded-lg shadow-sm">
               <Bath className="text-terras-verde-musgo w-6 h-6 mb-3"/>
-              <p className="text-2xl font-bold text-terras-marrom">{imovel.banheiros || 1}</p>
+              <p className="text-2xl font-bold text-terras-marrom">{imovel.banheiros ?? 0}</p>
               <p className="text-[10px] text-terras-marrom/50 uppercase tracking-widest font-bold">Banheiros</p>
             </div>
             <div className="flex flex-col items-center p-4 bg-white border border-terras-marrom/5 rounded-lg shadow-sm">
