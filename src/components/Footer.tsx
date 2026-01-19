@@ -86,7 +86,9 @@ export function Footer() {
           </h4>
           <div className="flex flex-col gap-3 text-terras-bege/90">
             <a
-              href="#"
+              href="https://www.instagram.com/terrasrurais_/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-terras-laranja transition inline-flex items-center gap-2"
               aria-label="Instagram"
             >
