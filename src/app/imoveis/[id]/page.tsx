@@ -119,54 +119,62 @@ export default async function DetalhesImovel({ params }: Props) {
       {/* Footer (Terras Rurais) */}
       <footer id="contato" className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10">
         <div className="max-w-7xl mx-auto px-6 grid gap-12 text-sm font-light md:grid-cols-3 items-start">
-          <div className="space-y-4 md:-mt-10">
-            {/* Logo em texto (pode ser substituída pela imagem depois) */}
-            <Link
-              href="/"
-              aria-label="Terras Rurais - Página inicial"
-              className="inline-flex items-start"
-            >
-              <Image
-                src="/logo-terrasrurais.png"
-                alt="Logo Terras Rurais"
-                width={260}
-                height={80}
-                className="h-28 w-auto sm:h-32 md:h-40"
-                sizes="(max-width: 640px) 440px, (max-width: 1024px) 560px, 680px"
-              />
-            </Link>
-            <p className="text-terras-bege/70 max-w-sm">
-              Seu parceiro de confiança para compra e venda de imóveis rurais. Conectando você ao melhor do campo.
-            </p>
-          </div>
-          <div className="space-y-4">
-            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
-            <a 
-              href="https://wa.me/553599227700" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-terras-bege/90 hover:text-terras-laranja transition block"
-            >
-              (35) 9922-7700
-            </a>
-            <a 
-              href="mailto:contato@terrasrurais.com.br"
-              className="text-terras-bege/90 hover:text-terras-laranja transition block"
-            >
-              contato@terrasrurais.com.br
-            </a>
-          </div>
-          <div className="space-y-4">
-            <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
-            <div className="flex gap-4 text-terras-bege/90">
-              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Instagram className="w-5 h-5"/> Instagram</a>
-              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Facebook className="w-5 h-5"/> Facebook</a>
+          <Reveal className="md:-mt-10">
+            <div className="space-y-4">
+              {/* Logo */}
+              <Link
+                href="/"
+                aria-label="Terras Rurais - Página inicial"
+                className="inline-flex items-start"
+              >
+                <Image
+                  src="/logo-terrasrurais.png"
+                  alt="Logo Terras Rurais"
+                  width={260}
+                  height={80}
+                  className="h-28 w-auto sm:h-32 md:h-40"
+                  sizes="(max-width: 640px) 440px, (max-width: 1024px) 560px, 680px"
+                />
+              </Link>
+              <p className="text-terras-bege/70 max-w-sm">
+                Seu parceiro de confiança para compra e venda de imóveis rurais. Conectando você ao melhor do campo.
+              </p>
             </div>
+          </Reveal>
+          <Reveal delayMs={120}>
+            <div className="space-y-4">
+              <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
+              <a 
+                href="https://wa.me/553599227700" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-terras-bege/90 hover:text-terras-laranja transition block"
+              >
+                (35) 9922-7700
+              </a>
+              <a 
+                href="mailto:contato@terrasrurais.com.br"
+                className="text-terras-bege/90 hover:text-terras-laranja transition block"
+              >
+                contato@terrasrurais.com.br
+              </a>
+            </div>
+          </Reveal>
+          <Reveal delayMs={180}>
+            <div className="space-y-4">
+              <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
+              <div className="flex gap-4 text-terras-bege/90">
+                <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Instagram className="w-5 h-5"/> Instagram</a>
+                <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Facebook className="w-5 h-5"/> Facebook</a>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+        <Reveal direction="none" delayMs={120}>
+          <div className="text-center mt-20 text-xs text-terras-bege/50 uppercase tracking-widest pt-8 border-t border-terras-bege/5">
+            © 2026 Terras Rurais. Todos os direitos reservados.
           </div>
-        </div>
-        <div className="text-center mt-20 text-xs text-terras-bege/50 uppercase tracking-widest pt-8 border-t border-terras-bege/5">
-          © 2026 Terras Rurais. Todos os direitos reservados.
-        </div>
+        </Reveal>
       </footer>
     </div>
   );

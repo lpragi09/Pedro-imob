@@ -12,6 +12,8 @@ type RevealProps = {
   durationMs?: number;
   /** Delay em ms (bom pra criar stagger em grids) */
   delayMs?: number;
+  /** Se true, anima apenas uma vez (comportamento antigo). Se false, anima sempre que entrar/sair da viewport. */
+  once?: boolean;
   /** Quanto do elemento precisa aparecer (0 a 1) */
   threshold?: number;
   /** Margem do observer (ex: "0px 0px -10% 0px") */
@@ -29,6 +31,7 @@ export function Reveal({
   distance = 14,
   durationMs = 650,
   delayMs = 0,
+  once = false,
   threshold = 0.15,
   rootMargin = "0px 0px -10% 0px",
   className,
@@ -55,8 +58,11 @@ export function Reveal({
         for (const entry of entries) {
           if (entry.isIntersecting) {
             setShown(true);
-            obs.disconnect();
+            if (once) obs.disconnect();
             break;
+          } else if (!once) {
+            // Modo contínuo: ao sair da viewport, reseta para poder animar de novo
+            setShown(false);
           }
         }
       },
@@ -65,7 +71,7 @@ export function Reveal({
 
     obs.observe(el);
     return () => obs.disconnect();
-  }, [prefersReducedMotion, rootMargin, threshold]);
+  }, [once, prefersReducedMotion, rootMargin, threshold]);
 
   const translate = direction === "up" ? `translate3d(0, ${distance}px, 0)` : "translate3d(0, 0, 0)";
 
