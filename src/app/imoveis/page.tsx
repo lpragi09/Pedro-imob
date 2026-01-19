@@ -172,7 +172,7 @@ export default async function PaginaImoveis({
               />
             </Link>
             <p className="text-terras-bege/70 max-w-sm">
-              Seu parceiro de confiança para compra, venda e arrendamento de imóveis rurais. Conectando você ao melhor do campo.
+              Seu parceiro de confiança para compra e venda de imóveis rurais. Conectando você ao melhor do campo.
             </p>
           </div>
           <div className="space-y-4">
