@@ -35,6 +35,11 @@ export default function AdminPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [editandoImovel, setEditandoImovel] = useState<Imovel | null>(null);
   const [salvando, setSalvando] = useState(false);
+  const [confirmacaoExclusao, setConfirmacaoExclusao] = useState<{
+    id: string;
+    titulo?: string;
+  } | null>(null);
+  const [excluindo, setExcluindo] = useState(false);
 
   // Formulário
   const [form, setForm] = useState<Partial<Imovel>>({
@@ -184,9 +189,17 @@ export default function AdminPage() {
   };
 
   const deletarImovel = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir esta propriedade?')) return;
-    await supabase.from('imoveis').delete().eq('id', id);
-    carregarImoveis();
+    setExcluindo(true);
+    try {
+      const { error } = await supabase.from('imoveis').delete().eq('id', id);
+      if (error) throw error;
+      await carregarImoveis();
+    } catch (error: any) {
+      alert('Erro ao excluir: ' + (error?.message || 'tente novamente.'));
+    } finally {
+      setExcluindo(false);
+      setConfirmacaoExclusao(null);
+    }
   };
 
   const abrirModalEdicao = (imovel: Imovel) => {
@@ -284,7 +297,12 @@ export default function AdminPage() {
                  )}
                  <div className="absolute top-2 right-2 flex gap-2">
                     <button onClick={() => abrirModalEdicao(imovel)} className="p-2 bg-white/90 text-terras-marrom hover:text-blue-600 rounded-full shadow-md transition"><Pencil className="w-4 h-4"/></button>
-                    <button onClick={() => deletarImovel(imovel.id)} className="p-2 bg-white/90 text-terras-marrom hover:text-red-600 rounded-full shadow-md transition"><Trash2 className="w-4 h-4"/></button>
+                    <button
+                      onClick={() => setConfirmacaoExclusao({ id: imovel.id, titulo: imovel.titulo })}
+                      className="p-2 bg-white/90 text-terras-marrom hover:text-red-600 rounded-full shadow-md transition"
+                    >
+                      <Trash2 className="w-4 h-4"/>
+                    </button>
                  </div>
               </div>
               <div className="p-5">
@@ -301,6 +319,66 @@ export default function AdminPage() {
           ))}
         </div>
       </main>
+
+      {/* Modal de confirmação de exclusão (não depende do confirm() do navegador) */}
+      {confirmacaoExclusao && (
+        <div
+          className="fixed inset-0 bg-terras-marrom/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Confirmar exclusão"
+          onClick={() => (excluindo ? null : setConfirmacaoExclusao(null))}
+        >
+          <div
+            className="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 relative animate-in zoom-in-95"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setConfirmacaoExclusao(null)}
+              disabled={excluindo}
+              className="absolute top-6 right-6 text-terras-marrom/40 hover:text-terras-marrom disabled:opacity-50"
+              aria-label="Fechar"
+            >
+              <X className="w-6 h-6"/>
+            </button>
+
+            <h3 className="text-xl md:text-2xl font-serif font-bold text-terras-marrom mb-2">
+              Confirmar exclusão
+            </h3>
+            <p className="text-terras-marrom/70 mb-6">
+              Tem certeza que deseja excluir este imóvel? Essa ação não pode ser desfeita.
+            </p>
+
+            {confirmacaoExclusao.titulo && (
+              <div className="bg-terras-bege border border-terras-marrom/10 rounded-xl p-4 mb-6">
+                <p className="text-xs font-bold uppercase tracking-widest text-terras-marrom/60 mb-1">Imóvel</p>
+                <p className="font-serif font-bold text-terras-marrom">{confirmacaoExclusao.titulo}</p>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setConfirmacaoExclusao(null)}
+                disabled={excluindo}
+                className="px-5 py-3 rounded-xl border border-terras-marrom/20 text-terras-marrom font-bold hover:bg-terras-bege transition disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => deletarImovel(confirmacaoExclusao.id)}
+                disabled={excluindo}
+                className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {excluindo ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {modalAberto && (
         <div className="fixed inset-0 bg-terras-marrom/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
