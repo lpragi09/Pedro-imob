@@ -1,14 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram } from "lucide-react";
+import { Facebook, Instagram } from "lucide-react";
 
 const linksNavegacao = [
   { label: "Início", href: "/#topo" },
   { label: "Propriedades", href: "/#imoveis" },
-  { label: "Quem Somos", href: "/#sobre" },
-  { label: "Contato", href: "/#contato" },
   // Leva direto para a página com filtros (acervo)
   { label: "Acervo", href: "/imoveis#imoveis" },
+  { label: "Quem Somos", href: "/#sobre" },
+  { label: "Contato", href: "/#contato" },
 ];
 
 export function Footer() {
@@ -84,13 +84,20 @@ export function Footer() {
           <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">
             Redes Sociais
           </h4>
-          <div className="text-terras-bege/90">
+          <div className="flex flex-col gap-3 text-terras-bege/90">
             <a
               href="#"
               className="hover:text-terras-laranja transition inline-flex items-center gap-2"
               aria-label="Instagram"
             >
               <Instagram className="w-5 h-5" /> Instagram
+            </a>
+            <a
+              href="#"
+              className="hover:text-terras-laranja transition inline-flex items-center gap-2"
+              aria-label="Facebook"
+            >
+              <Facebook className="w-5 h-5" /> Facebook
             </a>
           </div>
         </div>
