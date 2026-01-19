@@ -109,13 +109,13 @@ export default async function DetalhesImovel({ params }: Props) {
 
       {/* Footer (Terras Rurais) */}
       <footer id="contato" className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
-          <div className="col-span-1 md:col-span-2 space-y-6">
+        <div className="max-w-7xl mx-auto px-6 grid gap-12 text-sm font-light md:grid-cols-3 items-start">
+          <div className="space-y-4">
             {/* Logo em texto (pode ser substituída pela imagem depois) */}
             <Link
               href="/"
               aria-label="Terras Rurais - Página inicial"
-              className="inline-flex items-center"
+              className="inline-flex items-start"
             >
               <Image
                 src="/logo-terrasrurais.png"
@@ -126,6 +126,9 @@ export default async function DetalhesImovel({ params }: Props) {
                 sizes="(max-width: 640px) 440px, (max-width: 1024px) 560px, 680px"
               />
             </Link>
+            <p className="text-terras-bege/70 max-w-sm">
+              Seu parceiro de confiança para compra, venda e arrendamento de imóveis rurais. Conectando você ao melhor do campo.
+            </p>
           </div>
           <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
