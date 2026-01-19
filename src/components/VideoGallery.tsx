@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function VideoGallery({ videos }: { videos: string[] }) {
   const [indexAtual, setIndexAtual] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchLocked = useRef(false);
 
   if (!videos || videos.length === 0) {
     return (
@@ -24,8 +27,53 @@ export function VideoGallery({ videos }: { videos: string[] }) {
 
   const srcAtual = videos[indexAtual];
 
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    const t = e.touches[0];
+    touchStartX.current = t.clientX;
+    touchStartY.current = t.clientY;
+    touchLocked.current = false;
+  };
+
+  const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX.current == null || touchStartY.current == null) return;
+    if (touchLocked.current) return;
+
+    const t = e.touches[0];
+    const dx = t.clientX - touchStartX.current;
+    const dy = t.clientY - touchStartY.current;
+
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) {
+      touchLocked.current = true;
+      return;
+    }
+
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+      e.preventDefault();
+    }
+  };
+
+  const onTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX.current == null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX.current;
+
+    if (Math.abs(dx) >= 45) {
+      if (dx < 0) proximo();
+      else anterior();
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+    touchLocked.current = false;
+  };
+
   return (
-    <div className="relative w-full h-full group">
+    <div
+      className="relative w-full h-full group touch-pan-y"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       <video
         key={srcAtual}
         src={srcAtual}
