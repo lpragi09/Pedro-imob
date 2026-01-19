@@ -2,8 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { MapPin, Bed, Ruler, ArrowLeft, Bath, Car } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ImageGallery } from '@/components/ImageGallery';
-import { VideoGallery } from '@/components/VideoGallery';
+import { MediaGallery } from '@/components/MediaGallery';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { Footer } from '@/components/Footer';
 
@@ -43,16 +42,11 @@ export default async function DetalhesImovel({ params }: Props) {
       <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 flex-1 w-full pb-20">
         
         {/* Mídia (Fotos + Vídeos) */}
-        <div className="space-y-6">
-          <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
-            <ImageGallery imagens={imovel.imagens} />
-          </div>
-
-          {Array.isArray(imovel.videos) && imovel.videos.length > 0 ? (
-            <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
-              <VideoGallery videos={imovel.videos as string[]} />
-            </div>
-          ) : null}
+        <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
+          <MediaGallery
+            imagens={imovel.imagens || []}
+            videos={Array.isArray(imovel.videos) ? (imovel.videos as string[]) : []}
+          />
         </div>
 
         {/* Informações da Propriedade */}
