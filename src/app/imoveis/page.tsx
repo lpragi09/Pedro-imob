@@ -155,7 +155,7 @@ export default async function PaginaImoveis({
 
       <footer id="contato" className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10">
         <div className="max-w-7xl mx-auto px-6 grid gap-12 text-sm font-light md:grid-cols-3 items-start">
-          <div className="space-y-4">
+          <div className="space-y-4 md:-mt-10">
             {/* Logo */}
             <Link
               href="/"
