@@ -4,6 +4,7 @@ import { Search, MapPin, Image as ImageIcon, Instagram, Facebook, ArrowRight, Be
 import { supabase } from '@/lib/supabase';
 import { Pagination } from '@/components/Pagination'; 
 import { Reveal } from '@/components/Reveal';
+import { ScrollHashSync } from '@/components/ScrollHashSync';
 
 export const revalidate = 0;
 
@@ -36,6 +37,7 @@ export default async function HomeImobiliaria({
 
   return (
     <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans">
+      <ScrollHashSync />
       
       {/* HERO SECTION - Banner Rural */}
       <div 
