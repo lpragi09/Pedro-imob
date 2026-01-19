@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, MapPin, Image as ImageIcon, Instagram, Facebook, ArrowRight, Bed, Bath, Car, Ruler } from 'lucide-react';
+import { Search, MapPin, Image as ImageIcon, Instagram, ArrowRight, Bed, Bath, Car, Ruler } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Pagination } from '@/components/Pagination'; 
 import { Reveal } from '@/components/Reveal';
@@ -242,8 +242,13 @@ export default async function HomeImobiliaria({
           <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
             <div className="flex gap-4 text-terras-bege/90">
-              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Instagram className="w-5 h-5"/> Instagram</a>
-              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Facebook className="w-5 h-5"/> Facebook</a>
+              <a
+                href="#"
+                className="hover:text-terras-laranja transition flex items-center gap-2"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5" /> Instagram
+              </a>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { MapPin, Bed, Ruler, ArrowLeft, Bath, Car, Instagram, Facebook } from 'lucide-react';
+import { MapPin, Bed, Ruler, ArrowLeft, Bath, Car, Instagram } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
@@ -150,8 +150,13 @@ export default async function DetalhesImovel({ params }: Props) {
           <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
             <div className="flex gap-4 text-terras-bege/90">
-              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Instagram className="w-5 h-5"/> Instagram</a>
-              <a href="#" className="hover:text-terras-laranja transition flex items-center gap-2"><Facebook className="w-5 h-5"/> Facebook</a>
+              <a
+                href="#"
+                className="hover:text-terras-laranja transition flex items-center gap-2"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5" /> Instagram
+              </a>
             </div>
           </div>
         </div>

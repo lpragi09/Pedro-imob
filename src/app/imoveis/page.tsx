@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import { MapPin, Bed, Ruler, ArrowRight, Image as ImageIcon, Bath, Car, Instagram, Facebook } from 'lucide-react';
+import { MapPin, Bed, Ruler, ArrowRight, Image as ImageIcon, Bath, Car, Instagram } from 'lucide-react';
 import Image from 'next/image';
 import { ImoveisFilter } from '@/components/ImoveisFilter';
 import { Pagination } from '@/components/Pagination';
@@ -215,13 +215,6 @@ export default async function PaginaImoveis({
                 aria-label="Instagram"
               >
                 <Instagram className="w-5 h-5"/> Instagram
-              </a>
-              <a
-                href="#"
-                className="hover:text-terras-laranja transition flex items-center gap-2"
-                aria-label="Facebook"
-              >
-                <Facebook className="w-5 h-5"/> Facebook
               </a>
             </div>
           </div>
