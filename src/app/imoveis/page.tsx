@@ -4,6 +4,7 @@ import { MapPin, Bed, Ruler, ArrowRight, Image as ImageIcon, Bath, Car } from 'l
 import Image from 'next/image';
 import { ImoveisFilter } from '@/components/ImoveisFilter';
 import { Pagination } from '@/components/Pagination';
+import { Reveal } from '@/components/Reveal';
 
 export const revalidate = 0;
 
@@ -92,10 +93,10 @@ export default async function PaginaImoveis({
 
                 {/* GRADE DE IMÓVEIS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {imoveisParaExibir.map((imovel) => (
+                  {imoveisParaExibir.map((imovel, idx) => (
+                      <Reveal key={imovel.id} delayMs={Math.min(idx * 60, 420)}>
                       <Link 
                       href={`/imoveis/${imovel.id}`} 
-                      key={imovel.id} 
                       className="group block bg-white border border-terras-marrom/10 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-terras-marrom/10 hover:-translate-y-1"
                       >
                       <div className="h-64 overflow-hidden relative">
@@ -134,6 +135,7 @@ export default async function PaginaImoveis({
                           </div>
                       </div>
                       </Link>
+                      </Reveal>
                   ))}
                 </div>
                 

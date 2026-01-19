@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Search, MapPin, Image as ImageIcon, Instagram, Facebook, ArrowRight, Bed, Bath, Car, Ruler } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Pagination } from '@/components/Pagination'; 
+import { Reveal } from '@/components/Reveal';
 
 export const revalidate = 0;
 
@@ -49,23 +50,29 @@ export default async function HomeImobiliaria({
 
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-6">
           {/* Título agora é na cor bege claro para destacar */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl text-terras-bege font-serif leading-tight drop-shadow-2xl">
-            Encontre sua terra,<br/>seu refúgio no campo.
-          </h1>
-          <p className="text-terras-bege/90 text-lg md:text-xl max-w-2xl mx-auto font-light">
-            Especialistas em conectar você às melhores propriedades rurais, sítios e fazendas da região.
-          </p>
+          <Reveal>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl text-terras-bege font-serif leading-tight drop-shadow-2xl">
+              Encontre sua terra,<br/>seu refúgio no campo.
+            </h1>
+          </Reveal>
+          <Reveal delayMs={120}>
+            <p className="text-terras-bege/90 text-lg md:text-xl max-w-2xl mx-auto font-light">
+              Especialistas em conectar você às melhores propriedades rurais, sítios e fazendas da região.
+            </p>
+          </Reveal>
           
           <div className="mt-8 max-w-2xl mx-auto">
              {/* Barra de busca com cores novas */}
-             <form action="/imoveis" className="relative bg-terras-bege/90 backdrop-blur-md border border-terras-marrom/20 rounded-full p-2 flex items-center shadow-2xl shadow-terras-marrom/10">
-                <MapPin className="text-terras-marrom w-5 h-5 ml-4" />
-                <input name="busca" type="text" placeholder="Qual cidade ou região?" className="bg-transparent w-full px-4 py-3 outline-none text-terras-marrom placeholder:text-terras-marrom/60 font-sans text-base" />
-                {/* Botão de busca agora é LARANJA */}
-                <button type="submit" className="bg-terras-laranja hover:bg-terras-amarelo text-terras-bege px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition duration-300 flex items-center gap-2 shadow-lg shadow-terras-laranja/20">
-                   <Search className="w-4 h-4"/> Buscar
-                </button>
-             </form>
+             <Reveal delayMs={220}>
+               <form action="/imoveis" className="relative bg-terras-bege/90 backdrop-blur-md border border-terras-marrom/20 rounded-full p-2 flex items-center shadow-2xl shadow-terras-marrom/10">
+                  <MapPin className="text-terras-marrom w-5 h-5 ml-4" />
+                  <input name="busca" type="text" placeholder="Qual cidade ou região?" className="bg-transparent w-full px-4 py-3 outline-none text-terras-marrom placeholder:text-terras-marrom/60 font-sans text-base" />
+                  {/* Botão de busca agora é LARANJA */}
+                  <button type="submit" className="bg-terras-laranja hover:bg-terras-amarelo text-terras-bege px-8 py-3 rounded-full font-bold uppercase tracking-wider text-xs transition duration-300 flex items-center gap-2 shadow-lg shadow-terras-laranja/20">
+                     <Search className="w-4 h-4"/> Buscar
+                  </button>
+               </form>
+             </Reveal>
           </div>
         </div>
       </div>
@@ -74,12 +81,18 @@ export default async function HomeImobiliaria({
       <main id="imoveis" className="max-w-7xl mx-auto px-6 py-32 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="space-y-2">
-            <h2 className="text-4xl md:text-5xl text-terras-marrom font-serif">Propriedades em Destaque</h2>
-            <p className="text-terras-verde-musgo font-light">Confira as novidades que acabaram de chegar</p>
+            <Reveal>
+              <h2 className="text-4xl md:text-5xl text-terras-marrom font-serif">Propriedades em Destaque</h2>
+            </Reveal>
+            <Reveal delayMs={120}>
+              <p className="text-terras-verde-musgo font-light">Confira as novidades que acabaram de chegar</p>
+            </Reveal>
           </div>
-          <Link href="/imoveis" className="text-terras-marrom hover:text-terras-laranja transition text-sm uppercase tracking-widest border-b border-transparent hover:border-terras-laranja pb-1 font-bold">
-            Ver Todas
-          </Link>
+          <Reveal delayMs={180} direction="none">
+            <Link href="/imoveis" className="text-terras-marrom hover:text-terras-laranja transition text-sm uppercase tracking-widest border-b border-transparent hover:border-terras-laranja pb-1 font-bold">
+              Ver Todas
+            </Link>
+          </Reveal>
         </div>
 
         {/* GRID DE CARDS - NOVO ESTILO RÚSTICO */}
@@ -88,13 +101,13 @@ export default async function HomeImobiliaria({
              <p className="text-terras-marrom/70 col-span-3 text-center py-20 font-light italic">Nenhuma propriedade encontrada no momento.</p>
           )}
 
-          {imoveis?.map((imovel) => (
-            <Link 
-              href={`/imoveis/${imovel.id}`} 
-              key={imovel.id} 
-              // Card agora tem fundo branco/bege, borda sutil e sombra suave
-              className="group block bg-white border border-terras-marrom/10 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-terras-marrom/10 hover:-translate-y-1"
-            >
+          {imoveis?.map((imovel, idx) => (
+            <Reveal key={imovel.id} delayMs={Math.min(idx * 60, 420)}>
+              <Link 
+                href={`/imoveis/${imovel.id}`} 
+                // Card agora tem fundo branco/bege, borda sutil e sombra suave
+                className="group block bg-white border border-terras-marrom/10 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-terras-marrom/10 hover:-translate-y-1"
+              >
               <div className="h-72 overflow-hidden relative">
                  {/* Tag de Tipo com cores da logo */}
                  <span className={`absolute top-4 left-4 text-[10px] font-bold px-3 py-1 z-10 uppercase tracking-widest rounded-full shadow-sm ${imovel.tipo === 'VENDA' ? 'bg-terras-marrom text-terras-bege' : 'bg-terras-amarelo text-terras-marrom'}`}>
@@ -132,7 +145,8 @@ export default async function HomeImobiliaria({
                    <ArrowRight className="text-terras-marrom/60 w-5 h-5 group-hover:text-terras-laranja group-hover:translate-x-1 transition" />
                 </div>
               </div>
-            </Link>
+              </Link>
+            </Reveal>
           ))}
         </div>
 

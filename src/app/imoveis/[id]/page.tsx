@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ImageGallery } from '@/components/ImageGallery';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
+import { Reveal } from '@/components/Reveal';
 
 export const revalidate = 0;
 
@@ -42,9 +43,11 @@ export default async function DetalhesImovel({ params }: Props) {
       <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 flex-1 w-full pb-20">
         
         {/* Galeria Responsiva */}
-        <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
-          <ImageGallery imagens={imovel.imagens} />
-        </div>
+        <Reveal>
+          <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
+            <ImageGallery imagens={imovel.imagens} />
+          </div>
+        </Reveal>
 
         {/* Informações da Propriedade */}
         <div className="flex flex-col justify-center space-y-8">
@@ -58,13 +61,17 @@ export default async function DetalhesImovel({ params }: Props) {
               </span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-serif font-bold text-terras-marrom leading-tight mb-6">
-              {imovel.titulo}
-            </h1>
+            <Reveal>
+              <h1 className="text-4xl md:text-5xl font-serif font-bold text-terras-marrom leading-tight mb-6">
+                {imovel.titulo}
+              </h1>
+            </Reveal>
             
-            <p className="text-lg text-terras-marrom/80 font-light leading-relaxed border-l-2 border-terras-laranja pl-6">
-              {imovel.descricao}
-            </p>
+            <Reveal delayMs={120}>
+              <p className="text-lg text-terras-marrom/80 font-light leading-relaxed border-l-2 border-terras-laranja pl-6">
+                {imovel.descricao}
+              </p>
+            </Reveal>
           </div>
 
           {/* Preço de Destaque */}
@@ -97,13 +104,15 @@ export default async function DetalhesImovel({ params }: Props) {
           </div>
 
           {/* Botão de Contato WhatsApp */}
-          <WhatsAppButton 
-            phone="553599227700"
-            message={textoWhatsApp}
-            variant="large"
-          >
-            Falar com Corretor
-          </WhatsAppButton>
+          <Reveal delayMs={180}>
+            <WhatsAppButton 
+              phone="553599227700"
+              message={textoWhatsApp}
+              variant="large"
+            >
+              Falar com Corretor
+            </WhatsAppButton>
+          </Reveal>
         </div>
       </main>
 
