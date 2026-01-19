@@ -1,8 +1,9 @@
 import { supabase } from '@/lib/supabase';
-import { MapPin, Bed, Ruler, ArrowLeft, MessageCircle, Bath, Car, Instagram, Facebook } from 'lucide-react';
+import { MapPin, Bed, Ruler, ArrowLeft, Bath, Car, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ImageGallery } from '@/components/ImageGallery';
+import { WhatsAppButton } from '@/components/WhatsAppButton';
 
 export const revalidate = 0;
 
@@ -24,8 +25,7 @@ export default async function DetalhesImovel({ params }: Props) {
 
   if (!imovel) return notFound();
 
-  const textoWhatsApp = encodeURIComponent(`Olá! Vi o imóvel "${imovel.titulo}" no site Terras Rurais e quero mais detalhes.`);
-  const linkWhatsApp = `https://wa.me/5511999999999?text=${textoWhatsApp}`;
+  const textoWhatsApp = `Olá! Gostaria de saber sobre o imóvel "${imovel.titulo}".`;
 
   return (
     <div className="min-h-screen bg-terras-bege text-terras-marrom font-sans flex flex-col selection:bg-terras-laranja selection:text-white">
@@ -96,13 +96,13 @@ export default async function DetalhesImovel({ params }: Props) {
           </div>
 
           {/* Botão de Contato WhatsApp */}
-          <a 
-            href={linkWhatsApp} 
-            target="_blank" 
-            className="group bg-[#25D366] hover:bg-[#20bd5a] text-white px-8 py-5 rounded-full font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-green-900/10 hover:-translate-y-1"
+          <WhatsAppButton 
+            phone="553599227700"
+            message={textoWhatsApp}
+            variant="large"
           >
-            <MessageCircle className="w-5 h-5" /> Falar com Corretor
-          </a>
+            Falar com Corretor
+          </WhatsAppButton>
         </div>
       </main>
 
@@ -120,9 +120,20 @@ export default async function DetalhesImovel({ params }: Props) {
           </div>
           <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
-            <p className="text-terras-bege/90">(11) 99999-9999</p>
-            <p className="text-terras-bege/90">contato@terrasrurais.com.br</p>
-            <p className="text-terras-bege/90">Rodovia dos Bandeirantes, km 50 - SP</p>
+            <a 
+              href="https://wa.me/553599227700" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-terras-bege/90 hover:text-terras-laranja transition block"
+            >
+              (35) 9922-7700
+            </a>
+            <a 
+              href="mailto:contato@terrasrurais.com.br"
+              className="text-terras-bege/90 hover:text-terras-laranja transition block"
+            >
+              contato@terrasrurais.com.br
+            </a>
           </div>
           <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>

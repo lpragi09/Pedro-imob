@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, MessageCircle } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { WhatsAppButton } from '@/components/WhatsAppButton';
 
 export function Navbar() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -35,13 +36,7 @@ export function Navbar() {
 
           {/* WHATSAPP DESKTOP */}
           <div className="hidden md:flex items-center gap-4">
-            <a 
-              href="https://wa.me/5511999999999" 
-              target="_blank"
-              className="bg-[#25D366] hover:bg-[#20bd5a] text-white px-5 py-2 rounded font-bold text-xs uppercase tracking-widest shadow-lg transition flex items-center gap-2"
-            >
-              <MessageCircle className="w-4 h-4"/> WhatsApp
-            </a>
+            <WhatsAppButton phone="553599227700" />
           </div>
 
           {/* BOTÃO HAMBURGUER */}
@@ -101,13 +96,12 @@ export function Navbar() {
                 </Link>
             </div>
             
-            <a 
-              href="https://wa.me/5511999999999" 
-              target="_blank"
-              className="bg-[#25D366] text-white font-bold py-4 rounded-lg uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 mt-auto"
-            >
-              <MessageCircle className="w-5 h-5" /> WhatsApp
-            </a>
+            <div className="mt-auto">
+              <WhatsAppButton 
+                phone="553599227700" 
+                className="w-full justify-center py-4 rounded-lg"
+              />
+            </div>
           </div>
         </>
       )}

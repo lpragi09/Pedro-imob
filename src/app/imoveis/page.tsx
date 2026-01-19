@@ -164,9 +164,20 @@ export default async function PaginaImoveis({
           </div>
           <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
-            <p className="text-terras-bege/90">(11) 99999-9999</p>
-            <p className="text-terras-bege/90">contato@terrasrurais.com.br</p>
-            <p className="text-terras-bege/90">Rodovia dos Bandeirantes, km 50 - SP</p>
+            <a 
+              href="https://wa.me/553599227700" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-terras-bege/90 hover:text-terras-laranja transition block"
+            >
+              (35) 9922-7700
+            </a>
+            <a 
+              href="mailto:contato@terrasrurais.com.br"
+              className="text-terras-bege/90 hover:text-terras-laranja transition block"
+            >
+              contato@terrasrurais.com.br
+            </a>
           </div>
           <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Redes Sociais</h4>
