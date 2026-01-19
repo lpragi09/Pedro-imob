@@ -41,9 +41,32 @@ export default async function DetalhesImovel({ params }: Props) {
       {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 lg:gap-16 flex-1 w-full pb-20">
         
-        {/* Galeria Responsiva */}
-        <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
-          <ImageGallery imagens={imovel.imagens} />
+        {/* Mídia (Fotos + Vídeos) */}
+        <div className="space-y-6">
+          <div className="h-[400px] md:h-[600px] bg-white rounded-lg overflow-hidden border border-terras-marrom/10 shadow-2xl relative group">
+            <ImageGallery imagens={imovel.imagens} />
+          </div>
+
+          {Array.isArray(imovel.videos) && imovel.videos.length > 0 ? (
+            <div className="bg-white rounded-lg border border-terras-marrom/10 shadow-lg p-5">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-terras-marrom/70 mb-4">
+                Vídeos
+              </h3>
+              <div className="grid grid-cols-1 gap-4">
+                {imovel.videos.map((src: string) => (
+                  <div key={src} className="rounded-lg overflow-hidden border border-terras-marrom/10 bg-black">
+                    <video
+                      src={src}
+                      className="w-full h-[260px] md:h-[320px] object-contain"
+                      controls
+                      preload="metadata"
+                      playsInline
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         {/* Informações da Propriedade */}

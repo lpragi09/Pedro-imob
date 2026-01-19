@@ -19,9 +19,18 @@ type Imovel = {
   area: number;
   tipo: 'VENDA' | 'ALUGUEL';
   imagens: string[];
+  videos?: string[];
 };
 
 type FotoItem = {
+  id: string;
+  kind: 'existing' | 'new';
+  previewUrl: string;
+  url?: string;
+  file?: File;
+};
+
+type VideoItem = {
   id: string;
   kind: 'existing' | 'new';
   previewUrl: string;
@@ -36,6 +45,22 @@ function moverItem<T>(arr: T[], from: number, to: number) {
   const [item] = next.splice(from, 1);
   next.splice(to, 0, item);
   return next;
+}
+
+function limparObjectUrls(items: Array<{ kind: 'existing' | 'new'; previewUrl: string }>) {
+  for (const item of items) {
+    if (item.kind === 'new' && item.previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(item.previewUrl);
+    }
+  }
+}
+
+function publicUrlToStoragePath(url: string, bucket: string) {
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  const path = url.slice(idx + marker.length);
+  return decodeURIComponent(path);
 }
 
 export default function AdminPage() {
@@ -62,6 +87,7 @@ export default function AdminPage() {
   const [form, setForm] = useState<Partial<Imovel>>({
     tipo: 'VENDA',
     imagens: [],
+    videos: [],
     quartos: 0,
     banheiros: 0,
     vagas: 0,
@@ -69,6 +95,8 @@ export default function AdminPage() {
   });
   const [fotos, setFotos] = useState<FotoItem[]>([]);
   const [fotoArrastandoId, setFotoArrastandoId] = useState<string | null>(null);
+  const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [videoArrastandoId, setVideoArrastandoId] = useState<string | null>(null);
 
   // 1. Verifica Sessão
   useEffect(() => {
@@ -114,6 +142,16 @@ export default function AdminPage() {
     router.push('/');
   };
 
+  const fecharModal = () => {
+    limparObjectUrls(fotos);
+    limparObjectUrls(videos);
+    setModalAberto(false);
+    setEditandoImovel(null);
+    setForm({ tipo: 'VENDA', imagens: [], videos: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
+    setFotos([]);
+    setVideos([]);
+  };
+
   // --- NOVA FUNÇÃO DE MANIPULAÇÃO DE ARQUIVOS ---
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -130,10 +168,44 @@ export default function AdminPage() {
     }
   };
 
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const novosArquivos = Array.from(e.target.files).filter((f) => f.type === 'video/mp4');
+      const novosVideos: VideoItem[] = novosArquivos.map((file) => ({
+        id: gerarId(),
+        kind: 'new',
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+
+      setVideos((prev) => [...prev, ...novosVideos]);
+      e.target.value = '';
+    }
+  };
+
   // --- UPLOAD DE IMAGENS ---
   async function uploadImagem(file: File): Promise<string> {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+    const { error } = await supabase.storage
+      .from('imoveis')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type,
+      });
+
+    if (error) throw error;
+
+    const { data } = supabase.storage.from('imoveis').getPublicUrl(fileName);
+    return data.publicUrl;
+  }
+
+  // --- UPLOAD DE VÍDEOS (MP4) ---
+  async function uploadVideo(file: File): Promise<string> {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `videos/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
     const { error } = await supabase.storage
       .from('imoveis')
@@ -159,8 +231,25 @@ export default function AdminPage() {
     });
   };
 
+  const removerVideo = (id: string) => {
+    setVideos((prev) => {
+      const alvo = prev.find((v) => v.id === id);
+      if (alvo?.kind === 'new' && alvo.previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(alvo.previewUrl);
+      }
+      return prev.filter((v) => v.id !== id);
+    });
+  };
+
   const moverFotoPorIndice = (fromIndex: number, toIndex: number) => {
     setFotos((prev) => {
+      if (toIndex < 0 || toIndex >= prev.length) return prev;
+      return moverItem(prev, fromIndex, toIndex);
+    });
+  };
+
+  const moverVideoPorIndice = (fromIndex: number, toIndex: number) => {
+    setVideos((prev) => {
       if (toIndex < 0 || toIndex >= prev.length) return prev;
       return moverItem(prev, fromIndex, toIndex);
     });
@@ -171,6 +260,16 @@ export default function AdminPage() {
       if (dragId === hoverId) return prev;
       const from = prev.findIndex((f) => f.id === dragId);
       const to = prev.findIndex((f) => f.id === hoverId);
+      if (from === -1 || to === -1) return prev;
+      return moverItem(prev, from, to);
+    });
+  };
+
+  const reordenarVideoPorHover = (dragId: string, hoverId: string) => {
+    setVideos((prev) => {
+      if (dragId === hoverId) return prev;
+      const from = prev.findIndex((v) => v.id === dragId);
+      const to = prev.findIndex((v) => v.id === hoverId);
       if (from === -1 || to === -1) return prev;
       return moverItem(prev, from, to);
     });
@@ -199,9 +298,23 @@ export default function AdminPage() {
         }
       }
 
+      const videosOrdenados: string[] = [];
+      for (const video of videos) {
+        if (video.kind === 'existing' && video.url) {
+          videosOrdenados.push(video.url);
+          continue;
+        }
+        if (video.kind === 'new' && video.file) {
+          const url = await uploadVideo(video.file);
+          videosOrdenados.push(url);
+          continue;
+        }
+      }
+
       const dadosFinais = { 
         ...form, 
         imagens: imagensOrdenadas,
+        videos: videosOrdenados,
         preco: toNumber(form.preco),
         quartos: toNumber(form.quartos),
         banheiros: toNumber(form.banheiros),
@@ -219,8 +332,9 @@ export default function AdminPage() {
 
       setModalAberto(false);
       setEditandoImovel(null);
-      setForm({ tipo: 'VENDA', imagens: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
+      setForm({ tipo: 'VENDA', imagens: [], videos: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
       setFotos([]);
+      setVideos([]);
       carregarImoveis();
 
     } catch (error: any) {
@@ -233,6 +347,24 @@ export default function AdminPage() {
   const deletarImovel = async (id: string) => {
     setExcluindo(true);
     try {
+      // Tenta limpar arquivos do Storage (best effort). Pode falhar por política/permissão e não deve impedir a exclusão do registro.
+      const { data: midia } = await supabase
+        .from('imoveis')
+        .select('imagens, videos')
+        .eq('id', id)
+        .single();
+
+      const imagens: string[] = (midia as any)?.imagens || [];
+      const vids: string[] = (midia as any)?.videos || [];
+
+      const paths = [...imagens, ...vids]
+        .map((url) => publicUrlToStoragePath(url, 'imoveis'))
+        .filter((p): p is string => Boolean(p));
+
+      if (paths.length > 0) {
+        await supabase.storage.from('imoveis').remove(paths);
+      }
+
       const { error } = await supabase.from('imoveis').delete().eq('id', id);
       if (error) throw error;
       await carregarImoveis();
@@ -245,9 +377,17 @@ export default function AdminPage() {
   };
 
   const abrirModalEdicao = (imovel: Imovel) => {
+    limparObjectUrls(fotos);
+    limparObjectUrls(videos);
     setEditandoImovel(imovel);
     setForm(imovel);
     setFotos((imovel.imagens || []).map((url) => ({
+      id: gerarId(),
+      kind: 'existing',
+      url,
+      previewUrl: url,
+    })));
+    setVideos((imovel.videos || []).map((url) => ({
       id: gerarId(),
       kind: 'existing',
       url,
@@ -257,9 +397,12 @@ export default function AdminPage() {
   };
 
   const abrirModalCriacao = () => {
+    limparObjectUrls(fotos);
+    limparObjectUrls(videos);
     setEditandoImovel(null);
-    setForm({ tipo: 'VENDA', imagens: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
+    setForm({ tipo: 'VENDA', imagens: [], videos: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
     setFotos([]);
+    setVideos([]);
     setModalAberto(true);
   };
 
@@ -430,7 +573,7 @@ export default function AdminPage() {
       {modalAberto && (
         <div className="fixed inset-0 bg-terras-marrom/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl animate-in zoom-in-95 p-6 md:p-10 relative">
-             <button onClick={() => setModalAberto(false)} className="absolute top-6 right-6 text-terras-marrom/40 hover:text-terras-marrom"><X className="w-6 h-6"/></button>
+             <button onClick={fecharModal} className="absolute top-6 right-6 text-terras-marrom/40 hover:text-terras-marrom"><X className="w-6 h-6"/></button>
              
              <h2 className="text-2xl font-serif font-bold mb-8 flex items-center gap-2">
                {editandoImovel ? <Pencil className="w-5 h-5 text-terras-laranja"/> : <Plus className="w-5 h-5 text-terras-laranja"/>}
@@ -536,6 +679,101 @@ export default function AdminPage() {
                          <Upload className="w-8 h-8 text-terras-laranja" /><span className="text-sm font-bold">Adicionar fotos</span>
                       </div>
                    </div>
+                </div>
+
+                <div className="border-t border-terras-marrom/10 pt-6">
+                  <label className="label-admin mb-2 block">Vídeos (MP4)</label>
+                  <p className="text-[11px] text-terras-marrom/60 mb-4">
+                    Recomendado: até 30–60s por vídeo e arquivo leve para tocar rápido no celular.
+                  </p>
+
+                  {videos.length > 0 ? (
+                    <div className="mb-4">
+                      <div className="text-[11px] text-terras-marrom/60 mb-3">
+                        Dica: arraste para reordenar ou use as setas para ajustar a ordem.
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {videos.map((video, index) => (
+                          <div
+                            key={video.id}
+                            className={`relative rounded-xl overflow-hidden border border-terras-marrom/20 bg-white ${videoArrastandoId === video.id ? 'ring-2 ring-terras-laranja' : ''}`}
+                            draggable
+                            onDragStart={() => setVideoArrastandoId(video.id)}
+                            onDragEnd={() => setVideoArrastandoId(null)}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              if (!videoArrastandoId) return;
+                              reordenarVideoPorHover(videoArrastandoId, video.id);
+                            }}
+                          >
+                            <div className="p-3 flex items-center justify-between gap-3 border-b border-terras-marrom/10">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold bg-terras-marrom/80 text-terras-bege px-2 py-1 rounded-full">
+                                  {index + 1}
+                                </span>
+                                <span className="text-xs font-bold text-terras-marrom/70 uppercase tracking-widest inline-flex items-center gap-1">
+                                  <GripVertical className="w-3 h-3" /> Arraste
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => moverVideoPorIndice(index, index - 1)}
+                                  className="p-1.5 rounded-full bg-terras-bege text-terras-marrom hover:text-terras-laranja border border-terras-marrom/10 disabled:opacity-40"
+                                  aria-label="Mover vídeo para cima"
+                                  disabled={index === 0}
+                                >
+                                  <ChevronUp className="w-4 h-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => moverVideoPorIndice(index, index + 1)}
+                                  className="p-1.5 rounded-full bg-terras-bege text-terras-marrom hover:text-terras-laranja border border-terras-marrom/10 disabled:opacity-40"
+                                  aria-label="Mover vídeo para baixo"
+                                  disabled={index === videos.length - 1}
+                                >
+                                  <ChevronDown className="w-4 h-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removerVideo(video.id)}
+                                  className="p-1.5 rounded-full bg-terras-bege text-terras-marrom hover:text-red-600 border border-terras-marrom/10"
+                                  aria-label="Remover vídeo"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="p-3">
+                              <video
+                                src={video.previewUrl}
+                                className="w-full h-48 bg-black rounded-lg"
+                                controls
+                                preload="metadata"
+                                playsInline
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="border-2 border-dashed border-terras-marrom/20 rounded-xl bg-terras-bege p-8 text-center hover:bg-terras-bege/50 hover:border-terras-laranja transition cursor-pointer relative">
+                    <input
+                      type="file"
+                      multiple
+                      accept="video/mp4"
+                      onChange={handleVideoChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                    <div className="flex flex-col items-center gap-2 text-terras-marrom/60">
+                      <Upload className="w-8 h-8 text-terras-laranja" />
+                      <span className="text-sm font-bold">Adicionar vídeos (MP4)</span>
+                    </div>
+                  </div>
                 </div>
 
                 <button type="submit" disabled={salvando} className="w-full bg-terras-laranja hover:bg-terras-amarelo text-terras-bege font-bold py-4 rounded-xl uppercase tracking-widest shadow-xl shadow-terras-laranja/20 transition flex items-center justify-center gap-2">
