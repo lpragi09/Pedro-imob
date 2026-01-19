@@ -122,13 +122,10 @@ export default async function DetalhesImovel({ params }: Props) {
                 alt="Logo Terras Rurais"
                 width={260}
                 height={80}
-                className="h-20 w-auto sm:h-24 md:h-28"
-                sizes="(max-width: 640px) 320px, (max-width: 1024px) 420px, 520px"
+                className="h-28 w-auto sm:h-32 md:h-40"
+                sizes="(max-width: 640px) 440px, (max-width: 1024px) 560px, 680px"
               />
             </Link>
-            <p className="text-terras-bege/70 max-w-sm">
-              Seu parceiro de confiança para compra, venda e arrendamento de imóveis rurais. Conectando você ao melhor do campo.
-            </p>
           </div>
           <div className="space-y-4">
             <h4 className="uppercase tracking-widest text-xs font-bold text-terras-amarelo">Contato</h4>
