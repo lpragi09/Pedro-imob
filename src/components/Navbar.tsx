@@ -14,7 +14,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-20">
           
           {/* LOGO */}
-          <Link href="/" className="text-2xl font-serif font-bold flex items-center gap-2 group">
+          <Link href="/#topo" className="text-2xl font-serif font-bold flex items-center gap-2 group">
             <div className="bg-terras-bege/10 p-2 rounded-lg group-hover:bg-terras-laranja transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-terras-bege">
                 <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
@@ -28,7 +28,7 @@ export function Navbar() {
 
           {/* MENU DESKTOP */}
           <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest">
-            <Link href="/" className="hover:text-terras-laranja transition">Início</Link>
+            <Link href="/#topo" className="hover:text-terras-laranja transition">Início</Link>
             <Link href="/#imoveis" className="hover:text-terras-laranja transition">Propriedades</Link>
             <Link href="/#sobre" className="hover:text-terras-laranja transition">Quem Somos</Link>
             <Link href="/#contato" className="hover:text-terras-laranja transition">Contato</Link>
@@ -67,7 +67,7 @@ export function Navbar() {
             
             <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                 <Link 
-                  href="/" 
+                  href="/#topo" 
                   onClick={() => setMenuAberto(false)} 
                   className="text-terras-bege text-sm font-bold uppercase tracking-widest hover:text-terras-laranja border-l-2 border-terras-laranja/30 pl-3"
                 >
