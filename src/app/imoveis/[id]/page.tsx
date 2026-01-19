@@ -122,8 +122,8 @@ export default async function DetalhesImovel({ params }: Props) {
                 alt="Logo Terras Rurais"
                 width={260}
                 height={80}
-                className="h-10 w-auto sm:h-12"
-                sizes="(max-width: 640px) 160px, 220px"
+                className="h-14 w-auto sm:h-16 md:h-20"
+                sizes="(max-width: 640px) 220px, (max-width: 1024px) 260px, 320px"
               />
             </Link>
             <p className="text-terras-bege/70 max-w-sm">
