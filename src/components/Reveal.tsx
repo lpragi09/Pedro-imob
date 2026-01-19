@@ -37,11 +37,18 @@ export function Reveal({
   className,
 }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [shown, setShown] = useState(false);
+  // Começa como "true" para não esconder conteúdo no SSR/hidratação (evita sensação de “teleporte”).
+  // No mount, calculamos se está em viewport para decidir se deve iniciar oculto (abaixo da dobra).
+  const [shown, setShown] = useState(true);
 
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === "undefined") return false;
     return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+  }, []);
+
+  const isMobile = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia?.("(max-width: 768px)")?.matches ?? false;
   }, []);
 
   useEffect(() => {
@@ -53,6 +60,12 @@ export function Reveal({
     const el = ref.current;
     if (!el) return;
 
+    // Decide o estado inicial com base na viewport (sem piscar).
+    // Se já estiver visível, mantém mostrado; se estiver fora da tela, inicia oculto para animar quando entrar.
+    const rect = el.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    setShown(inView);
+
     const obs = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -60,8 +73,8 @@ export function Reveal({
             setShown(true);
             if (once) obs.disconnect();
             break;
-          } else if (!once) {
-            // Modo contínuo: ao sair da viewport, reseta para poder animar de novo
+          } else if (!once && entry.intersectionRatio === 0) {
+            // Modo contínuo: só reseta quando saiu COMPLETAMENTE da viewport (evita flicker no mobile)
             setShown(false);
           }
         }
@@ -73,7 +86,15 @@ export function Reveal({
     return () => obs.disconnect();
   }, [once, prefersReducedMotion, rootMargin, threshold]);
 
-  const translate = direction === "up" ? `translate3d(0, ${distance}px, 0)` : "translate3d(0, 0, 0)";
+  // Mobile: animação mais “lisa” (menos deslocamento, mais duração e um leve delay padrão).
+  const effectiveDistance = isMobile ? Math.min(distance, 10) : distance;
+  const effectiveDurationMs = isMobile ? Math.max(durationMs, 780) : durationMs;
+  const effectiveDelayMs = isMobile ? delayMs + 60 : delayMs;
+
+  const translate =
+    direction === "up"
+      ? `translate3d(0, ${effectiveDistance}px, 0)`
+      : "translate3d(0, 0, 0)";
 
   return (
     <div
@@ -83,9 +104,9 @@ export function Reveal({
         opacity: shown ? 1 : 0,
         transform: shown ? "translate3d(0, 0, 0)" : translate,
         transitionProperty: "opacity, transform",
-        transitionDuration: `${durationMs}ms`,
+        transitionDuration: `${effectiveDurationMs}ms`,
         transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
-        transitionDelay: `${delayMs}ms`,
+        transitionDelay: `${effectiveDelayMs}ms`,
         willChange: "opacity, transform",
       }}
     >
