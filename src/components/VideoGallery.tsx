@@ -105,7 +105,7 @@ export function VideoGallery({ videos }: { videos: string[] }) {
 
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
             <div className="bg-black/50 text-white text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-              {indexAtual + 1} de {videos.length} vídeos
+              {indexAtual + 1} de {videos.length}
             </div>
           </div>
         </>

@@ -160,8 +160,7 @@ export function MediaGallery({
 
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
             <div className="bg-black/50 text-white text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-              {indexAtual + 1} de {total}{" "}
-              {total === 1 ? tipoAtual : tipoAtualPlural}
+              {indexAtual + 1} de {total}
             </div>
           </div>
         </>

@@ -99,7 +99,7 @@ export function ImageGallery({ imagens }: { imagens: string[] }) {
           {/* Indicador (Ex: 1 de 2 fotos) */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
             <div className="bg-black/50 text-white text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-              {indexAtual + 1} de {imagens.length} fotos
+              {indexAtual + 1} de {imagens.length}
             </div>
           </div>
         </>
