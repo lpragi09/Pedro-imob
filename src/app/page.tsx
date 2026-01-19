@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, MapPin, Image as ImageIcon, Instagram, Facebook, ArrowRight, Bed, Bath, Car, Ruler } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Pagination } from '@/components/Pagination'; 
@@ -176,10 +177,21 @@ export default async function HomeImobiliaria({
       <footer id="contato" className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-sm font-light">
           <div className="col-span-1 md:col-span-2 space-y-6">
-            {/* Logo em texto (pode ser substituída pela imagem depois) */}
-            <h3 className="text-3xl font-serif font-bold flex items-center gap-2">
-              <span className="text-terras-amarelo">Terras</span>Rurais
-            </h3>
+            {/* Logo */}
+            <Link
+              href="/"
+              aria-label="Terras Rurais - Página inicial"
+              className="inline-flex items-center"
+            >
+              <Image
+                src="/logo-terrasrurais.png"
+                alt="Logo Terras Rurais"
+                width={260}
+                height={80}
+                className="h-10 w-auto sm:h-12"
+                sizes="(max-width: 640px) 160px, 220px"
+              />
+            </Link>
             <p className="text-terras-bege/70 max-w-sm">
               Seu parceiro de confiança para compra, venda e arrendamento de imóveis rurais. Conectando você ao melhor do campo.
             </p>
