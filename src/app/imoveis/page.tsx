@@ -167,8 +167,8 @@ export default async function PaginaImoveis({
                 alt="Logo Terras Rurais"
                 width={260}
                 height={80}
-                className="h-14 w-auto sm:h-16 md:h-20"
-                sizes="(max-width: 640px) 220px, (max-width: 1024px) 260px, 320px"
+                className="h-20 w-auto sm:h-24 md:h-28"
+                sizes="(max-width: 640px) 320px, (max-width: 1024px) 420px, 520px"
               />
             </Link>
             <p className="text-terras-bege/70 max-w-sm">
