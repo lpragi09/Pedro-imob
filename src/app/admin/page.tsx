@@ -39,7 +39,11 @@ export default function AdminPage() {
   // Formulário
   const [form, setForm] = useState<Partial<Imovel>>({
     tipo: 'VENDA',
-    imagens: []
+    imagens: [],
+    quartos: 0,
+    banheiros: 0,
+    vagas: 0,
+    area: 0,
   });
   const [arquivos, setArquivos] = useState<File[]>([]);
 
@@ -135,6 +139,11 @@ export default function AdminPage() {
     setSalvando(true);
 
     try {
+      const toNumber = (value: unknown, fallback = 0) => {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+      };
+
       // Filtramos apenas URLs que já são do Supabase (remover previews em base64)
       let novasImagens = form.imagens?.filter(img => img.startsWith('http')) || [];
       
@@ -143,7 +152,15 @@ export default function AdminPage() {
         novasImagens = [...novasImagens, ...urlsUpload];
       }
 
-      const dadosFinais = { ...form, imagens: novasImagens, preco: Number(form.preco), quartos: Number(form.quartos), banheiros: Number(form.banheiros), vagas: Number(form.vagas), area: Number(form.area) };
+      const dadosFinais = { 
+        ...form, 
+        imagens: novasImagens, 
+        preco: toNumber(form.preco),
+        quartos: toNumber(form.quartos),
+        banheiros: toNumber(form.banheiros),
+        vagas: toNumber(form.vagas),
+        area: toNumber(form.area),
+      };
 
       if (editandoImovel) {
         const { error } = await supabase.from('imoveis').update(dadosFinais).eq('id', editandoImovel.id);
@@ -155,7 +172,7 @@ export default function AdminPage() {
 
       setModalAberto(false);
       setEditandoImovel(null);
-      setForm({ tipo: 'VENDA', imagens: [] });
+      setForm({ tipo: 'VENDA', imagens: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
       setArquivos([]);
       carregarImoveis();
 
@@ -181,7 +198,7 @@ export default function AdminPage() {
 
   const abrirModalCriacao = () => {
     setEditandoImovel(null);
-    setForm({ tipo: 'VENDA', imagens: [] });
+    setForm({ tipo: 'VENDA', imagens: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
     setArquivos([]);
     setModalAberto(true);
   };
@@ -311,10 +328,10 @@ export default function AdminPage() {
 
                    <div className="space-y-4">
                       <div className="grid grid-cols-4 gap-2">
-                         <div><label className="label-admin">Qua</label><input type="number" value={form.quartos || ''} onChange={e => setForm({...form, quartos: Number(e.target.value)})} className="input-admin text-center" /></div>
-                         <div><label className="label-admin">Ban</label><input type="number" value={form.banheiros || ''} onChange={e => setForm({...form, banheiros: Number(e.target.value)})} className="input-admin text-center" /></div>
-                         <div><label className="label-admin">Vag</label><input type="number" value={form.vagas || ''} onChange={e => setForm({...form, vagas: Number(e.target.value)})} className="input-admin text-center" /></div>
-                         <div><label className="label-admin">m²</label><input type="number" value={form.area || ''} onChange={e => setForm({...form, area: Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">Qua</label><input min={0} step={1} type="number" value={form.quartos ?? ''} onChange={e => setForm({...form, quartos: e.target.value === '' ? undefined : Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">Ban</label><input min={0} step={1} type="number" value={form.banheiros ?? ''} onChange={e => setForm({...form, banheiros: e.target.value === '' ? undefined : Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">Vag</label><input min={0} step={1} type="number" value={form.vagas ?? ''} onChange={e => setForm({...form, vagas: e.target.value === '' ? undefined : Number(e.target.value)})} className="input-admin text-center" /></div>
+                         <div><label className="label-admin">m²</label><input min={0} step={1} type="number" value={form.area ?? ''} onChange={e => setForm({...form, area: e.target.value === '' ? undefined : Number(e.target.value)})} className="input-admin text-center" /></div>
                       </div>
                       <div><label className="label-admin">Descrição</label><textarea rows={5} value={form.descricao || ''} onChange={e => setForm({...form, descricao: e.target.value})} className="input-admin resize-none" /></div>
                    </div>
