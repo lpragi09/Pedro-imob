@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { Trash2, Plus, Pencil, LogOut, Image as ImageIcon, Loader2, Save, X, Upload, User, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, Pencil, LogOut, Image as ImageIcon, Loader2, Save, X, Upload, User, ChevronUp, ChevronDown } from 'lucide-react';
 
 // Tipagem do Imóvel
 type Imovel = {
@@ -94,9 +94,7 @@ export default function AdminPage() {
     area: 0,
   });
   const [fotos, setFotos] = useState<FotoItem[]>([]);
-  const [fotoArrastandoId, setFotoArrastandoId] = useState<string | null>(null);
   const [videos, setVideos] = useState<VideoItem[]>([]);
-  const [videoArrastandoId, setVideoArrastandoId] = useState<string | null>(null);
 
   // 1. Verifica Sessão
   useEffect(() => {
@@ -252,26 +250,6 @@ export default function AdminPage() {
     setVideos((prev) => {
       if (toIndex < 0 || toIndex >= prev.length) return prev;
       return moverItem(prev, fromIndex, toIndex);
-    });
-  };
-
-  const reordenarPorHover = (dragId: string, hoverId: string) => {
-    setFotos((prev) => {
-      if (dragId === hoverId) return prev;
-      const from = prev.findIndex((f) => f.id === dragId);
-      const to = prev.findIndex((f) => f.id === hoverId);
-      if (from === -1 || to === -1) return prev;
-      return moverItem(prev, from, to);
-    });
-  };
-
-  const reordenarVideoPorHover = (dragId: string, hoverId: string) => {
-    setVideos((prev) => {
-      if (dragId === hoverId) return prev;
-      const from = prev.findIndex((v) => v.id === dragId);
-      const to = prev.findIndex((v) => v.id === hoverId);
-      if (from === -1 || to === -1) return prev;
-      return moverItem(prev, from, to);
     });
   };
 
@@ -609,22 +587,11 @@ export default function AdminPage() {
                    <label className="label-admin mb-2 block">Fotos</label>
                    {fotos.length > 0 ? (
                     <div className="mb-4">
-                      <div className="text-[11px] text-terras-marrom/60 mb-3">
-                        Dica: arraste para reordenar ou use as setas para ajustar a ordem.
-                      </div>
                       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                         {fotos.map((foto, index) => (
                           <div
                             key={foto.id}
-                            className={`relative rounded-lg overflow-hidden border border-terras-marrom/20 bg-white group ${fotoArrastandoId === foto.id ? 'ring-2 ring-terras-laranja' : ''}`}
-                            draggable
-                            onDragStart={() => setFotoArrastandoId(foto.id)}
-                            onDragEnd={() => setFotoArrastandoId(null)}
-                            onDragOver={(e) => {
-                              e.preventDefault();
-                              if (!fotoArrastandoId) return;
-                              reordenarPorHover(fotoArrastandoId, foto.id);
-                            }}
+                            className="relative rounded-lg overflow-hidden border border-terras-marrom/20 bg-white group"
                           >
                             <img src={foto.previewUrl} className="w-full h-24 object-cover" />
 
@@ -662,12 +629,6 @@ export default function AdminPage() {
                                 <X className="w-4 h-4" />
                               </button>
                             </div>
-
-                            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                              <div className="text-[10px] text-terras-bege/90 bg-black/50 rounded-full px-2 py-1 inline-flex items-center gap-1">
-                                <GripVertical className="w-3 h-3" /> Arraste
-                              </div>
-                            </div>
                           </div>
                         ))}
                       </div>
@@ -689,30 +650,16 @@ export default function AdminPage() {
 
                   {videos.length > 0 ? (
                     <div className="mb-4">
-                      <div className="text-[11px] text-terras-marrom/60 mb-3">
-                        Dica: arraste para reordenar ou use as setas para ajustar a ordem.
-                      </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {videos.map((video, index) => (
                           <div
                             key={video.id}
-                            className={`relative rounded-xl overflow-hidden border border-terras-marrom/20 bg-white ${videoArrastandoId === video.id ? 'ring-2 ring-terras-laranja' : ''}`}
-                            draggable
-                            onDragStart={() => setVideoArrastandoId(video.id)}
-                            onDragEnd={() => setVideoArrastandoId(null)}
-                            onDragOver={(e) => {
-                              e.preventDefault();
-                              if (!videoArrastandoId) return;
-                              reordenarVideoPorHover(videoArrastandoId, video.id);
-                            }}
+                            className="relative rounded-xl overflow-hidden border border-terras-marrom/20 bg-white"
                           >
                             <div className="p-3 flex items-center justify-between gap-3 border-b border-terras-marrom/10">
                               <div className="flex items-center gap-2">
                                 <span className="text-[10px] font-bold bg-terras-marrom/80 text-terras-bege px-2 py-1 rounded-full">
                                   {index + 1}
-                                </span>
-                                <span className="text-xs font-bold text-terras-marrom/70 uppercase tracking-widest inline-flex items-center gap-1">
-                                  <GripVertical className="w-3 h-3" /> Arraste
                                 </span>
                               </div>
 
