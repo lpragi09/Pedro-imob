@@ -47,11 +47,20 @@ export async function sendEmail(
     const pass = process.env.ZOHO_SMTP_PASS;
     const to = process.env.CONTACT_TO || user;
 
-    if (!user || !pass || !to) {
+    const missing: string[] = [];
+    if (!user) missing.push("ZOHO_SMTP_USER");
+    if (!pass) missing.push("ZOHO_SMTP_PASS");
+    if (!to) missing.push("CONTACT_TO");
+
+    if (missing.length > 0) {
+      // Não logar valores (segurança). Apenas quais chaves estão ausentes.
+      console.warn("Configuração SMTP ausente:", missing.join(", "));
       return {
         ok: false,
         message:
-          "Configuração de e-mail ausente no servidor. Verifique o .env.local.",
+          `Configuração de e-mail ausente no servidor: ${missing.join(
+            ", "
+          )}. Verifique o .env.local (local) ou as Environment Variables na Vercel.`,
       };
     }
 
