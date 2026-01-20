@@ -42,8 +42,8 @@ export function ContactForm() {
   }, [state.ok]);
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2 items-start">
-      <div className="rounded-2xl border border-terras-bege/10 bg-terras-bege/5 backdrop-blur-sm shadow-2xl shadow-black/25 p-6 sm:p-8">
+    <div className="w-full max-w-5xl mx-auto grid gap-6 lg:gap-8 lg:grid-cols-[1.05fr_0.95fr] items-start">
+      <div className="w-full rounded-2xl border border-terras-bege/10 bg-terras-bege/5 backdrop-blur-sm shadow-2xl shadow-black/25 p-5 sm:p-8">
         <div className="mb-6">
           <h3 className="text-2xl sm:text-3xl font-serif text-terras-bege">
             Vamos encontrar a sua terra ideal
@@ -153,7 +153,7 @@ export function ContactForm() {
         </form>
       </div>
 
-      <div className="grid gap-4">
+      <div className="w-full grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
         <div className="rounded-2xl border border-terras-bege/10 bg-white/5 backdrop-blur-sm p-6 shadow-xl shadow-black/20">
           <div className="flex items-start gap-3">
             <div className="rounded-xl bg-terras-bege/10 p-3">
@@ -163,7 +163,9 @@ export function ContactForm() {
               <p className="text-[11px] font-bold uppercase tracking-widest text-terras-bege/70">
                 E-mail
               </p>
-              <p className="text-terras-bege mt-1">contato@terrasruraisimoveis.com.br</p>
+              <p className="text-terras-bege mt-1 break-all">
+                contato@terrasruraisimoveis.com.br
+              </p>
             </div>
           </div>
         </div>
@@ -182,7 +184,7 @@ export function ContactForm() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-terras-bege/10 bg-terras-bege/5 p-6 shadow-xl shadow-black/20">
+        <div className="sm:col-span-2 lg:col-span-1 rounded-2xl border border-terras-bege/10 bg-terras-bege/5 p-6 shadow-xl shadow-black/20">
           <p className="font-serif text-xl text-terras-bege leading-snug">
             “Terra boa é a que você consegue viver e prosperar.”
           </p>
