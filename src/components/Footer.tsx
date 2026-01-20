@@ -14,7 +14,7 @@ const linksNavegacao = [
 export function Footer() {
   return (
     <footer
-      id="contato"
+      id="rodape"
       className="bg-[#3a281d] text-terras-bege py-20 border-t border-terras-bege/10"
     >
       <div className="max-w-7xl mx-auto px-6 grid gap-12 text-sm font-light md:grid-cols-2 lg:grid-cols-4 items-start">

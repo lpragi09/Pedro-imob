@@ -5,6 +5,7 @@ import { Pagination } from '@/components/Pagination';
 import { Reveal } from '@/components/Reveal';
 import { ScrollHashSync } from '@/components/ScrollHashSync';
 import { Footer } from '@/components/Footer';
+import { ContactForm } from '@/components/ContactForm';
 
 export const revalidate = 0;
 
@@ -196,6 +197,32 @@ export default async function HomeImobiliaria({
               />
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* SEÇÃO CONTATO - Premium */}
+      <section id="contato" className="py-28 bg-[#1f1711] text-terras-bege relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/10" />
+        <div className="max-w-7xl mx-auto px-6 relative">
+          <div className="grid gap-10">
+            <div className="max-w-2xl">
+              <Reveal>
+                <h2 className="text-4xl md:text-5xl font-serif">
+                  Quer comprar? A gente monta sua rota.
+                </h2>
+              </Reveal>
+              <Reveal delayMs={120}>
+                <p className="text-terras-bege/75 mt-4 leading-relaxed">
+                  Deixe seu contato e diga o que você procura. A gente te ajuda a acertar a região,
+                  o perfil e os detalhes pra fechar com segurança.
+                </p>
+              </Reveal>
+            </div>
+
+            <Reveal delayMs={180}>
+              <ContactForm />
+            </Reveal>
+          </div>
         </div>
       </section>
 
