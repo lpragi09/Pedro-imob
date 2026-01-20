@@ -2,7 +2,7 @@
 
 import nodemailer from "nodemailer";
 
-type ActionState = {
+export type ContactActionState = {
   ok: boolean;
   message: string;
 };
@@ -22,9 +22,9 @@ function isValidEmail(email: string) {
 }
 
 export async function sendEmail(
-  _prevState: ActionState,
+  _prevState: ContactActionState,
   formData: FormData
-): Promise<ActionState> {
+): Promise<ContactActionState> {
   try {
     const honeypot = String(formData.get("website") ?? "").trim();
     if (honeypot) {

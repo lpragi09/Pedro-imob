@@ -12,12 +12,7 @@ import {
   Send,
   User,
 } from "lucide-react";
-import { sendEmail } from "@/app/actions";
-
-type State = {
-  ok: boolean;
-  message: string;
-};
+import { sendEmail, type ContactActionState } from "@/app/actions";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -34,7 +29,7 @@ function SubmitButton() {
 }
 
 export function ContactForm() {
-  const [state, formAction] = useFormState<State>(sendEmail, {
+  const [state, formAction] = useFormState<ContactActionState, FormData>(sendEmail, {
     ok: false,
     message: "",
   });
