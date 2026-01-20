@@ -201,8 +201,8 @@ export default async function HomeImobiliaria({
       </section>
 
       {/* SEÇÃO CONTATO - Premium */}
-      <section id="contato" className="py-28 bg-[#1f1711] text-terras-bege relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/10" />
+      <section id="contato" className="py-28 bg-terras-marrom text-terras-bege relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-terras-marrom/0 via-black/10 to-black/20" />
         <div className="max-w-7xl mx-auto px-6 relative">
           <div className="grid gap-10">
             <div className="max-w-2xl">

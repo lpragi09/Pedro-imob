@@ -20,7 +20,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex items-center justify-center gap-2 rounded-xl bg-terras-amarelo text-terras-marrom px-6 py-4 font-bold uppercase tracking-widest text-xs shadow-lg shadow-black/20 transition hover:brightness-110 disabled:opacity-60"
+      className="inline-flex items-center justify-center gap-2 rounded-xl bg-terras-laranja text-terras-bege px-6 py-4 font-bold uppercase tracking-widest text-xs shadow-lg shadow-terras-laranja/20 transition hover:bg-terras-amarelo disabled:opacity-60"
     >
       {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
       {pending ? "Enviando..." : "Enviar"}
@@ -43,7 +43,7 @@ export function ContactForm() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-2 items-start">
-      <div className="rounded-2xl border border-terras-bege/10 bg-white/5 backdrop-blur-sm shadow-2xl shadow-black/25 p-6 sm:p-8">
+      <div className="rounded-2xl border border-terras-bege/10 bg-terras-bege/5 backdrop-blur-sm shadow-2xl shadow-black/25 p-6 sm:p-8">
         <div className="mb-6">
           <h3 className="text-2xl sm:text-3xl font-serif text-terras-bege">
             Vamos encontrar a sua terra ideal
@@ -75,7 +75,7 @@ export function ContactForm() {
                   name="nome"
                   required
                   placeholder="Seu nome"
-                  className="w-full rounded-xl bg-black/20 border border-terras-bege/10 px-12 py-3 text-terras-bege placeholder:text-terras-bege/40 outline-none focus:border-terras-amarelo/60 focus:ring-1 focus:ring-terras-amarelo/40"
+                  className="w-full rounded-xl bg-terras-marrom/30 border border-terras-bege/10 px-12 py-3 text-terras-bege placeholder:text-terras-bege/40 outline-none focus:border-terras-laranja/70 focus:ring-1 focus:ring-terras-laranja/40"
                 />
               </div>
             </div>
@@ -91,7 +91,7 @@ export function ContactForm() {
                   type="email"
                   required
                   placeholder="voce@exemplo.com"
-                  className="w-full rounded-xl bg-black/20 border border-terras-bege/10 px-12 py-3 text-terras-bege placeholder:text-terras-bege/40 outline-none focus:border-terras-amarelo/60 focus:ring-1 focus:ring-terras-amarelo/40"
+                  className="w-full rounded-xl bg-terras-marrom/30 border border-terras-bege/10 px-12 py-3 text-terras-bege placeholder:text-terras-bege/40 outline-none focus:border-terras-laranja/70 focus:ring-1 focus:ring-terras-laranja/40"
                 />
               </div>
             </div>
@@ -107,7 +107,7 @@ export function ContactForm() {
                 name="whatsapp"
                 inputMode="tel"
                 placeholder="(35) 99999-9999"
-                className="w-full rounded-xl bg-black/20 border border-terras-bege/10 px-12 py-3 text-terras-bege placeholder:text-terras-bege/40 outline-none focus:border-terras-amarelo/60 focus:ring-1 focus:ring-terras-amarelo/40"
+                className="w-full rounded-xl bg-terras-marrom/30 border border-terras-bege/10 px-12 py-3 text-terras-bege placeholder:text-terras-bege/40 outline-none focus:border-terras-laranja/70 focus:ring-1 focus:ring-terras-laranja/40"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ export function ContactForm() {
                 required
                 rows={5}
                 placeholder="Ex.: Quero um sítio até X km de..., orçamento..., preferência por água/estrada..."
-                className="w-full rounded-xl bg-black/20 border border-terras-bege/10 px-12 py-3 text-terras-bege placeholder:text-terras-bege/40 outline-none focus:border-terras-amarelo/60 focus:ring-1 focus:ring-terras-amarelo/40 resize-none"
+                className="w-full rounded-xl bg-terras-marrom/30 border border-terras-bege/10 px-12 py-3 text-terras-bege placeholder:text-terras-bege/40 outline-none focus:border-terras-laranja/70 focus:ring-1 focus:ring-terras-laranja/40 resize-none"
               />
             </div>
           </div>
@@ -157,13 +157,13 @@ export function ContactForm() {
         <div className="rounded-2xl border border-terras-bege/10 bg-white/5 backdrop-blur-sm p-6 shadow-xl shadow-black/20">
           <div className="flex items-start gap-3">
             <div className="rounded-xl bg-terras-bege/10 p-3">
-              <Mail className="w-5 h-5 text-terras-amarelo" />
+              <Mail className="w-5 h-5 text-terras-laranja" />
             </div>
             <div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-terras-bege/70">
                 E-mail
               </p>
-              <p className="text-terras-bege mt-1">contato@terrasrurais.com.br</p>
+              <p className="text-terras-bege mt-1">contato@terrasruraisimoveis.com.br</p>
             </div>
           </div>
         </div>
@@ -171,7 +171,7 @@ export function ContactForm() {
         <div className="rounded-2xl border border-terras-bege/10 bg-white/5 backdrop-blur-sm p-6 shadow-xl shadow-black/20">
           <div className="flex items-start gap-3">
             <div className="rounded-xl bg-terras-bege/10 p-3">
-              <Phone className="w-5 h-5 text-terras-amarelo" />
+              <Phone className="w-5 h-5 text-terras-laranja" />
             </div>
             <div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-terras-bege/70">
