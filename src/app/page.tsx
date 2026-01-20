@@ -200,6 +200,27 @@ export default async function HomeImobiliaria({
         </div>
       </section>
 
+      {/* DIVISOR PREMIUM */}
+      <div aria-hidden="true" className="bg-terras-marrom">
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <div className="relative">
+            {/* Linha */}
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+
+            {/* Ornamento central */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="h-8 w-28 rounded-full border border-white/20 bg-terras-marrom/60 backdrop-blur-sm flex items-center justify-center">
+                <div className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
+                  <span className="h-1 w-10 rounded-full bg-white/30" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* SEÇÃO CONTATO - Premium */}
       <section id="contato" className="py-28 bg-terras-marrom text-terras-bege relative">
         <div className="absolute inset-0 bg-gradient-to-b from-terras-marrom/0 via-black/10 to-black/20" />
