@@ -98,7 +98,7 @@ export default function AdminPage() {
   const [avisoMidia, setAvisoMidia] = useState<string | null>(null);
 
   // Limites práticos (o Supabase Storage pode impor limites dependendo do plano/configuração)
-  const MAX_VIDEO_BYTES = 50 * 1024 * 1024; // 50MB
+  const MAX_VIDEO_BYTES = 200 * 1024 * 1024; // 200MB (vídeos de celular podem ser maiores)
   const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
 
   const formatBytes = (bytes: number) => {
