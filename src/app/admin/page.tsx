@@ -95,6 +95,16 @@ export default function AdminPage() {
   });
   const [fotos, setFotos] = useState<FotoItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [avisoMidia, setAvisoMidia] = useState<string | null>(null);
+
+  // Limites práticos (o Supabase Storage pode impor limites dependendo do plano/configuração)
+  const MAX_VIDEO_BYTES = 50 * 1024 * 1024; // 50MB
+  const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
+
+  const formatBytes = (bytes: number) => {
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(0)}MB`;
+  };
 
   // 1. Verifica Sessão
   useEffect(() => {
@@ -148,13 +158,25 @@ export default function AdminPage() {
     setForm({ tipo: 'VENDA', imagens: [], videos: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
     setFotos([]);
     setVideos([]);
+    setAvisoMidia(null);
   };
 
   // --- NOVA FUNÇÃO DE MANIPULAÇÃO DE ARQUIVOS ---
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      setAvisoMidia(null);
       const novosArquivos = Array.from(e.target.files);
-      const novasFotos: FotoItem[] = novosArquivos.map((file) => ({
+
+      const validos = novosArquivos.filter((f) => {
+        if (f.size <= MAX_IMAGE_BYTES) return true;
+        setAvisoMidia(
+          `Uma ou mais imagens foram ignoradas porque excedem ${formatBytes(MAX_IMAGE_BYTES)}. ` +
+            `Dica: reduza o tamanho antes de enviar.`
+        );
+        return false;
+      });
+
+      const novasFotos: FotoItem[] = validos.map((file) => ({
         id: gerarId(),
         kind: 'new',
         file,
@@ -168,8 +190,19 @@ export default function AdminPage() {
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      setAvisoMidia(null);
       const novosArquivos = Array.from(e.target.files).filter((f) => f.type === 'video/mp4');
-      const novosVideos: VideoItem[] = novosArquivos.map((file) => ({
+
+      const validos = novosArquivos.filter((f) => {
+        if (f.size <= MAX_VIDEO_BYTES) return true;
+        setAvisoMidia(
+          `Um ou mais vídeos foram ignorados porque excedem ${formatBytes(MAX_VIDEO_BYTES)}. ` +
+            `Recomendação: exportar/compactar para até ${formatBytes(MAX_VIDEO_BYTES)} e tentar novamente.`
+        );
+        return false;
+      });
+
+      const novosVideos: VideoItem[] = validos.map((file) => ({
         id: gerarId(),
         kind: 'new',
         file,
@@ -183,6 +216,9 @@ export default function AdminPage() {
 
   // --- UPLOAD DE IMAGENS ---
   async function uploadImagem(file: File): Promise<string> {
+    if (file.size > MAX_IMAGE_BYTES) {
+      throw new Error(`Imagem muito grande. Limite recomendado: ${formatBytes(MAX_IMAGE_BYTES)}.`);
+    }
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
@@ -202,6 +238,9 @@ export default function AdminPage() {
 
   // --- UPLOAD DE VÍDEOS (MP4) ---
   async function uploadVideo(file: File): Promise<string> {
+    if (file.size > MAX_VIDEO_BYTES) {
+      throw new Error(`Vídeo muito grande. Limite recomendado: ${formatBytes(MAX_VIDEO_BYTES)}.`);
+    }
     const fileExt = file.name.split('.').pop();
     const fileName = `videos/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
@@ -256,6 +295,7 @@ export default function AdminPage() {
   const salvarImovel = async (e: React.FormEvent) => {
     e.preventDefault();
     setSalvando(true);
+    setAvisoMidia(null);
 
     try {
       const toNumber = (value: unknown, fallback = 0) => {
@@ -316,7 +356,15 @@ export default function AdminPage() {
       carregarImoveis();
 
     } catch (error: any) {
-      alert('Erro ao salvar: ' + error.message);
+      const msg = String(error?.message || '');
+      if (msg.toLowerCase().includes('maximum allowed size') || msg.toLowerCase().includes('exceeded')) {
+        setAvisoMidia(
+          `O Supabase recusou o upload porque o arquivo excede o tamanho máximo permitido. ` +
+            `Tente enviar um MP4 menor (ex.: até ${formatBytes(MAX_VIDEO_BYTES)}).`
+        );
+      } else {
+        setAvisoMidia(`Erro ao salvar: ${msg || 'tente novamente.'}`);
+      }
     } finally {
       setSalvando(false);
     }
@@ -357,6 +405,7 @@ export default function AdminPage() {
   const abrirModalEdicao = (imovel: Imovel) => {
     limparObjectUrls(fotos);
     limparObjectUrls(videos);
+    setAvisoMidia(null);
     setEditandoImovel(imovel);
     setForm(imovel);
     setFotos((imovel.imagens || []).map((url) => ({
@@ -377,6 +426,7 @@ export default function AdminPage() {
   const abrirModalCriacao = () => {
     limparObjectUrls(fotos);
     limparObjectUrls(videos);
+    setAvisoMidia(null);
     setEditandoImovel(null);
     setForm({ tipo: 'VENDA', imagens: [], videos: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
     setFotos([]);
@@ -647,6 +697,12 @@ export default function AdminPage() {
                   <p className="text-[11px] text-terras-marrom/60 mb-4">
                     Recomendado: até 30–60s por vídeo e arquivo leve para tocar rápido no celular.
                   </p>
+
+                  {avisoMidia ? (
+                    <div className="mb-4 rounded-xl border border-terras-laranja/30 bg-terras-laranja/10 p-4 text-sm text-terras-marrom">
+                      {avisoMidia}
+                    </div>
+                  ) : null}
 
                   {videos.length > 0 ? (
                     <div className="mb-4">
