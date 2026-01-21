@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import {
   AlertTriangle,
@@ -43,7 +43,7 @@ export function ContactForm() {
     message: "",
   });
   const [locked, setLocked] = useState(false);
-  const submissionId = useMemo(() => gerarSubmissionId(), []);
+  const submissionIdRef = useRef<HTMLInputElement | null>(null);
 
   // Quando der sucesso, a UX fica melhor limpando os campos
   useEffect(() => {
@@ -75,7 +75,14 @@ export function ContactForm() {
           id="contact-form"
           action={formAction}
           className="space-y-4"
-          onSubmitCapture={() => setLocked(true)}
+          onSubmitCapture={() => {
+            // Garante que cada envio tem um id único (e que clique duplo não gera 2 ids).
+            if (locked) return;
+            if (submissionIdRef.current) {
+              submissionIdRef.current.value = gerarSubmissionId();
+            }
+            setLocked(true);
+          }}
         >
           {/* Honeypot anti-spam */}
           <input
@@ -85,7 +92,7 @@ export function ContactForm() {
             autoComplete="off"
             className="hidden"
           />
-          <input type="hidden" name="submission_id" value={submissionId} />
+          <input ref={submissionIdRef} type="hidden" name="submission_id" defaultValue="" />
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">

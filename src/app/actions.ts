@@ -1,6 +1,7 @@
 "use server";
 
 import nodemailer from "nodemailer";
+import crypto from "node:crypto";
 
 export type ContactActionState = {
   ok: boolean;
@@ -35,25 +36,34 @@ export async function sendEmail(
       return { ok: true, message: "Mensagem enviada com sucesso." };
     }
 
+    const nome = String(formData.get("nome") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const whatsapp = String(formData.get("whatsapp") ?? "").trim();
+    const mensagem = String(formData.get("mensagem") ?? "").trim();
+
     const submissionId = String(formData.get("submission_id") ?? "").trim();
-    if (submissionId) {
+    // Fallback: se o cliente não mandou id, criamos um hash baseado no conteúdo + minuto
+    const minuteBucket = Math.floor(Date.now() / 60000);
+    const contentHash = crypto
+      .createHash("sha256")
+      .update(`${email}|${whatsapp}|${mensagem}|${minuteBucket}`)
+      .digest("hex")
+      .slice(0, 24);
+    const dedupeKey = submissionId || `hash_${contentHash}`;
+
+    {
       const now = Date.now();
       // Limpeza simples (evita crescer infinito)
       for (const [key, ts] of recentSubmissions.entries()) {
         if (now - ts > SUBMISSION_TTL_MS) recentSubmissions.delete(key);
       }
 
-      const last = recentSubmissions.get(submissionId);
+      const last = recentSubmissions.get(dedupeKey);
       if (last && now - last < SUBMISSION_TTL_MS) {
         return { ok: true, message: "Mensagem enviada com sucesso. Vamos te chamar!" };
       }
-      recentSubmissions.set(submissionId, now);
+      recentSubmissions.set(dedupeKey, now);
     }
-
-    const nome = String(formData.get("nome") ?? "").trim();
-    const email = String(formData.get("email") ?? "").trim();
-    const whatsapp = String(formData.get("whatsapp") ?? "").trim();
-    const mensagem = String(formData.get("mensagem") ?? "").trim();
 
     if (!nome || !email || !mensagem) {
       return { ok: false, message: "Preencha Nome, E-mail e Mensagem." };
