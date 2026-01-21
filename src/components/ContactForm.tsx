@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import {
   AlertTriangle,
@@ -14,12 +14,21 @@ import {
 } from "lucide-react";
 import { sendEmail, type ContactActionState } from "@/app/actions";
 
-function SubmitButton() {
+function gerarSubmissionId() {
+  // crypto.randomUUID() nem sempre existe em ambientes antigos, então fazemos fallback.
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function SubmitButton({ locked }: { locked: boolean }) {
   const { pending } = useFormStatus();
+  const disabled = pending || locked;
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={disabled}
       className="inline-flex items-center justify-center gap-2 rounded-xl bg-terras-laranja text-terras-bege px-6 py-4 font-bold uppercase tracking-widest text-xs shadow-lg shadow-terras-laranja/20 transition hover:bg-terras-amarelo disabled:opacity-60"
     >
       {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
@@ -33,13 +42,21 @@ export function ContactForm() {
     ok: false,
     message: "",
   });
+  const [locked, setLocked] = useState(false);
+  const submissionId = useMemo(() => gerarSubmissionId(), []);
 
   // Quando der sucesso, a UX fica melhor limpando os campos
   useEffect(() => {
     if (!state.ok) return;
     const form = document.getElementById("contact-form") as HTMLFormElement | null;
     form?.reset();
+    setLocked(false);
   }, [state.ok]);
+
+  useEffect(() => {
+    // Se a action respondeu com erro, libera para tentar novamente
+    if (state.message && !state.ok) setLocked(false);
+  }, [state.message, state.ok]);
 
   return (
     <div className="w-full max-w-5xl mx-auto grid gap-6 lg:gap-8 lg:grid-cols-[1.05fr_0.95fr] items-start">
@@ -54,7 +71,12 @@ export function ContactForm() {
           </p>
         </div>
 
-        <form id="contact-form" action={formAction} className="space-y-4">
+        <form
+          id="contact-form"
+          action={formAction}
+          className="space-y-4"
+          onSubmitCapture={() => setLocked(true)}
+        >
           {/* Honeypot anti-spam */}
           <input
             type="text"
@@ -63,6 +85,7 @@ export function ContactForm() {
             autoComplete="off"
             className="hidden"
           />
+          <input type="hidden" name="submission_id" value={submissionId} />
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
@@ -148,7 +171,7 @@ export function ContactForm() {
           ) : null}
 
           <div className="pt-2">
-            <SubmitButton />
+            <SubmitButton locked={locked} />
           </div>
         </form>
       </div>

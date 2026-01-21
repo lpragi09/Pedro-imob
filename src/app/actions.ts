@@ -7,6 +7,10 @@ export type ContactActionState = {
   message: string;
 };
 
+// Evita envios duplicados (clique duplo / retry). TTL curto e sem persistência.
+const recentSubmissions = new Map<string, number>();
+const SUBMISSION_TTL_MS = 2 * 60 * 1000; // 2 minutos
+
 function escapeHtml(input: string) {
   return input
     .replaceAll("&", "&amp;")
@@ -29,6 +33,21 @@ export async function sendEmail(
     const honeypot = String(formData.get("website") ?? "").trim();
     if (honeypot) {
       return { ok: true, message: "Mensagem enviada com sucesso." };
+    }
+
+    const submissionId = String(formData.get("submission_id") ?? "").trim();
+    if (submissionId) {
+      const now = Date.now();
+      // Limpeza simples (evita crescer infinito)
+      for (const [key, ts] of recentSubmissions.entries()) {
+        if (now - ts > SUBMISSION_TTL_MS) recentSubmissions.delete(key);
+      }
+
+      const last = recentSubmissions.get(submissionId);
+      if (last && now - last < SUBMISSION_TTL_MS) {
+        return { ok: true, message: "Mensagem enviada com sucesso. Vamos te chamar!" };
+      }
+      recentSubmissions.set(submissionId, now);
     }
 
     const nome = String(formData.get("nome") ?? "").trim();
