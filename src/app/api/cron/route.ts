@@ -11,14 +11,14 @@ function getHeader(req: Request, name: string) {
 export async function GET(req: Request) {
   const startedAt = Date.now();
 
-  const expectedKey = process.env.CRON_KEY;
+  const expectedKey = process.env.CRON_SECRET;
   const providedKey = getHeader(req, "x-cron-key");
 
   if (!expectedKey) {
     return NextResponse.json(
       {
         ok: false,
-        error: "Env CRON_KEY não configurada.",
+        error: "Env CRON_SECRET não configurada.",
         timestamp: new Date().toISOString(),
       },
       { status: 500 }
@@ -38,22 +38,20 @@ export async function GET(req: Request) {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || (!anonKey && !serviceRoleKey)) {
+  if (!supabaseUrl || !anonKey) {
     return NextResponse.json(
       {
         ok: false,
         error:
-          "Env do Supabase ausentes. Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY (ou SUPABASE_SERVICE_ROLE_KEY).",
+          "Env do Supabase ausentes. Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.",
         timestamp: new Date().toISOString(),
       },
       { status: 500 }
     );
   }
 
-  // Preferimos service role (se existir) para não depender de RLS em um ping.
-  const supabase = createClient(supabaseUrl, serviceRoleKey || anonKey!, {
+  const supabase = createClient(supabaseUrl, anonKey, {
     auth: { persistSession: false },
   });
 
