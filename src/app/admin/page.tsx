@@ -191,9 +191,26 @@ export default function AdminPage() {
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setAvisoMidia(null);
-      const novosArquivos = Array.from(e.target.files).filter((f) => f.type === 'video/mp4');
+      const novosArquivos = Array.from(e.target.files);
 
-      const validos = novosArquivos.filter((f) => {
+      // iPhone frequentemente exporta vídeos como .mov (video/quicktime), então aceitamos formatos comuns.
+      const suportado = (f: File) => {
+        const type = (f.type || '').toLowerCase();
+        const ext = (f.name.split('.').pop() || '').toLowerCase();
+        if (type.startsWith('video/')) return true;
+        if (['mp4', 'mov', 'm4v'].includes(ext)) return true;
+        return false;
+      };
+
+      const apenasVideos = novosArquivos.filter(suportado);
+      if (apenasVideos.length !== novosArquivos.length) {
+        setAvisoMidia(
+          'Alguns arquivos foram ignorados porque não parecem ser vídeos. ' +
+            'Dica: selecione um vídeo MP4/MOV diretamente da galeria.'
+        );
+      }
+
+      const validos = apenasVideos.filter((f) => {
         if (f.size <= MAX_VIDEO_BYTES) return true;
         setAvisoMidia(
           `Um ou mais vídeos foram ignorados porque excedem ${formatBytes(MAX_VIDEO_BYTES)}. ` +
@@ -768,13 +785,13 @@ export default function AdminPage() {
                     <input
                       type="file"
                       multiple
-                      accept="video/mp4"
+                      accept="video/*,.mp4,.mov,.m4v"
                       onChange={handleVideoChange}
                       className="absolute inset-0 opacity-0 cursor-pointer"
                     />
                     <div className="flex flex-col items-center gap-2 text-terras-marrom/60">
                       <Upload className="w-8 h-8 text-terras-laranja" />
-                      <span className="text-sm font-bold">Adicionar vídeos (MP4)</span>
+                      <span className="text-sm font-bold">Adicionar vídeos</span>
                     </div>
                   </div>
                 </div>
