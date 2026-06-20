@@ -38,6 +38,43 @@ type VideoItem = {
   file?: File;
 };
 
+// Converte um texto no formato brasileiro (ex: "2.100,58") para número (2100.58)
+const parsePrecoBR = (texto: string): number => {
+  if (!texto) return 0;
+  // Remove tudo que não for dígito, vírgula ou ponto
+  const limpo = texto.replace(/[^\d,.]/g, '');
+  // Remove os pontos de milhar e troca a vírgula decimal por ponto
+  const normalizado = limpo.replace(/\./g, '').replace(',', '.');
+  const n = Number(normalizado);
+  return Number.isFinite(n) ? n : 0;
+};
+
+// Formata um número para o padrão brasileiro de moeda sem o símbolo (ex: 2100.58 -> "2.100,58")
+const formatarPrecoBR = (valor?: number): string => {
+  if (valor === undefined || valor === null || Number.isNaN(valor) || valor === 0) return '';
+  return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valor);
+};
+
+// Formata o texto enquanto o usuário digita, mantendo pontos de milhar e vírgula decimal
+const mascararPrecoBR = (texto: string): string => {
+  // Mantém apenas dígitos e vírgula (apenas a primeira vírgula é considerada decimal)
+  let limpo = texto.replace(/[^\d,]/g, '');
+  const partes = limpo.split(',');
+  let inteiro = partes[0] || '';
+  let decimal = partes.length > 1 ? partes.slice(1).join('').slice(0, 2) : null;
+
+  // Remove zeros à esquerda desnecessários, mas mantém um zero se vazio com decimal
+  inteiro = inteiro.replace(/^0+(?=\d)/, '');
+
+  // Aplica os pontos de milhar
+  const inteiroFormatado = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  if (decimal !== null) {
+    return `${inteiroFormatado || '0'},${decimal}`;
+  }
+  return inteiroFormatado;
+};
+
 const gerarId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 function moverItem<T>(arr: T[], from: number, to: number) {
@@ -93,6 +130,7 @@ export default function AdminPage() {
     vagas: 0,
     area: 0,
   });
+  const [precoTexto, setPrecoTexto] = useState('');
   const [fotos, setFotos] = useState<FotoItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [avisoMidia, setAvisoMidia] = useState<string | null>(null);
@@ -156,6 +194,7 @@ export default function AdminPage() {
     setModalAberto(false);
     setEditandoImovel(null);
     setForm({ tipo: 'VENDA', imagens: [], videos: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
+    setPrecoTexto('');
     setFotos([]);
     setVideos([]);
     setAvisoMidia(null);
@@ -350,7 +389,7 @@ export default function AdminPage() {
         ...form, 
         imagens: imagensOrdenadas,
         videos: videosOrdenados,
-        preco: toNumber(form.preco),
+        preco: parsePrecoBR(precoTexto),
         quartos: toNumber(form.quartos),
         banheiros: toNumber(form.banheiros),
         vagas: toNumber(form.vagas),
@@ -368,6 +407,7 @@ export default function AdminPage() {
       setModalAberto(false);
       setEditandoImovel(null);
       setForm({ tipo: 'VENDA', imagens: [], videos: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
+      setPrecoTexto('');
       setFotos([]);
       setVideos([]);
       carregarImoveis();
@@ -425,6 +465,7 @@ export default function AdminPage() {
     setAvisoMidia(null);
     setEditandoImovel(imovel);
     setForm(imovel);
+    setPrecoTexto(formatarPrecoBR(imovel.preco));
     setFotos((imovel.imagens || []).map((url) => ({
       id: gerarId(),
       kind: 'existing',
@@ -446,6 +487,7 @@ export default function AdminPage() {
     setAvisoMidia(null);
     setEditandoImovel(null);
     setForm({ tipo: 'VENDA', imagens: [], videos: [], quartos: 0, banheiros: 0, vagas: 0, area: 0 });
+    setPrecoTexto('');
     setFotos([]);
     setVideos([]);
     setModalAberto(true);
@@ -630,7 +672,7 @@ export default function AdminPage() {
                    <div className="space-y-4">
                       <div><label className="label-admin">Título</label><input required type="text" value={form.titulo || ''} onChange={e => setForm({...form, titulo: e.target.value})} className="input-admin" /></div>
                       <div className="grid grid-cols-2 gap-4">
-                         <div><label className="label-admin">Preço</label><input required type="number" value={form.preco || ''} onChange={e => setForm({...form, preco: Number(e.target.value)})} className="input-admin" /></div>
+                         <div><label className="label-admin">Preço</label><input required type="text" inputMode="decimal" placeholder="0,00" value={precoTexto} onChange={e => { const mascarado = mascararPrecoBR(e.target.value); setPrecoTexto(mascarado); setForm({...form, preco: parsePrecoBR(mascarado)}); }} className="input-admin" /></div>
                          <div><label className="label-admin">Tipo</label><select value={form.tipo || 'VENDA'} onChange={e => setForm({...form, tipo: e.target.value as any})} className="input-admin"><option value="VENDA">Venda</option><option value="ALUGUEL">Aluguel</option></select></div>
                       </div>
                       <div className="grid grid-cols-3 gap-4">
